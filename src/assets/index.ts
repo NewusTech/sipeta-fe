@@ -1,3 +1,3 @@
-import Logo from "@/assets/Logo";
+import logo from "@/assets/Logo";
 
-export { Logo };
+export { logo };
