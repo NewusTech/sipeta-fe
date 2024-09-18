@@ -10,7 +10,7 @@ export default function DashboardLayout({
     <section className="relative">
       <NavDashboard />
       <Sidebar />
-      <main className="pl-64 pt-32">{children}</main>
+      <main className="pl-64 pr-10 pt-32">{children}</main>
     </section>
   );
 }

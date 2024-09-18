@@ -2,6 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 const Sidebar = () => {
@@ -40,13 +41,17 @@ const Sidebar = () => {
           />
         </li>
         {dropdown && (
-          <div className="space-y-2 my-2 text-[15px]">
-            <p className="hover:translate-x-3 transition duration-300">
-              Pendataan
-            </p>
-            <p className="hover:translate-x-3 transition duration-300">
-              Pemberian Nama
-            </p>
+          <div className="flex flex-col gap-y-2 my-2 text-[15px]">
+            <Link href="/manage-data">
+              <p className="hover:translate-x-3 transition duration-300">
+                Pendataan
+              </p>
+            </Link>
+            <Link href="/naming">
+              <p className="hover:translate-x-3 transition duration-300">
+                Pemberian Nama
+              </p>
+            </Link>
           </div>
         )}
         <li className="p-3 rounded-md hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
