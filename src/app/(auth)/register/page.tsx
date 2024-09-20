@@ -18,7 +18,7 @@ const RegisterPage = () => {
 
   return (
     <section className="-mt-10 bg-[url('/assets/images/bg-screen.jpg')] flex justify-center items-center w-screen h-screen bg-cover">
-      <div className="container mx-auto space-y-4 bg-[#84ACCE] py-8 px-[60px] w-[565px] rounded-xl flex flex-col">
+      <div className="container mx-auto space-y-4 bg-white py-8 px-[60px] w-[565px] rounded-xl flex flex-col">
         <div className="flex flex-col">
           <h5 className="uppercase text-primaryy font-bold tracking-[0.2rem] text-lg">
             daftar
@@ -34,28 +34,28 @@ const RegisterPage = () => {
           <div className="space-y-1">
             <Label>Nama Lengkap</Label>
             <Input
-              className="rounded-full border-none"
+              className="rounded-full border-primaryy"
               placeholder="Nama Lengkap"
             />
           </div>
           <div className="space-y-1">
             <Label>Nomor Telepon</Label>
             <Input
-              className="rounded-full border-none"
+              className="rounded-full border-primaryy"
               placeholder="Nomor Telepon"
             />
           </div>
           <div className="space-y-1">
             <Label>Email</Label>
             <Input
-              className="rounded-full border-none"
+              className="rounded-full border-primaryy"
               placeholder="Email"
               type="email"
             />
           </div>
           <div className="space-y-1">
             <Label>Password</Label>
-            <div className=" flex rounded-full items-center pr-3 pl-1 bg-white">
+            <div className="border border-primaryy flex rounded-full items-center pr-3 pl-1 bg-white">
               <Input
                 className="rounded-full border-none"
                 placeholder="Kata Sandi"
@@ -66,9 +66,9 @@ const RegisterPage = () => {
                 className="cursor-pointer"
               >
                 {showPassword ? (
-                  <EyeOff className="text-greyy" />
+                  <EyeOff className="text-primaryy" />
                 ) : (
-                  <Eye className="text-greyy" />
+                  <Eye className="text-primaryy" />
                 )}
               </div>
             </div>

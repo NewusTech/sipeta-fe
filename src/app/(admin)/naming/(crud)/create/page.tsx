@@ -1,19 +1,64 @@
 "use client";
 
-import { Button } from "../../components/ui/button";
+import * as React from "react";
+import { Check, ChevronDown } from "lucide-react";
 
-import React from "react";
+import { cn } from "@/lib/utils";
+import { Button } from "../../../../../components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../../../../../components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../../../components/ui/popover";
+import { NamingForm } from "../../../../../components/Form/Naming";
 import {
   GoogleMap,
   Marker,
   StandaloneSearchBox,
   useLoadScript,
 } from "@react-google-maps/api";
-import { Input } from "../../components/ui/input";
-import geoJson from "../../constants/lamtura.json";
-import geoJson2 from "../../constants/lamturaa.json";
+import { Input } from "../../../../../components/ui/input";
+import geoJson from "../../../../../constants/lamtura.json";
+import geoJson2 from "../../../../../constants/lamturaa.json";
 
-export default function Home() {
+const frameworks = [
+  {
+    value: "next.js",
+    label: "Next.js",
+  },
+  {
+    value: "sveltekit",
+    label: "SvelteKit",
+  },
+  {
+    value: "nuxt.js",
+    label: "Nuxt.js",
+  },
+  {
+    value: "remix",
+    label: "Remix",
+  },
+  {
+    value: "astro",
+    label: "Astro",
+  },
+];
+
+export default function CreateNamingPage() {
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+  const [onEdit, setOnEdit] = React.useState(false);
+  const [searchText, setSearchText] = React.useState("");
+  const [currentLocation, setCurrentLocation] = React.useState(null);
+  const [addressInfo, setAddressInfo] = React.useState(null);
   const [markerPosition, setMarkerPosition] = React.useState({
     lat: -4.8357, // Default latitude (Lampung Utara)
     lng: 104.9441, // Default longitude (Lampung Utara)
@@ -164,41 +209,47 @@ export default function Home() {
     setMapCenter(LAMPUNG_UTARA); // Center back to Lampung Timur after drag
   };
 
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  }
+  if (!isLoaded) return null;
 
   return (
-    <div className="flex justify-center items-center w-screen h-screen bg-cover">
-      <div className="w-full ">
-        <div className="relative">
-          {/* Input search with Autocomplete */}
-          <StandaloneSearchBox
-            onPlacesChanged={onPlacesChanged}
-            onLoad={(ref) => (searchBoxRef.current = ref)}
-          >
-            <Input
-              type="text"
-              placeholder="Search for a location"
-              className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-1/2 shadow"
-            />
-          </StandaloneSearchBox>
-        </div>
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          center={mapCenter}
-          onLoad={onLoadMap}
-          zoom={10.85}
-          onDragEnd={onMapDragEnd} // Menangani event drag pada peta
-          onClick={onMapClick}
-          // Menangani event klik pada peta
-        >
-          <Marker
-            position={markerPosition} // Menampilkan marker pada posisi terkini
-            // Memungkinkan marker untuk didrag
-          />
-        </GoogleMap>
+    <section>
+      <div className="flex justify-between">
+        <h1 className="text-primaryy pt-5 font-semibold">Tambah Data</h1>
       </div>
-    </div>
+      <div className="flex justify-between space-x-4">
+        <div className="mt-4">
+          <NamingForm />
+        </div>
+        <div className="w-full -mt-11">
+          <div className="relative">
+            {/* Input search with Autocomplete */}
+            <StandaloneSearchBox
+              onPlacesChanged={onPlacesChanged}
+              onLoad={(ref) => (searchBoxRef.current = ref)}
+            >
+              <Input
+                type="text"
+                placeholder="Search for a location"
+                className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-1/2 shadow"
+              />
+            </StandaloneSearchBox>
+          </div>
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            center={mapCenter}
+            onLoad={onLoadMap}
+            zoom={10.85}
+            onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+            onClick={onMapClick}
+            // Menangani event klik pada peta
+          >
+            <Marker
+              position={markerPosition} // Menampilkan marker pada posisi terkini
+              draggable={true} // Memungkinkan marker untuk didrag
+            />
+          </GoogleMap>
+        </div>
+      </div>
+    </section>
   );
 }

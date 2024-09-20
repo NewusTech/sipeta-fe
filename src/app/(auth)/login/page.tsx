@@ -17,7 +17,7 @@ const LoginPage = () => {
 
   return (
     <section className="-mt-10 bg-[url('/assets/images/bg-screen.jpg')] flex justify-center items-center w-screen h-screen bg-cover">
-      <div className="container mx-auto space-y-4 bg-[#84ACCE] py-8 px-[60px] w-[565px] rounded-xl flex flex-col">
+      <div className="container mx-auto space-y-4 bg-white py-8 px-[60px] w-[565px] rounded-xl flex flex-col">
         <div className="flex justify-center">
           <Image
             src="/assets/icons/logo.svg"
@@ -33,7 +33,7 @@ const LoginPage = () => {
           </p>
         </div>
         <div className="space-y-2 w-full">
-          <div className=" flex rounded-full items-center pl-3 bg-white">
+          <div className=" flex rounded-full border border-primaryy items-center pl-3 bg-white">
             <Image
               src="/assets/icons/user.svg"
               alt="logo"
@@ -42,7 +42,7 @@ const LoginPage = () => {
             />
             <Input className="rounded-full border-none" placeholder="Email" />
           </div>
-          <div className=" flex rounded-full items-center pr-3 pl-1 bg-white">
+          <div className=" flex rounded-full border border-primaryy items-center pr-3 pl-1 bg-white">
             <Input
               className="rounded-full border-none"
               placeholder="Kata Sandi"
