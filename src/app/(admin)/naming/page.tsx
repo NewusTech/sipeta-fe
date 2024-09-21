@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "../../../components/ui/breadcrumb";
 import { DataTables } from "../../../components/Datatables";
-import { Download, ListFilter, Printer } from "lucide-react";
+import { Download, ListFilter, MapPinPlus, Printer } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import Link from "next/link";
 
@@ -71,7 +71,7 @@ const columns: ColumnDef<Payment>[] = [
 
 export default function NamingPage() {
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 pl-64 pr-10 pt-32">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className="text-primaryy">
@@ -91,13 +91,13 @@ export default function NamingPage() {
       </Breadcrumb>
       <div>
         <div className="flex space-x-2 justify-end">
-          <Button className="bg-primaryy rounded-full flex justify-between space-x-2">
-            <Download className="h-4 w-4 text-white" />
-            <p>Download</p>
+          <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
+            <Download className="h-4 w-4 text-primaryy group-hover:text-white" />
+            <p className="text-primaryy group-hover:text-white">Download</p>
           </Button>
-          <Button className="bg-primaryy rounded-full flex justify-between space-x-2">
-            <Printer className="h-4 w-4 text-white" />
-            <p>Print</p>
+          <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
+            <Printer className="h-4 w-4 text-primaryy group-hover:text-white" />
+            <p className="text-primaryy group-hover:text-white">Print</p>
           </Button>
         </div>
         <div className="flex items-center space-x-11">
@@ -106,8 +106,9 @@ export default function NamingPage() {
             <p className="text-primaryy font-light">Filter</p>
           </div>
           <Link href="/naming/create">
-            <div className="w-20 h-[28px] bg-primaryy mt-4 text-white rounded-full flex justify-center items-center">
-              <p className="text-sm">Tambah</p>
+            <div className="flex px-2 space-x-2 items-center h-[28px] bg-primaryy mt-4 text-white rounded-full ">
+              <MapPinPlus className="w-5 h-5" />
+              <p className="text-sm">Tambah Data</p>
             </div>
           </Link>
         </div>

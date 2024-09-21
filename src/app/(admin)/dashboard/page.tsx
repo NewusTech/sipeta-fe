@@ -15,7 +15,7 @@ const Card = () => {
 
 const DashboardPage = () => {
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 pl-64 pr-10 pt-32">
       <h1 className="text-primaryy font-semibold text-lg">Dashboard</h1>
       <div className="grid grid-cols-3 gap-x-3">
         <Card />

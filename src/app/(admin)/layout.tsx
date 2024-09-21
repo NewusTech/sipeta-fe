@@ -1,16 +1,33 @@
+"use client";
+
+import { Inter } from "next/font/google";
+import "../globals.css";
+
 import NavDashboard from "../../components/Dashboard/NavDashboard";
 import Sidebar from "../../components/Dashboard/Sidebar";
+import { usePathname } from "next/navigation";
 
-export default function DashboardLayout({
+const inter = Inter({ subsets: ["latin"] });
+
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isCrudRoute = pathname.includes("/create");
+
   return (
-    <section className="relative">
-      <NavDashboard />
-      <Sidebar />
-      <main className="pl-64 pr-10 pt-32">{children}</main>
-    </section>
+    <html>
+      <body className={inter.className}>
+        {!isCrudRoute && (
+          <>
+            <NavDashboard />
+            <Sidebar type="large" />
+          </>
+        )}
+        <main className="relative">{children}</main>
+      </body>
+    </html>
   );
 }
