@@ -18,7 +18,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../../../../../components/ui/popover";
-import { NamingForm } from "../../../../../components/Form/Naming";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../../../../components/ui/tabs";
 import {
   GoogleMap,
   Marker,
@@ -28,6 +33,8 @@ import {
 import { Input } from "../../../../../components/ui/input";
 import geoJson from "../../../../../constants/lamtura.json";
 import geoJson2 from "../../../../../constants/lamturaa.json";
+import InformationForm from "../../../../../components/Form/Information";
+import DetailForm from "../../../../../components/Form/Detail";
 
 const frameworks = [
   {
@@ -217,8 +224,38 @@ export default function CreateNamingPage() {
         <h1 className="text-primaryy pt-5 font-semibold">Tambah Data</h1>
       </div>
       <div className="flex justify-between space-x-4">
-        <div className="mt-4">
-          <NamingForm />
+        <div className="mt-4 w-5/12">
+          <Tabs defaultValue="information">
+            <TabsList className="w-full rounded-full border bg-slate-100 space-x-2">
+              <TabsTrigger
+                className="w-full px-5 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                value="information"
+              >
+                Informasi
+              </TabsTrigger>
+              <TabsTrigger
+                className="w-full px-5 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                value="detail"
+              >
+                Detail
+              </TabsTrigger>
+              <TabsTrigger
+                className="w-full px-5 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                value="document"
+              >
+                Dokumen
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="information">
+              <InformationForm />
+            </TabsContent>
+            <TabsContent value="detail">
+              <DetailForm />
+            </TabsContent>
+            <TabsContent value="document">
+              Change your password here.
+            </TabsContent>
+          </Tabs>
         </div>
         <div className="w-full -mt-11">
           <div className="relative">
