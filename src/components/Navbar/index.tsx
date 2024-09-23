@@ -58,6 +58,7 @@ const Navbar = () => {
           <li className="cursor-pointer">Beranda</li>
           <li className="cursor-pointer">Daftar Nama Rupabumi</li>
           <li className="cursor-pointer">Petunjuk Penggunaan</li>
+          <li className="cursor-pointer">Kecamatan</li>
           <li className="cursor-pointer">Kontak</li>
         </ul>
       </div>

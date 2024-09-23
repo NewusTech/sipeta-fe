@@ -1,19 +1,42 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "../../../components/ui/input";
-import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
+import { Checkbox } from "../../../components/ui/checkbox";
+
+const registerSchema = z.object({
+  fullName: z.string().min(1, "Nama lengkap harus diisi"),
+  phoneNumber: z
+    .string()
+    .min(10, "Nomor telepon harus terdiri dari 10 angka")
+    .regex(/^[0-9]+$/, "Nomor telepon hanya boleh terdiri dari angka"),
+  email: z.string().email("Email tidak valid"),
+  password: z.string().min(6, "Password harus minimal 6 karakter"),
+});
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
   // Fungsi untuk toggle visibilitas kata sandi
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
+  };
+
+  const onSubmit = (data: any) => {
+    console.log(data);
   };
 
   return (
@@ -23,41 +46,60 @@ const RegisterPage = () => {
           <h5 className="uppercase text-primaryy font-bold tracking-[0.2rem] text-lg">
             daftar
           </h5>
-          <p className="text-black font-light text-sm">
+          <p className="text-black text-sm">
             Sudah punya akun? silakan{" "}
-            <Link href="/login" className="underline text-primaryy">
+            <Link href="/login" className="underline text-primaryy font-medium">
               Masuk
             </Link>
           </p>
         </div>
-        <div className="space-y-2 w-full">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 w-full">
           <div className="space-y-1">
-            <Label>Nama Lengkap</Label>
+            <Label className="text-primaryy">Nama Lengkap</Label>
             <Input
-              className="rounded-full border-primaryy"
+              {...register("fullName")}
+              className="rounded-full bg-transparent"
               placeholder="Nama Lengkap"
             />
+            {errors.fullName && (
+              <p className="text-red-500 text-xs">
+                {String(errors.fullName.message)}
+              </p>
+            )}
           </div>
           <div className="space-y-1">
-            <Label>Nomor Telepon</Label>
+            <Label className="text-primaryy">Nomor Telepon</Label>
             <Input
-              className="rounded-full border-primaryy"
+              {...register("phoneNumber")}
+              className="rounded-full bg-transparent"
               placeholder="Nomor Telepon"
             />
+            {errors.phoneNumber?.message && (
+              <p className="text-red-500 text-xs">
+                {String(errors.phoneNumber.message)}
+              </p>
+            )}
           </div>
           <div className="space-y-1">
-            <Label>Email</Label>
+            <Label className="text-primaryy">Email</Label>
             <Input
-              className="rounded-full border-primaryy"
+              {...register("email")}
+              className="rounded-full bg-transparent"
               placeholder="Email"
               type="email"
             />
+            {errors.email?.message && (
+              <p className="text-red-500 text-xs">
+                {String(errors.email.message)}
+              </p>
+            )}
           </div>
           <div className="space-y-1">
-            <Label>Password</Label>
-            <div className="border border-primaryy flex rounded-full items-center pr-3 pl-1 bg-white">
+            <Label className="text-primaryy">Password</Label>
+            <div className="border flex rounded-full bg-transparent items-center pr-3 pl-1">
               <Input
-                className="rounded-full border-none"
+                {...register("password")}
+                className="rounded-full bg-transparent border-none"
                 placeholder="Kata Sandi"
                 type={showPassword ? "text" : "password"}
               />
@@ -72,19 +114,30 @@ const RegisterPage = () => {
                 )}
               </div>
             </div>
+            {errors.password?.message && (
+              <p className="text-red-500 text-xs">
+                {String(errors.password.message)}
+              </p>
+            )}
           </div>
-        </div>
-        <div className="flex justify-center">
-          <Button className="rounded-full text-white bg-primaryy px-8">
-            Daftar
-          </Button>
-        </div>
-        <p className="text-center text-xs text-black font-light">
-          Dengan mendaftar, Anda menyetujui{" "}
-          <span className="font-semibold">Syarat & Ketentuan</span> kami dan
-          Anda <br /> telah membaca{" "}
-          <span className="font-semibold">Kebijakan Privasi</span> kami.
-        </p>
+          <div className="flex space-x-2 items-center">
+            <Checkbox />
+            <p className="text-xs text-primaryy -my-1">
+              Dengan mendaftar, Anda menyetujui{" "}
+              <span className="font-semibold">Syarat & Ketentuan</span> kami dan
+              Anda telah membaca
+              <span className="font-semibold"> Kebijakan Privasi</span> kami.
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <Button
+              type="submit"
+              className="rounded-full bg-transparent text-white bg-primaryy px-8"
+            >
+              Daftar
+            </Button>
+          </div>
+        </form>
       </div>
     </section>
   );
