@@ -14,9 +14,14 @@ import {
 import { Input } from "../../components/ui/input";
 import geoJson from "../../constants/lamtura.json";
 import geoJson2 from "../../constants/lamturaa.json";
+import { usePathname } from "next/navigation";
+import path from "path";
 
 const Navbar = () => {
   // const [openDropdown, setOpenDropdown] = useState(false);
+  const pathname = usePathname();
+
+  const isActive = (path: string) => pathname === path;
 
   return (
     <>
@@ -55,11 +60,31 @@ const Navbar = () => {
       </div>
       <div className="py-5 border-b border-primaryy">
         <ul className="container mx-auto flex items-center space-x-10 uppercase text-primaryy">
-          <li className="cursor-pointer">Beranda</li>
-          <li className="cursor-pointer">Daftar Nama Rupabumi</li>
-          <li className="cursor-pointer">Petunjuk Penggunaan</li>
-          <li className="cursor-pointer">Kecamatan</li>
-          <li className="cursor-pointer">Kontak</li>
+          <li
+            className={`cursor-pointer ${isActive("/") ? "font-semibold" : ""}`}
+          >
+            <Link href="/">Beranda</Link>
+          </li>
+          <li
+            className={`cursor-pointer ${isActive("/list-name") ? "font-semibold" : "font-light"}`}
+          >
+            <Link href="/list-name">Daftar Nama Rupabumi</Link>
+          </li>
+          <li
+            className={`cursor-pointer ${isActive("/instructions-for-use") ? "font-semibold" : "font-light"}`}
+          >
+            <Link href="/instructions-for-use">Petunjuk Penggunaan</Link>
+          </li>
+          <li
+            className={`cursor-pointer ${isActive("/district") ? "font-semibold" : "font-light"}`}
+          >
+            <Link href="/district">Kecamatan</Link>
+          </li>
+          <li
+            className={`cursor-pointer ${isActive("/contact") ? "font-semibold" : "font-light"}`}
+          >
+            <Link href="/contact">Kontak</Link>
+          </li>
         </ul>
       </div>
     </>

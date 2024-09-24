@@ -1,82 +1,96 @@
+"use client";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTables2 } from "../../../components/Datatables/table2";
-
-type PaymentS = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const payments: PaymentS[] = [
-  {
-    id: "728ed52f",
-    amount: 100,
-    status: "pending",
-    email: "m@example.com",
-  },
-  {
-    id: "489e1d42",
-    amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
-  },
-  {
-    id: "728ed52f",
-    amount: 100,
-    status: "pending",
-    email: "m@example.com",
-  },
-  {
-    id: "489e1d42",
-    amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
-  },
-  // ...
-];
+import useSWR from "swr";
+import { fetcherWithoutAuth } from "@/constants/fetcher";
+import { useState } from "react";
+import { Pagination } from "../../../components/Pagination";
 
 type Payment = {
   id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
+  no: number;
+  name: string;
+  kepala: string;
+  alamat: string;
+  telp: string;
 };
 
 const columns: ColumnDef<Payment>[] = [
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "no",
+    header: "No",
+    cell: ({ row }) => <span>{row.index + 1}</span>,
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "name",
+    header: "Kelurahan / Desa",
+    cell: ({ row }) => <span>{row.original.name || "-"}</span>,
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
+    accessorKey: "kepala",
+    header: "Lurah / Kades",
+    cell: ({ row }) => <span>{row.original.kepala || "-"}</span>,
+  },
+  {
+    accessorKey: "alamat",
+    header: "Alamat Kantor",
+    cell: ({ row }) => <span>{row.original.alamat || "-"}</span>,
+  },
+  {
+    accessorKey: "telp",
+    header: "Telepon",
+    cell: ({ row }) => <span>{row.original.telp || "-"}</span>,
   },
 ];
 
 export default function DistrictPage() {
+  const [page, setPage] = useState(1);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  // Fetch data dengan SWR berdasarkan halaman saat ini
+  const { data } = useSWR<any>(
+    `${apiUrl}/kecamatan/get?page=${page}&limit=5&desaLimit=10000000`,
+    fetcherWithoutAuth
+  );
+
+  const result = data?.data;
+  const totalPages = data?.pagination?.totalPages || 1;
+
+  // Fungsi untuk mengubah halaman
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   return (
     <section className="py-10 container mx-auto space-y-6">
-      <h1 className="text-lg font-semibold text-primaryy">
-        Kecamatan Agung Barat
-      </h1>
-      <div className="flex space-x-10">
-        <div className="uppercase font-medium space-y-1">
-          <p>Alamat Kantor</p>
-          <p>Telepon</p>
-          <p>Camat</p>
+      {result?.map((v: any) => (
+        <div key={v.id} className="space-y-3">
+          <h1 className="text-lg font-semibold text-primaryy">
+            Kecamatan {v.name}
+          </h1>
+          <div className="flex space-x-10">
+            <div className="uppercase font-medium space-y-1">
+              <p>Alamat Kantor</p>
+              <p>Telepon</p>
+              <p>Camat</p>
+            </div>
+            <div className="uppercase space-y-1">
+              <p>: {v.alamat || "-"}</p>
+              <p>: {v.telep || "-"}</p>
+              <p>: {v.camat || "-"}</p>
+            </div>
+          </div>
+          {v.Desas && (
+            <DataTables2 columns={columns} data={v.Desas} filterBy="name" />
+          )}
         </div>
-        <div className="uppercase space-y-1">
-          <p>: Alamat Kantor</p>
-          <p>: Telepon</p>
-          <p>: Camat</p>
-        </div>
-      </div>
-      <DataTables2 columns={columns} data={payments} filterBy="name" />
+      ))}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </section>
   );
 }
