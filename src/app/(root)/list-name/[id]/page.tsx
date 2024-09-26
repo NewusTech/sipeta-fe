@@ -21,8 +21,6 @@ const DetailPage = ({
 
   const result = data?.data;
 
-  console.log(result);
-
   return (
     <section className="container mx-auto">
       <div className="py-10 flex space-x-5">

@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import CircularPercentage from "../../../components/CircularPercentage";
+
+export const metadata: Metadata = {
+  title: "Admin - Dashboard Sipeta",
+};
 
 const Card = () => {
   return (

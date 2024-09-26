@@ -39,19 +39,20 @@ const LoginPage = () => {
   };
 
   return (
-    <section className="-mt-10 bg-[url('/assets/images/bg-screen.jpg')] flex justify-center items-center w-screen h-screen bg-cover">
-      <div className="container mx-auto space-y-4 bg-white py-8 px-[60px] w-[565px] rounded-xl flex flex-col">
+    <section className="-mt-10 bg-primaryy px-10 md:px-0 md:bg-[url('/assets/images/bg-screen.jpg')] flex justify-center items-center w-screen h-screen bg-cover">
+      <div className="container mx-auto space-y-4 bg-white py-8 md:px-[60px] w-[565px] rounded-xl flex flex-col">
         <div className="flex justify-center">
           <Image
             src="/assets/icons/logo.svg"
             alt="logo"
             width={140}
             height={178}
+            className="w-[100px] h-[138px] md:w-[140px] md:h-[178px]"
           />
         </div>
         <div className="flex flex-col items-center">
           <h5 className="uppercase text-primaryy font-semibold">sipeta</h5>
-          <p className="uppercase text-primaryy font-light w-8/12 text-center text-sm">
+          <p className="uppercase text-primaryy w-full md:w-8/12 text-center text-xs md:text-sm">
             sistem informasi pengelolaan data kewilayahan lampung utara
           </p>
         </div>
@@ -100,10 +101,10 @@ const LoginPage = () => {
             )}
           </div>
           <div className="flex justify-between">
-            <Link href="/" className="text-primaryy underline text-sm">
+            <Link href="/" className="text-primaryy underline text-sm w-40">
               Lupa kata sandi?
             </Link>
-            <p className="text-sm text-greyy">
+            <p className="text-sm text-right md:text-left text-greyy">
               Belum punya akun? silakan{" "}
               <Link href="/register" className="text-primaryy underline">
                 Daftar?
@@ -119,7 +120,7 @@ const LoginPage = () => {
             </Button>
           </div>
         </form>
-        <p className="text-center text-xs text-primaryy font-light">
+        <p className="text-center text-xs text-primaryy">
           Dengan mendaftar, Anda menyetujui{" "}
           <span className="font-semibold">Syarat & Ketentuan</span> kami dan
           Anda <br /> telah membaca{" "}
