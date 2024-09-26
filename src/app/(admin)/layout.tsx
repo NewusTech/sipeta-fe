@@ -6,13 +6,8 @@ import "../globals.css";
 import NavDashboard from "../../components/Dashboard/NavDashboard";
 import Sidebar from "../../components/Dashboard/Sidebar";
 import { usePathname } from "next/navigation";
-import { Metadata } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Admin - Sipeta",
-};
 
 export default function RootLayout({
   children,

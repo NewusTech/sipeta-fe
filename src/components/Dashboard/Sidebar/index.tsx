@@ -33,11 +33,15 @@ const Sidebar = ({ type }: { type?: string }) => {
               <p className="font-light text-sm text-primaryy">Dashboard</p>
             </div>
           </div>
-          <ul className="text-primaryy mt-14 font-light cursor-pointer text-[15px]">
-            <li className="p-3 rounded-md hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
-              Dashboard
+          <ul className="text-primaryy mt-14 cursor-pointer text-[15px]">
+            <li className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+              <LayoutDashboard />
+              <Link href="/dashboard">
+                <p>Dashboard</p>
+              </Link>
             </li>
-            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+            <li className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+              <MapIcon />
               <Link href="/naming">
                 <p>Pendataan</p>
               </Link>

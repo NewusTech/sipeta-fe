@@ -40,8 +40,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <section className="-mt-10 bg-[url('/assets/images/bg-screen.jpg')] flex justify-center items-center w-screen h-screen bg-cover">
-      <div className="container mx-auto space-y-4 bg-white py-8 px-[60px] w-[565px] rounded-xl flex flex-col">
+    <section className="-mt-10 bg-primaryy px-10 md:px-0 md:bg-[url('/assets/images/bg-screen.jpg')] flex justify-center items-center w-screen h-screen bg-cover">
+      <div className="container mx-auto space-y-4 bg-white py-8 md:px-[60px] w-[565px] rounded-xl flex flex-col">
         <div className="flex flex-col">
           <h5 className="uppercase text-primaryy font-bold tracking-[0.2rem] text-lg">
             daftar

@@ -177,7 +177,7 @@ export default function ListNamePage() {
 
   return (
     <section className="py-10 container mx-auto space-y-6">
-      <div className="flex around w-full gap-7">
+      <div className="flex md:flex-row flex-col around w-full gap-7">
         <div className="w-full space-y-5">
           <div className="space-y-2">
             <Label htmlFor="name">Nama Rupabumi</Label>
@@ -230,7 +230,7 @@ export default function ListNamePage() {
           </div>
         </div>
       </div>
-      <div className="flex justify-end">
+      <div className="flex md:justify-end">
         <Button
           onClick={handleFilter}
           className="space-x-2 rounded-full bg-primaryy"

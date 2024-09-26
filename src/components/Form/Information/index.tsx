@@ -42,40 +42,40 @@ const languages = [
 
 const formSchema = z.object({
   idToponim: z.string({
-    message: "Please enter a username.",
+    message: "Mauskann ID Toponim",
   }),
   typeGemoetry: z.string({
-    required_error: "Please select a language.",
+    required_error: "Pilih tipe geometri.",
   }),
   classcificationToponim: z.string({
-    required_error: "Please select a language.",
+    required_error: "Masukkan klasifikasi toponim.",
   }),
   unsur: z.string({
-    required_error: "Please select a language.",
+    required_error: "Pilih unsur.",
   }),
   district: z.string({
-    message: "Please enter a username.",
+    message: "Pilih kecamatan.",
   }),
   village: z.string({
-    message: "Please enter a username.",
+    message: "Pilih desa.",
   }),
   name: z.string({
-    message: "Please enter a username.",
+    message: "Masukkan nama lokal.",
   }),
   nameSpesific: z.string({
-    message: "Please enter a username.",
+    message: "Masukkan nama spesifik.",
   }),
   nameMap: z.string({
-    message: "Please enter a username.",
+    message: "Masukan nama peta.",
   }),
   mainCoordinat: z.string({
-    message: "Please enter a username.",
+    message: "Masukan koordinat utama.",
   }),
   lat: z.string({
-    message: "Please enter a username.",
+    message: "Masukan garis bujur.",
   }),
   long: z.string({
-    message: "Please enter a username.",
+    message: "Masukkan garis lintang.",
   }),
 });
 
