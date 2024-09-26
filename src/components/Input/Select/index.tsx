@@ -15,32 +15,22 @@ import {
 } from "../../ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
+interface SelectSearchProps {
+  data: { value: string | number; label: string }[]; // Definisikan tipe data
+  placeholder: string;
+  valueId?: { id: string | number; label: string };
+  type?: string;
+  setValueId?: (v: { id: string | number; label: string }) => void;
+}
 
-export default function SelectSeacrh() {
+const SelectSearch: React.FC<SelectSearchProps> = ({
+  data,
+  placeholder,
+  type,
+  valueId,
+  setValueId,
+}) => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -51,34 +41,34 @@ export default function SelectSeacrh() {
           aria-expanded={open}
           className="w-full justify-between rounded-full"
         >
-          {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select framework..."}
+          {valueId?.id
+            ? data?.find((v: any) => v.value === valueId.id)?.label
+            : `Pilih ${placeholder}`}
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[400px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." />
+          <CommandInput placeholder={`Cari ${placeholder}`} />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No data found.</CommandEmpty>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {data?.map((v: any) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                  key={v.id}
+                  value={v.label}
+                  onSelect={() => {
+                    setValueId && setValueId({ id: v.value, label: v.label });
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      valueId?.id === v.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {framework.label}
+                  {v.label}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -87,4 +77,6 @@ export default function SelectSeacrh() {
       </PopoverContent>
     </Popover>
   );
-}
+};
+
+export default SelectSearch;

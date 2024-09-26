@@ -35,6 +35,7 @@ import geoJson from "../../../../../constants/lamtura.json";
 import geoJson2 from "../../../../../constants/lamturaa.json";
 import InformationForm from "../../../../../components/Form/Information";
 import DetailForm from "../../../../../components/Form/Detail";
+import DocumentTab from "../../../../../components/Form/Document";
 
 const frameworks = [
   {
@@ -224,23 +225,23 @@ export default function CreateNamingPage() {
         <h1 className="text-primaryy pt-5 font-semibold">Tambah Data</h1>
       </div>
       <div className="flex justify-between space-x-4">
-        <div className="mt-4 w-5/12">
+        <div className="mt-4 w-5/12 p-5 shadow-md rounded-xl">
           <Tabs defaultValue="information">
             <TabsList className="w-full rounded-full border bg-slate-100 space-x-2">
               <TabsTrigger
-                className="w-full px-5 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
                 value="information"
               >
                 Informasi
               </TabsTrigger>
               <TabsTrigger
-                className="w-full px-5 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
                 value="detail"
               >
                 Detail
               </TabsTrigger>
               <TabsTrigger
-                className="w-full px-5 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
                 value="document"
               >
                 Dokumen
@@ -253,11 +254,11 @@ export default function CreateNamingPage() {
               <DetailForm />
             </TabsContent>
             <TabsContent value="document">
-              Change your password here.
+              <DocumentTab />
             </TabsContent>
           </Tabs>
         </div>
-        <div className="w-full -mt-11">
+        <div className="w-1/2 right-0 -mt-11 fixed">
           <div className="relative">
             {/* Input search with Autocomplete */}
             <StandaloneSearchBox
@@ -267,7 +268,7 @@ export default function CreateNamingPage() {
               <Input
                 type="text"
                 placeholder="Search for a location"
-                className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-1/2 shadow"
+                className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
               />
             </StandaloneSearchBox>
           </div>

@@ -6,13 +6,36 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "../../../components/ui/button";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .email("Format email tidak valid")
+    .min(1, "Email wajib diisi"),
+  password: z.string().min(6, "Kata sandi minimal 6 karakter"),
+});
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
 
   // Fungsi untuk toggle visibilitas kata sandi
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
+  };
+
+  const onSubmit = (data: any) => {
+    console.log("Login data:", data);
+    // Lakukan proses login di sini (misalnya, panggilan API)
   };
 
   return (
@@ -32,47 +55,70 @@ const LoginPage = () => {
             sistem informasi pengelolaan data kewilayahan lampung utara
           </p>
         </div>
-        <div className="space-y-2 w-full">
-          <div className=" flex rounded-full border border-primaryy items-center pl-3 bg-white">
-            <Image
-              src="/assets/icons/user.svg"
-              alt="logo"
-              width={20}
-              height={20}
-            />
-            <Input className="rounded-full border-none" placeholder="Email" />
-          </div>
-          <div className=" flex rounded-full border border-primaryy items-center pr-3 pl-1 bg-white">
-            <Input
-              className="rounded-full border-none"
-              placeholder="Kata Sandi"
-              type={showPassword ? "text" : "password"}
-            />
-            <div onClick={togglePasswordVisibility} className="cursor-pointer">
-              {showPassword ? (
-                <EyeOff className="text-greyy" />
-              ) : (
-                <Eye className="text-greyy" />
-              )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2 w-full">
+            <div className="flex rounded-full border border-primaryy items-center pl-3 bg-white">
+              <Image
+                src="/assets/icons/user.svg"
+                alt="logo"
+                width={20}
+                height={20}
+              />
+              <Input
+                className="rounded-full border-none"
+                placeholder="Email"
+                {...register("email")}
+              />
             </div>
+            {errors.email?.message && (
+              <p className="text-red-500 text-sm">
+                {String(errors.email.message)}
+              </p>
+            )}
+            <div className="flex rounded-full border border-primaryy items-center pr-3 pl-1 bg-white">
+              <Input
+                className="rounded-full border-none"
+                placeholder="Kata Sandi"
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+              />
+              <div
+                onClick={togglePasswordVisibility}
+                className="cursor-pointer"
+              >
+                {showPassword ? (
+                  <EyeOff className="text-greyy" />
+                ) : (
+                  <Eye className="text-greyy" />
+                )}
+              </div>
+            </div>
+            {errors.password?.message && (
+              <p className="text-red-500 text-sm">
+                {String(errors.password.message)}
+              </p>
+            )}
           </div>
-        </div>
-        <div className="flex justify-between">
-          <Link href="/" className="text-primaryy underline text-sm">
-            Lupa kata sandi?
-          </Link>
-          <p className="text-sm text-greyy">
-            Belum punya akun? silakan{" "}
-            <Link href="/register" className="text-primaryy underline">
-              Daftar?
+          <div className="flex justify-between">
+            <Link href="/" className="text-primaryy underline text-sm">
+              Lupa kata sandi?
             </Link>
-          </p>
-        </div>
-        <div className="flex justify-center">
-          <Button className="rounded-full text-white bg-primaryy px-8">
-            Masuk
-          </Button>
-        </div>
+            <p className="text-sm text-greyy">
+              Belum punya akun? silakan{" "}
+              <Link href="/register" className="text-primaryy underline">
+                Daftar?
+              </Link>
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <Button
+              type="submit"
+              className="rounded-full text-white bg-primaryy px-8"
+            >
+              Masuk
+            </Button>
+          </div>
+        </form>
         <p className="text-center text-xs text-primaryy font-light">
           Dengan mendaftar, Anda menyetujui{" "}
           <span className="font-semibold">Syarat & Ketentuan</span> kami dan
