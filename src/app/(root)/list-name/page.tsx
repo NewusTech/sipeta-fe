@@ -14,24 +14,9 @@ import {
 } from "@tanstack/react-table";
 import { DataTables2 } from "../../../components/Datatables/table2";
 import useSWR, { mutate } from "swr";
-import { fetcherWithoutAuth } from "@/constants/fetcher";
+import { fetcherWithoutAuth } from "../../../constants/fetcher";
 import { ChangeEvent, useState } from "react";
 import Link from "next/link";
-
-type PaymentS = {
-  id: string;
-  nama_peta: number;
-  status: number;
-  Unsur: {
-    name: string;
-  };
-  Desa: {
-    name: string;
-  };
-  Kecamatan: {
-    name: string;
-  };
-};
 
 type Payment = {
   id: string;

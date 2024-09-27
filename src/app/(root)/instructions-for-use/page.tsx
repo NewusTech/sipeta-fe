@@ -1,6 +1,6 @@
 "use client";
 
-import { fetcherWithoutAuth } from "@/constants/fetcher";
+import { fetcherWithoutAuth } from "../../../constants/fetcher";
 import useSWR from "swr";
 
 export default function InstructionsForUsePage() {

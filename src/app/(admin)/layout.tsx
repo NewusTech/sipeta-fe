@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isCrudRoute = pathname.includes("/create");
+  const isCrudRoute = pathname.includes("/naming/create");
 
   return (
     <html>

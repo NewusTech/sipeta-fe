@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTables2 } from "../../../components/Datatables/table2";
 import useSWR from "swr";
-import { fetcherWithoutAuth } from "@/constants/fetcher";
+import { fetcherWithoutAuth } from "../../../constants/fetcher";
 import { useState } from "react";
 import { Pagination } from "../../../components/Pagination";
 

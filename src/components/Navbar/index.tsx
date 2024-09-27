@@ -30,7 +30,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    <div>
       <div className="bg-primaryy">
         <nav className="container mx-auto flex justify-between items-center py-5">
           <div className="flex w-full md:w-5/12 items-center space-x-2">
@@ -81,7 +81,7 @@ const Navbar = () => {
             </Link>
           </div>
           <div onClick={toggleDropdown}>
-            {openDropdown ? (
+            {!openDropdown ? (
               <HamburgerMenuIcon className="text-primaryy w-8 h-8" />
             ) : (
               <X className="text-primaryy w-8 h-8" />
@@ -117,7 +117,7 @@ const Navbar = () => {
         </ul>
       </div>
       <div
-        className={`md:hidden absolute h-full z-40 bg-white w-full duration-300 transition-all ${openDropdown ? "translate-x-full" : "translate-x-0"}`}
+        className={`md:hidden absolute z-40 bg-white w-full duration-300 transition-all ${!openDropdown ? "-translate-x-full" : "translate-x-0"}`}
       >
         <ul className="container mx-auto flex flex-col items-end space-y-3 py-5 uppercase text-primaryy">
           <li

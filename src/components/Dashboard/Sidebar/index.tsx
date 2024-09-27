@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, LayoutDashboard, MapIcon } from "lucide-react";
+import { ChevronDown, Database, LayoutDashboard, MapIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -46,6 +46,26 @@ const Sidebar = ({ type }: { type?: string }) => {
                 <p>Pendataan</p>
               </Link>
             </li>
+            <li
+              onClick={toggleDropdown}
+              className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
+            >
+              <Database />
+              <p>Master Data</p>
+              <ChevronDown
+                className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
+              />
+            </li>
+            {dropdown && (
+              <ul className="space-y-2 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/master-data/district">Kecamatan</Link>
+                </li>
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/master-data/village">Desa</Link>
+                </li>
+              </ul>
+            )}
           </ul>
         </>
       ) : (

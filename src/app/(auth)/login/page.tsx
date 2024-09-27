@@ -9,17 +9,20 @@ import { Button } from "../../../components/ui/button";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Swal from "sweetalert2";
+import useAuthStore from "../../../store/useAuthStore";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
-  email: z
-    .string()
-    .email("Format email tidak valid")
-    .min(1, "Email wajib diisi"),
+  username: z.string({ message: "username wajib diisi" }),
   password: z.string().min(6, "Kata sandi minimal 6 karakter"),
 });
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const login = useAuthStore((state) => state.login);
   const {
     register,
     handleSubmit,
@@ -33,9 +36,61 @@ const LoginPage = () => {
     setShowPassword((prevState) => !prevState);
   };
 
-  const onSubmit = (data: any) => {
-    console.log("Login data:", data);
-    // Lakukan proses login di sini (misalnya, panggilan API)
+  const onSubmit = async (data: any) => {
+    setIsLoading(true);
+    const formData = {
+      nik: data.username,
+      password: data.password,
+    };
+
+    console.log(formData);
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        // Tangani respons yang bukan 2xx
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || `HTTP error! status: ${response.status}`
+        );
+      }
+      if (response.ok) {
+        const tokenAuth = data.data.token;
+        login(tokenAuth);
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        Swal.fire({
+          icon: "success",
+          title: "Login berhasil!",
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+        // Redirect ke path tujuan setelah login
+        const pathBeforeLogin =
+          sessionStorage.getItem("pathBeforeLogin") || "/";
+        sessionStorage.removeItem("pathBeforeLogin");
+        router.push(pathBeforeLogin);
+      }
+    } catch (e: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Login gagal",
+        text: "Username atau password salah",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    } finally {
+      setIsLoading(false); // Stop loading
+    }
   };
 
   return (
@@ -68,12 +123,12 @@ const LoginPage = () => {
               <Input
                 className="rounded-full border-none"
                 placeholder="Email"
-                {...register("email")}
+                {...register("username")}
               />
             </div>
-            {errors.email?.message && (
+            {errors.username?.message && (
               <p className="text-red-500 text-sm">
-                {String(errors.email.message)}
+                {String(errors.username.message)}
               </p>
             )}
             <div className="flex rounded-full border border-primaryy items-center pr-3 pl-1 bg-white">
@@ -115,8 +170,9 @@ const LoginPage = () => {
             <Button
               type="submit"
               className="rounded-full text-white bg-primaryy px-8"
+              disabled={isLoading}
             >
-              Masuk
+              {isLoading ? "Loading..." : "Masuk"}
             </Button>
           </div>
         </form>

@@ -11,40 +11,40 @@ import { DataTables } from "../../../components/Datatables";
 import { Download, ListFilter, Printer } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 
-type PaymentS = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
+// type PaymentS = {
+//   id: string;
+//   amount: number;
+//   status: "pending" | "processing" | "success" | "failed";
+//   email: string;
+// };
 
-export const payments: PaymentS[] = [
-  {
-    id: "728ed52f",
-    amount: 100,
-    status: "pending",
-    email: "m@example.com",
-  },
-  {
-    id: "489e1d42",
-    amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
-  },
-  {
-    id: "728ed52f",
-    amount: 100,
-    status: "pending",
-    email: "m@example.com",
-  },
-  {
-    id: "489e1d42",
-    amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
-  },
-  // ...
-];
+// export const payments: PaymentS[] = [
+//   {
+//     id: "728ed52f",
+//     amount: 100,
+//     status: "pending",
+//     email: "m@example.com",
+//   },
+//   {
+//     id: "489e1d42",
+//     amount: 125,
+//     status: "processing",
+//     email: "example@gmail.com",
+//   },
+//   {
+//     id: "728ed52f",
+//     amount: 100,
+//     status: "pending",
+//     email: "m@example.com",
+//   },
+//   {
+//     id: "489e1d42",
+//     amount: 125,
+//     status: "processing",
+//     email: "example@gmail.com",
+//   },
+//   // ...
+// ];
 
 type Payment = {
   id: string;
@@ -103,9 +103,9 @@ export default function ManageDataPage() {
           <ListFilter className="h-4 w-4 text-primaryy" />
           <p className="text-primaryy font-light">Filter</p>
         </div>
-        <div className="w-full -mt-[85px]">
+        {/* <div className="w-full -mt-[85px]">
           <DataTables columns={columns} data={payments} filterBy="name" />
-        </div>
+        </div> */}
       </div>
     </section>
   );
