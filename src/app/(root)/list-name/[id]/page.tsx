@@ -1,6 +1,6 @@
 "use client";
 
-import { fetcherWithoutAuth } from "@/constants/fetcher";
+import { fetcherWithoutAuth } from "../../../../constants/fetcher";
 import { Button } from "../../../../components/ui/button";
 import { GoogleMap } from "@react-google-maps/api";
 import { Download } from "lucide-react";
@@ -98,7 +98,7 @@ const DetailPage = ({
           <div className="space-y-2">
             <h1 className="font-semibold text-xl">Foto Topmonim</h1>
             <div className="flex space-x-3">
-              {Array.from({ length: 4 }).map((_, index) => (
+              {/* {Array.from({ length: 4 }).map((_, index) => (
                 <div className="w-[174px] h-[119px]">
                   <Image
                     key={index}
@@ -109,11 +109,11 @@ const DetailPage = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
-              ))}
+              ))} */}
             </div>
             <h1 className="font-semibold text-xl">Sketsa Toponim</h1>
             <div className="flex space-x-3">
-              {Array.from({ length: 1 }).map((_, index) => (
+              {/* {Array.from({ length: 1 }).map((_, index) => (
                 <div className="w-[174px] h-[119px]">
                   <Image
                     key={index}
@@ -124,7 +124,7 @@ const DetailPage = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
         </div>

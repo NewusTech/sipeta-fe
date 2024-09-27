@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { cn } from "@/lib/utils";
+import { cn } from "../../../lib/utils";
 import { Button } from "../../ui/button";
 import { toast } from "../../../hooks/use-toast";
 import {

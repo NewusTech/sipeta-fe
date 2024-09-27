@@ -2,7 +2,7 @@
 
 import { DataTables2 } from "../../../../components/Datatables/table2";
 import { DataTables } from "../../../../components/Datatables";
-import { fetcherWithoutAuth } from "@/constants/fetcher";
+import { fetcherWithoutAuth } from "../../../../constants/fetcher";
 import { ColumnDef } from "@tanstack/react-table";
 import useSWR from "swr";
 import {

@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Swal from "sweetalert2";
-import useAuthStore from "@/store/useAuthStore";
+import useAuthStore from "../../../store/useAuthStore";
 import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
