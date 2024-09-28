@@ -23,10 +23,10 @@ const DetailPage = ({
 
   return (
     <section className="container mx-auto">
-      <div className="py-10 flex space-x-5">
-        <div className="w-5/12 space-y-20">
+      <div className="py-10 flex flex-col md:flex-row md:space-x-5 space-y-5">
+        <div className="w-full md:w-5/12 space-y-20">
           <div className="flex space-x-10">
-            <div className="space-y-3">
+            <div className="space-y-3 text-sm md:text-[16px]">
               <div className="flex items-center space-x-3">
                 <p className="w-24 font-semibold">ID Toponim</p>
                 <p>{result?.id_toponim}</p>
@@ -80,7 +80,7 @@ const DetailPage = ({
               </div>
             </div>
           </div>
-          <Button className="space-x-2 rounded-full bg-primaryy hover:bg-blue-950">
+          <Button className="hidden md:flex space-x-2 rounded-full bg-primaryy hover:bg-blue-950">
             <Download />
             <p>Download Foto dan Sketsa</p>
           </Button>
@@ -97,8 +97,8 @@ const DetailPage = ({
           </div>
           <div className="space-y-2">
             <h1 className="font-semibold text-xl">Foto Topmonim</h1>
-            <div className="flex space-x-3">
-              {/* {Array.from({ length: 4 }).map((_, index) => (
+            <div className="md:flex grid grid-cols-2 gap-3">
+              {Array.from({ length: 4 }).map((_, index) => (
                 <div className="w-[174px] h-[119px]">
                   <Image
                     key={index}
@@ -109,11 +109,11 @@ const DetailPage = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
-              ))} */}
+              ))}
             </div>
             <h1 className="font-semibold text-xl">Sketsa Toponim</h1>
-            <div className="flex space-x-3">
-              {/* {Array.from({ length: 1 }).map((_, index) => (
+            <div className="md:flex grid grid-cols-2 gap-3">
+              {Array.from({ length: 1 }).map((_, index) => (
                 <div className="w-[174px] h-[119px]">
                   <Image
                     key={index}
@@ -124,10 +124,14 @@ const DetailPage = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
-              ))} */}
+              ))}
             </div>
           </div>
         </div>
+        <Button className="flex md:hidden space-x-2 rounded-full bg-primaryy hover:bg-blue-950">
+          <Download />
+          <p>Download Foto dan Sketsa</p>
+        </Button>
       </div>
     </section>
   );

@@ -14,25 +14,25 @@ export default function ContactPage() {
   return (
     <section className="container mx-auto py-10 space-y-6">
       <h1 className="text-primaryy font-semibold text-3xl">Kontak</h1>
-      <div className="space-y-1">
-        <div className="flex space-x-4">
+      <div className="md:space-y-1 space-y-2">
+        <div className="flex md:flex-row flex-col space-y-1 md:space-x-4">
           <p className="font-medium w-[70px]">Lokasi</p>
-          <div className="flex space-x-1">
-            <p>:</p>
+          <div className="flex md:space-x-1">
+            <p className="hidden md:block">:</p>
             <p>{CONTACT?.alamat}</p>
           </div>
         </div>
-        <div className="flex space-x-4">
+        <div className="flex md:flex-row flex-col space-y-1 md:space-x-4">
           <p className="font-medium w-[70px]">Email</p>
-          <div className="flex space-x-1">
-            <p>:</p>
+          <div className="flex md:space-x-1">
+            <p className="hidden md:block">:</p>
             <p>{CONTACT?.email}</p>
           </div>
         </div>
-        <div className="flex space-x-4">
+        <div className="flex md:flex-row flex-col space-y-1 md:space-x-4">
           <p className="font-medium w-[70px]">Telepon </p>
-          <div className="flex space-x-1">
-            <p>:</p>
+          <div className="flex md:space-x-1">
+            <p className="hidden md:block">:</p>
             <p>{CONTACT?.telp}</p>
           </div>
         </div>

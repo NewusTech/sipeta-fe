@@ -11,11 +11,9 @@ export default function InstructionsForUsePage() {
 
   const manualBook = data?.data;
 
-  console.log(manualBook);
-
   return (
     <section className="container mx-auto py-10">
-      <div className="grid grid-cols-3 gap-x-5">
+      <div className="grid md:grid-cols-3 grid-cols-1 gap-x-5">
         {manualBook?.map((v: any) => (
           <div key={v.id} className="text-center space-y-4">
             <h1>{v.tipe}</h1>
