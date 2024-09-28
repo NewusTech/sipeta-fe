@@ -14,7 +14,7 @@ const Sidebar = ({ type }: { type?: string }) => {
 
   return (
     <aside
-      className={`${type === "large" ? "w-[228px]" : "w-[100px]"} h-screen bg-[#F6F6F6] fixed p-6 z-50`}
+      className={`hidden md:block ${type === "large" ? "w-[228px]" : "w-[100px]"} h-screen bg-[#F6F6F6] fixed p-6 z-50`}
     >
       {type === "large" ? (
         <>
