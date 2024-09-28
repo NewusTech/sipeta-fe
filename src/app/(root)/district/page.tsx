@@ -24,12 +24,12 @@ const columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: "name",
-    header: "Kelurahan / Desa",
+    header: "Kelurahan/Desa",
     cell: ({ row }) => <span>{row.original.name || "-"}</span>,
   },
   {
     accessorKey: "kepala",
-    header: "Lurah / Kades",
+    header: "Lurah/Kades",
     cell: ({ row }) => <span>{row.original.kepala || "-"}</span>,
   },
   {

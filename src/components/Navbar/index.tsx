@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, LayoutDashboardIcon, LogOut, X } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import {
@@ -17,16 +17,24 @@ import geoJson2 from "../../constants/lamturaa.json";
 import { usePathname } from "next/navigation";
 import path from "path";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import Cookies from "js-cookie";
 
 const Navbar = () => {
   // const [openDropdown, setOpenDropdown] = useState(false);
   const [openDropdown, setOpenDropdown] = React.useState(false);
+  const [openDropdownName, setOpenDropdownName] = React.useState(false);
   const pathname = usePathname();
+
+  const token = Cookies.get("token");
 
   const isActive = (path: string) => pathname === path;
 
   const toggleDropdown = () => {
     setOpenDropdown(!openDropdown);
+  };
+
+  const toggleDropdownName = () => {
+    setOpenDropdownName(!openDropdownName);
   };
 
   return (
@@ -66,20 +74,50 @@ const Navbar = () => {
       </div>
       <div className="py-5 border-b border-primaryy">
         <div className="flex justify-between md:hidden items-center container">
-          <div className="flex space-x-2">
-            <Link
-              href="/register"
-              className="rounded-full h-10 flex items-center px-8 bg-primaryy text-white"
-            >
-              Daftar
-            </Link>
-            <Link
-              href="/login"
-              className="rounded-full h-10 flex items-center px-8 bg-transparent border border-primaryy text-primaryy"
-            >
-              Masuk
-            </Link>
-          </div>
+          {token ? (
+            <div className="relative">
+              <Button
+                onClick={toggleDropdownName}
+                className="rounded-full bg-primaryy flex space-x-4 items-center"
+              >
+                <p>Aris</p>
+                <ChevronDown
+                  className={`text-white w-5 h-5 transition-all duration-300 ${openDropdownName ? "rotate-180" : "rotate-0"}`}
+                />
+              </Button>
+              {openDropdownName && (
+                <div className="bg-white space-y-2 rounded-lg absolute shadow z-50 w-[175px] h-[84px] mt-5 p-4">
+                  <div className="flex space-x-4 items-center transition-all duration-300 hover:translate-x-5">
+                    <LayoutDashboardIcon className="text-primaryy w-5 h-5" />
+                    <Link href="/dashboard" className="text-primaryy">
+                      Dashboard
+                    </Link>
+                  </div>
+                  <div className="flex space-x-4 items-center transition-all duration-300 hover:translate-x-5">
+                    <LogOut className="text-slate-300 w-5 h-5" />
+                    <Link href="/dashboard" className="text-slate-300">
+                      Dashboard
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex space-x-2">
+              <Link
+                href="/register"
+                className="rounded-full h-10 flex items-center px-8 bg-primaryy text-white"
+              >
+                Daftar
+              </Link>
+              <Link
+                href="/login"
+                className="rounded-full h-10 flex items-center px-8 bg-transparent border border-primaryy text-primaryy"
+              >
+                Masuk
+              </Link>
+            </div>
+          )}
           <div onClick={toggleDropdown}>
             {!openDropdown ? (
               <HamburgerMenuIcon className="text-primaryy w-8 h-8" />

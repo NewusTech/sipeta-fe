@@ -121,7 +121,7 @@ const LoginPage = () => {
                 height={20}
               />
               <Input
-                className="rounded-full border-none"
+                className="rounded-full border-none bg-transparent"
                 placeholder="Email"
                 {...register("username")}
               />
@@ -133,7 +133,7 @@ const LoginPage = () => {
             )}
             <div className="flex rounded-full border border-primaryy items-center pr-3 pl-1 bg-white">
               <Input
-                className="rounded-full border-none"
+                className="rounded-full border-none bg-transparent"
                 placeholder="Kata Sandi"
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
