@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 
 import NavDashboard from "../../components/Dashboard/NavDashboard";
-import Sidebar from "../../components/Dashboard/Sidebar";
+import { Sidebar } from "../../components/Dashboard/Sidebar";
 import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
