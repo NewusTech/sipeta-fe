@@ -1,5 +1,8 @@
 import { Metadata } from "next";
-import CircularPercentage from "../../../components/CircularPercentage";
+import {
+  CircularPercentage,
+  CircularPercentageTwo,
+} from "../../../components/CircularPercentage";
 
 export const metadata: Metadata = {
   title: "Admin - Dashboard Sipeta",
@@ -27,12 +30,31 @@ const DashboardPage = () => {
         <Card />
         <Card />
       </div>
-      <div className="md:hidden bg-white">
-        <CircularPercentage
-          percentage={80}
-          color="text-primaryy"
-          color2="text-white"
-        />
+      <div className="md:hidden shadow-md py-3 px-5 rounded-lg grid grid-cols-3 gap-3">
+        <div className="flex flex-col items-center justify-center">
+          <CircularPercentageTwo
+            percentage={80}
+            color="text-primaryy"
+            color2="text-white"
+          />
+          <p className="text-sm">Surveyor</p>
+        </div>
+        <div className="flex flex-col justify-center items-center">
+          <CircularPercentageTwo
+            percentage={80}
+            color="text-primaryy"
+            color2="text-white"
+          />
+          <p className="text-sm">Surveyor</p>
+        </div>
+        <div className="flex flex-col justify-center items-center">
+          <CircularPercentageTwo
+            percentage={80}
+            color="text-primaryy"
+            color2="text-white"
+          />
+          <p className="text-sm">Surveyor</p>
+        </div>
       </div>
       <div className="w-full"></div>
     </section>

@@ -1,8 +1,16 @@
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
-import { BellIcon, ChevronDown, UserCircle2Icon } from "lucide-react";
+import { BellIcon, ChevronDown, UserCircle2Icon, X } from "lucide-react";
 import Image from "next/image";
+import { SidebarMobile } from "../Sidebar";
+import { useState } from "react";
 
 const NavDashboard = () => {
+  const [open, setOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setOpen(!open);
+  };
+
   return (
     <>
       <nav className="z-10 md:absolute bg-primaryy w-screen px-10 md:px-0 py-4 md:py-0">
@@ -37,7 +45,13 @@ const NavDashboard = () => {
         </ul>
       </nav>
       <div className="flex shadow px-10 py-3 justify-between items-center text-primaryy">
-        <HamburgerMenuIcon className="w-6 h-6" />
+        <div onClick={toggleSidebar}>
+          {open ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <HamburgerMenuIcon className="w-6 h-6" />
+          )}
+        </div>
         <div className="flex items-center space-x-3">
           <BellIcon className="w-6 h-6" />
           <div className="flex items-center space-x-2">
@@ -46,6 +60,11 @@ const NavDashboard = () => {
             <ChevronDown className={`w-4 h-4 transition-all duration-300 `} />
           </div>
         </div>
+      </div>
+      <div
+        className={`md:hidden relative block z-50 transition-all duration-300 ${open ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        <SidebarMobile type="large" />
       </div>
     </>
   );
