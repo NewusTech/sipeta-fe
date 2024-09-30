@@ -32,18 +32,27 @@ export default function ProfilePage() {
   };
 
   return (
-    <section className="pl-64 pr-10 pt-32">
+    <section className="md:pl-64 pr-10 pl-10 pt-10 md:pt-32">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex space-x-4">
-          <div className="w-full bg-white shadow rounded-xl px-10 py-3 space-y-10">
-            <h1 className="text-primaryy font-semibold text-xl">Foto</h1>
-            <div className="flex flex-col justify-center items-center space-y-10">
+        <div className="flex md:flex-row shadow rounded-lg md:shadow-none p-5 md:p-0 flex-col md:space-x-4">
+          <div className="w-full md:bg-white md:shadow rounded-xl p-0 md:px-10 md:py-3 space-y-1 md:space-y-10">
+            <h1 className="text-primaryy font-semibold text-xl hidden md:block">
+              Foto
+            </h1>
+            <h1 className="text-primaryy font-semibold text-xl block md:hidden">
+              Profile
+            </h1>
+            <div className="flex flex-col justify-center items-center md:space-y-10 space-y-3">
               <UserCircle2 className="w-32 h-32 text-primaryy" />
-              <Button className="w-full rounded-full bg-primaryy">Pilih</Button>
+              <Button className="md:w-full px-9 rounded-full bg-primaryy">
+                Pilih
+              </Button>
             </div>
           </div>
-          <div className="w-full bg-white shadow rounded-xl px-10 py-3 space-y-3">
-            <h1 className="text-primaryy font-semibold text-xl">Profile</h1>
+          <div className="w-full md:bg-white md:shadow rounded-xl p-0 md:px-10 md:py-3 space-y-3">
+            <h1 className="text-primaryy font-semibold text-xl hidden md:block">
+              Profile
+            </h1>
             <div className="space-y-2">
               {/* Input Nama Lengkap */}
               <div className="space-y-1">
@@ -92,7 +101,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Tombol Simpan */}
-              <div className="flex space-x-3 mt-2 justify-end">
+              <div className="flex space-x-3 pt-6 md:mt-2 justify-center md:justify-end">
                 <ChangePasswordDialog />
                 <Button
                   type="submit"

@@ -1,4 +1,6 @@
-import { ColumnDef } from "@tanstack/react-table";
+"use client";
+
+import { DataTables } from "@/components/Datatables";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,55 +8,21 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "../../../components/ui/breadcrumb";
-import { DataTables } from "../../../components/Datatables";
-import { Download, ListFilter, MapPinPlus, Printer } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { fetcher } from "constants/fetcher";
+import { Download, EyeIcon, ListFilter, Printer } from "lucide-react";
 import Link from "next/link";
+import useSWR from "swr";
 
-// type PaymentS = {
-//   id: string;
-//   amount: number;
-//   status: "pending" | "processing" | "success" | "failed";
-//   email: string;
-// };
-
-// export const payments: PaymentS[] = [
-//   {
-//     id: "728ed52f",
-//     amount: 100,
-//     status: "pending",
-//     email: "m@example.com",
-//   },
-//   {
-//     id: "489e1d42",
-//     amount: 125,
-//     status: "processing",
-//     email: "example@gmail.com",
-//   },
-//   {
-//     id: "728ed52f",
-//     amount: 100,
-//     status: "pending",
-//     email: "m@example.com",
-//   },
-//   {
-//     id: "489e1d42",
-//     amount: 125,
-//     status: "processing",
-//     email: "example@gmail.com",
-//   },
-//   // ...
-// ];
-
-type Payment = {
+type HasBeenReviewed = {
   id: string;
-  nama_peta: number;
+  id_toponim: string;
+  nama_lokal: string;
+  nama_spesifik: string;
   status: number;
   Unsur: {
-    name: string;
-  };
-  Desa: {
     name: string;
   };
   Kecamatan: {
@@ -62,28 +30,9 @@ type Payment = {
   };
 };
 
-const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<HasBeenReviewed>[] = [
   {
-    accessorKey: "nama_peta",
-    header: "Nama Rupabumi",
-  },
-  {
-    accessorKey: "Unsur.name",
-    header: "Unsur",
-  },
-  {
-    accessorKey: "Desa.name",
-    header: "Desa",
-  },
-  {
-    accessorKey: "Kecamatan.name",
-    header: "Kecamatan",
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-  },
-  {
+    id: "action",
     header: "Aksi",
     cell: ({ row }) => {
       return (
@@ -97,11 +46,38 @@ const columns: ColumnDef<Payment>[] = [
       );
     },
   },
+  {
+    accessorKey: "id_toponim",
+    header: "Id Toponim",
+  },
+  {
+    accessorKey: "Unsur.name",
+    header: "Unsur",
+  },
+  {
+    accessorKey: "nama_lokal",
+    header: "Nama Lokal",
+  },
+  {
+    accessorKey: "nama_spesifik",
+    header: "Nama Spesifik",
+  },
+  {
+    accessorKey: "Kecamatan.name",
+    header: "Kecamatan",
+  },
 ];
 
-export default function NamingPage() {
+export default function HasBeenReviewedPage() {
+  const { data } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get?limit=10000000`,
+    fetcher
+  );
+
+  const result = data?.data;
+
   return (
-    <section className="space-y-4 pl-64 pr-10 pt-32">
+    <section className="md:pl-64 pr-10 pt-28">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className="text-primaryy">
@@ -109,17 +85,17 @@ export default function NamingPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator className="text-primaryy" />
           <BreadcrumbItem className="text-primaryy">
-            <BreadcrumbLink href="#">Pengelolaan Data</BreadcrumbLink>
+            <BreadcrumbLink href="#">Penelaahan</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="text-primaryy" />
           <BreadcrumbItem>
             <BreadcrumbPage className="text-primaryy font-semibold">
-              Pemberian Nama
+              Sudah Ditelaah
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div>
+      <div className="pt-5">
         <div className="flex space-x-2 justify-end">
           <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
             <Download className="h-4 w-4 text-primaryy group-hover:text-white" />
@@ -135,15 +111,11 @@ export default function NamingPage() {
             <ListFilter className="h-4 w-4 text-primaryy" />
             <p className="text-primaryy font-light">Filter</p>
           </div>
-          <Link href="/naming/create">
-            <div className="flex px-2 space-x-2 items-center h-[28px] bg-primaryy mt-4 text-white rounded-full ">
-              <MapPinPlus className="w-5 h-5" />
-              <p className="text-sm">Tambah Data</p>
-            </div>
-          </Link>
         </div>
         <div className="w-full -mt-[85px]">
-          {/* <DataTables columns={columns} data={payments} filterBy="name" /> */}
+          {result && (
+            <DataTables columns={columns} data={result} filterBy="name" />
+          )}
         </div>
       </div>
     </section>

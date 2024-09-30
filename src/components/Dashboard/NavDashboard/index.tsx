@@ -44,7 +44,7 @@ const NavDashboard = () => {
           </li>
         </ul>
       </nav>
-      <div className="flex shadow px-10 py-3 justify-between items-center text-primaryy">
+      <div className="flex shadow px-10 py-3 md:py-0 justify-between items-center text-primaryy">
         <div onClick={toggleSidebar}>
           {open ? (
             <X className="w-6 h-6" />
