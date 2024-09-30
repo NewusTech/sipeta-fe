@@ -112,7 +112,7 @@ export default function ChangePasswordDialog() {
             <AlertDialogFooter>
               <AlertDialogAction
                 type="submit"
-                className="bg-primaryy rounded-full"
+                className="bg-primaryy rounded-full mt-2 md:mt-0"
               >
                 Simpan
               </AlertDialogAction>

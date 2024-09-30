@@ -1,6 +1,12 @@
 "use client";
 
-import { ChevronDown, Database, LayoutDashboard, MapIcon } from "lucide-react";
+import {
+  ChevronDown,
+  Database,
+  LayoutDashboard,
+  MapIcon,
+  MapPinPlus,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -14,7 +20,7 @@ const Sidebar = ({ type }: { type?: string }) => {
 
   return (
     <aside
-      className={`hidden md:block ${type === "large" ? "w-[228px]" : "w-[100px]"} h-screen bg-[#F6F6F6] fixed p-6 z-50`}
+      className={`hidden md:block md:-mt-6 ${type === "large" ? "w-[228px]" : "w-[100px]"} h-screen bg-[#F6F6F6] fixed p-6 z-50`}
     >
       {type === "large" ? (
         <>
@@ -50,6 +56,31 @@ const Sidebar = ({ type }: { type?: string }) => {
               onClick={toggleDropdown}
               className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
             >
+              <MapPinPlus />
+              <p>Penelaahan</p>
+              <ChevronDown
+                className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
+              />
+            </li>
+            {dropdown && (
+              <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/review/has-been-reviewed">Sudah Ditelaah</Link>
+                </li>
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/review/has-not-been-reviewed">
+                    Belum Ditelaah
+                  </Link>
+                </li>
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/review/declined">Ditolak</Link>
+                </li>
+              </ul>
+            )}
+            <li
+              onClick={toggleDropdown}
+              className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
+            >
               <Database />
               <p>Master Data</p>
               <ChevronDown
@@ -57,7 +88,7 @@ const Sidebar = ({ type }: { type?: string }) => {
               />
             </li>
             {dropdown && (
-              <ul className="space-y-2 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+              <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
                 <li className="hover:translate-x-2 duration-300 transition-all">
                   <Link href="/master-data/district">Kecamatan</Link>
                 </li>
@@ -185,4 +216,4 @@ const SidebarMobile = ({ type }: { type?: string }) => {
   );
 };
 
-export {Sidebar, SidebarMobile};
+export { Sidebar, SidebarMobile };
