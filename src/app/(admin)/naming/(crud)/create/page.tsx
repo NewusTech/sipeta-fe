@@ -217,7 +217,7 @@ export default function CreateNamingPage() {
     setMapCenter(LAMPUNG_UTARA); // Center back to Lampung Timur after drag
   };
 
-  if (!isLoaded) return null;
+  if (!isLoaded) return <p>Loading ...</p>;
 
   return (
     <section>
@@ -258,9 +258,9 @@ export default function CreateNamingPage() {
             </TabsContent>
           </Tabs>
         </div>
-        <div className="w-1/2 right-0 -mt-11 fixed">
+        {/* <div className="w-1/2 right-0 -mt-11 fixed">
           <div className="relative">
-            {/* Input search with Autocomplete */}
+            Input search with Autocomplete
             <StandaloneSearchBox
               onPlacesChanged={onPlacesChanged}
               onLoad={(ref) => (searchBoxRef.current = ref)}
@@ -286,7 +286,7 @@ export default function CreateNamingPage() {
               draggable={true} // Memungkinkan marker untuk didrag
             />
           </GoogleMap>
-        </div>
+        </div> */}
       </div>
     </section>
   );
