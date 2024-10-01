@@ -82,7 +82,7 @@ export function DataTables<TData, TValue>({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  size="xs"
+                  size="xxs"
                   className="ml-auto rounded-full border-primaryy"
                 >
                   <EllipsisVertical className="w-4 h-4 text-primaryy" />

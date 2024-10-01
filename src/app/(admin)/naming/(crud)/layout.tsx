@@ -1,4 +1,4 @@
-import Sidebar from "../../../../components/Dashboard/Sidebar";
+import { Sidebar } from "../../../../components/Dashboard/Sidebar";
 
 export default function CrudLayout({
   children,

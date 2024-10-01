@@ -5,8 +5,10 @@ import {
   Database,
   LayoutDashboard,
   MapIcon,
+  MapPinCheck,
   MapPinPlus,
   User,
+  User2,
   User2Icon,
 } from "lucide-react";
 import Image from "next/image";
@@ -58,7 +60,7 @@ const Sidebar = ({ type }: { type?: string }) => {
               onClick={toggleDropdown}
               className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
             >
-              <MapPinPlus />
+              <MapPinCheck />
               <p>Penelaahan</p>
               <ChevronDown
                 className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
@@ -141,6 +143,21 @@ const Sidebar = ({ type }: { type?: string }) => {
                 <MapIcon />
               </Link>
             </li>
+            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+              <Link href="/naming">
+                <MapPinCheck />
+              </Link>
+            </li>
+            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+              <Link href="/naming">
+                <User2 />
+              </Link>
+            </li>
+            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+              <Link href="/naming">
+                <Database />
+              </Link>
+            </li>
           </ul>
         </>
       )}
@@ -189,6 +206,51 @@ const SidebarMobile = ({ type }: { type?: string }) => {
                 <p>Pendataan</p>
               </Link>
             </li>
+            <li
+              onClick={toggleDropdown}
+              className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
+            >
+              <MapPinCheck />
+              <p>Penelaahan</p>
+              <ChevronDown
+                className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
+              />
+            </li>
+            {dropdown && (
+              <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/review/has-been-reviewed">Sudah Ditelaah</Link>
+                </li>
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/review/has-not-been-reviewed">
+                    Belum Ditelaah
+                  </Link>
+                </li>
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/review/declined">Ditolak</Link>
+                </li>
+              </ul>
+            )}
+            <li
+              onClick={toggleDropdown}
+              className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
+            >
+              <User2Icon className="w-[29px] h-[29px]" />
+              <p>Peran Pengguna</p>
+              <ChevronDown
+                className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
+              />
+            </li>
+            {dropdown && (
+              <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/user/contributor">Kontributor</Link>
+                </li>
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/user/admin">Admin</Link>
+                </li>
+              </ul>
+            )}
             <li
               onClick={toggleDropdown}
               className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
