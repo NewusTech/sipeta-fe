@@ -63,7 +63,7 @@ export function DataTables2<TData, TValue>({
   return (
     <div>
       <div className="space-y-4">
-        {type === "search" && (
+        {type === "search" ? (
           <div className="space-y-4">
             <div className="flex border-primaryy items-center space-x-2 pr-5 w-1/2 rounded-full bg-transparent border">
               <Input
@@ -79,6 +79,24 @@ export function DataTables2<TData, TValue>({
               <SearchIcon className="w-6 h-6 text-primaryy" />
             </div>
           </div>
+        ) : type === "search-right" ? (
+          <div className="space-y-4 flex justify-end">
+            <div className="flex border-primaryy justify-end items-center space-x-2 pr-5 w-1/2 rounded-full bg-transparent border">
+              <Input
+                placeholder="Cari..."
+                value={
+                  (table.getColumn(filterBy)?.getFilterValue() as string) ?? ""
+                }
+                onChange={(event) =>
+                  table.getColumn(filterBy)?.setFilterValue(event.target.value)
+                }
+                className="rounded-full border-none w-full"
+              />
+              <SearchIcon className="w-6 h-6 text-primaryy" />
+            </div>
+          </div>
+        ) : (
+          ""
         )}
         <Table className="border text-primaryy border-x-0">
           <TableHeader className="bg-[#3FA2F6] bg-opacity-50">

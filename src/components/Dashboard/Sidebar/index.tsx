@@ -6,6 +6,8 @@ import {
   LayoutDashboard,
   MapIcon,
   MapPinPlus,
+  User,
+  User2Icon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -74,6 +76,26 @@ const Sidebar = ({ type }: { type?: string }) => {
                 </li>
                 <li className="hover:translate-x-2 duration-300 transition-all">
                   <Link href="/review/declined">Ditolak</Link>
+                </li>
+              </ul>
+            )}
+            <li
+              onClick={toggleDropdown}
+              className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
+            >
+              <User2Icon className="w-[29px] h-[29px]" />
+              <p>Peran Pengguna</p>
+              <ChevronDown
+                className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
+              />
+            </li>
+            {dropdown && (
+              <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/user/contributor">Kontributor</Link>
+                </li>
+                <li className="hover:translate-x-2 duration-300 transition-all">
+                  <Link href="/user/admin">Admin</Link>
                 </li>
               </ul>
             )}
