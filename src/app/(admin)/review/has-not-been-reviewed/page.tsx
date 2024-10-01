@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTables } from "@/components/Datatables";
+import { Pagination } from "@/components/Pagination";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,10 +11,19 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ColumnDef } from "@tanstack/react-table";
+import { CardTable } from "app/(admin)/naming/page";
 import { fetcher } from "constants/fetcher";
-import { Download, EyeIcon, ListFilter, Printer } from "lucide-react";
+import {
+  Download,
+  EyeIcon,
+  ListFilter,
+  Printer,
+  SearchIcon,
+} from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import useSWR from "swr";
 
 type HasBeenReviewed = {
@@ -69,16 +79,24 @@ const columns: ColumnDef<HasBeenReviewed>[] = [
 ];
 
 export default function HasNotBeenReviewedPage() {
+  const [page, setPage] = useState(1);
+
   const { data } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get?limit=10000000`,
     fetcher
   );
 
   const result = data?.data;
+  const totalPages = data?.pagination?.totalPages || 1;
+
+  // Fungsi untuk mengubah halaman
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   return (
-    <section className="md:pl-64 pr-10 pt-28">
-      <Breadcrumb>
+    <section className="md:pl-64 pl-10 pr-10 md:pt-28 pt-6">
+      <Breadcrumb className="hidden md:block">
         <BreadcrumbList>
           <BreadcrumbItem className="text-primaryy">
             <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
@@ -90,21 +108,35 @@ export default function HasNotBeenReviewedPage() {
           <BreadcrumbSeparator className="text-primaryy" />
           <BreadcrumbItem>
             <BreadcrumbPage className="text-primaryy font-semibold">
-              Belum Ditelaah
+              Sudah Ditelaah
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+      <h1 className="text-xl text-primaryy font-semibold">Belum Ditelaah</h1>
       <div className="pt-5">
-        <div className="flex space-x-2 justify-end">
-          <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
-            <Download className="h-4 w-4 text-primaryy group-hover:text-white" />
-            <p className="text-primaryy group-hover:text-white">Download</p>
-          </Button>
-          <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
-            <Printer className="h-4 w-4 text-primaryy group-hover:text-white" />
-            <p className="text-primaryy group-hover:text-white">Print</p>
-          </Button>
+        <div className="flex space-x-2 justify-start md:justify-end">
+          <div className="flex md:hidden border-primaryy items-center space-x-2 pr-5 w-full rounded-full bg-transparent border">
+            <Input
+              placeholder="Cari..."
+              className="rounded-full border-none w-full"
+            />
+            <SearchIcon className="w-6 h-6 text-primaryy" />
+          </div>
+          <div className="flex space-x-2">
+            <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
+              <Download className="h-4 w-4 text-primaryy group-hover:text-white" />
+              <p className="text-primaryy group-hover:text-white hidden md:block">
+                Download
+              </p>
+            </Button>
+            <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
+              <Printer className="h-4 w-4 text-primaryy group-hover:text-white" />
+              <p className="text-primaryy group-hover:text-white hidden md:block">
+                Print
+              </p>
+            </Button>
+          </div>
         </div>
         <div className="flex items-center space-x-11">
           <div className="flex rounded-full w-[80px] h-[28px] items-center px-2 justify-between border border-primaryy mt-[15px]">
@@ -112,7 +144,23 @@ export default function HasNotBeenReviewedPage() {
             <p className="text-primaryy font-light">Filter</p>
           </div>
         </div>
-        <div className="w-full -mt-[85px]">
+        <div className="space-y-2 mt-6 md:hidden block">
+          {result ? (
+            result?.map((v: any) => <CardTable key={v.id} data={v} />)
+          ) : (
+            <div className="flex justify-center items-center">
+              <p className="text-slate-400">Tidak ada data</p>
+            </div>
+          )}
+        </div>
+        <div className="w-full flex md:hidden justify-end">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+        <div className="w-full -mt-[85px] md:block hidden">
           {result && (
             <DataTables columns={columns} data={result} filterBy="name" />
           )}

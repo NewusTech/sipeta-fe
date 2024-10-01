@@ -114,7 +114,7 @@ export const Pagination = ({
       <button
         onClick={handlePrev}
         disabled={page === 1}
-        className={`px-3 py-1 border rounded-md ${
+        className={`px-2 py-1 border rounded-md ${
           page === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"
         }`}
       >
@@ -126,7 +126,7 @@ export const Pagination = ({
       <button
         onClick={handleNext}
         disabled={page === totalPages}
-        className={`px-3 py-1 border rounded-md ${
+        className={`px-2 py-1 border rounded-md ${
           page === totalPages
             ? "opacity-50 cursor-not-allowed"
             : "hover:bg-gray-400"
