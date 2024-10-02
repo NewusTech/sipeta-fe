@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, ChevronLeft } from "lucide-react";
 
 import { cn } from "../../../../../lib/utils";
 import { Button } from "../../../../../components/ui/button";
@@ -36,6 +36,7 @@ import geoJson2 from "../../../../../constants/lamturaa.json";
 import InformationForm from "../../../../../components/Form/Information";
 import DetailForm from "../../../../../components/Form/Detail";
 import DocumentTab from "../../../../../components/Form/Document";
+import Link from "next/link";
 
 const frameworks = [
   {
@@ -79,6 +80,11 @@ export default function CreateNamingPage() {
   const mapContainerStyle = {
     width: "100%",
     height: "100vh",
+  };
+
+  const mapContainerStyle2 = {
+    width: "100%",
+    height: "30vh",
   };
 
   const onLoadMap = React.useCallback((map: google.maps.Map) => {
@@ -220,12 +226,58 @@ export default function CreateNamingPage() {
   if (!isLoaded) return <p>Loading ...</p>;
 
   return (
-    <section>
-      <div className="flex justify-between">
-        <h1 className="text-primaryy pt-5 font-semibold">Tambah Data</h1>
+    <section className="md:pl-32 pl-10 pr-10 md:pr-0 pb-20 md:pb-0">
+      <div className="flex items-center text-primaryy mt-4">
+        <Link href="/naming" className="cursor-pointer">
+          <ChevronLeft className="w-7 h-7" />
+        </Link>
+        <h4>Kembali</h4>
       </div>
-      <div className="flex justify-between space-x-4">
-        <div className="mt-4 w-5/12 p-5 shadow-md rounded-xl">
+      <div className="flex md:flex-row md:space-x-2 space-y-2 mb-2 md:mb-0 flex-col md:items-center">
+        <h1 className="text-primaryy pt-5 font-semibold text-xl">
+          Tambah Data
+        </h1>
+        <div className="space-x-2">
+          <Button className="rounded-full bg-green-400 space-x-2">
+            <p>Ajukan</p>
+            <Check className="w-5 h-5" />
+          </Button>
+          <Button className="text-primaryy border bg-transparent border-primaryy rounded-full">
+            Ubah
+          </Button>
+        </div>
+      </div>
+      <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
+        <div className="w-full block md:hidden ">
+          <div className="relative">
+            {/* Input search with Autocomplete */}
+            <StandaloneSearchBox
+              onPlacesChanged={onPlacesChanged}
+              onLoad={(ref) => (searchBoxRef.current = ref)}
+            >
+              <Input
+                type="text"
+                placeholder="Search for a location"
+                className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
+              />
+            </StandaloneSearchBox>
+          </div>
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle2}
+            center={mapCenter}
+            onLoad={onLoadMap}
+            zoom={10.85}
+            onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+            onClick={onMapClick}
+            // Menangani event klik pada peta
+          >
+            <Marker
+              position={markerPosition} // Menampilkan marker pada posisi terkini
+              draggable={true} // Memungkinkan marker untuk didrag
+            />
+          </GoogleMap>
+        </div>
+        <div className="mt-4 md:w-[38%] w-full p-5 shadow-md rounded-xl">
           <Tabs defaultValue="information">
             <TabsList className="w-full rounded-full border bg-slate-100 space-x-2">
               <TabsTrigger
@@ -258,7 +310,7 @@ export default function CreateNamingPage() {
             </TabsContent>
           </Tabs>
         </div>
-        <div className="w-1/2 right-0 -mt-11 fixed">
+        <div className="w-1/2 right-0 -mt-[100px] md:fixed md:block hidden">
           <div className="relative">
             {/* Input search with Autocomplete */}
             <StandaloneSearchBox

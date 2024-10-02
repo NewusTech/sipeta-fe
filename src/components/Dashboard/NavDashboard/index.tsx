@@ -1,14 +1,27 @@
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
-import { BellIcon, ChevronDown, UserCircle2Icon, X } from "lucide-react";
+import {
+  BellIcon,
+  ChevronDown,
+  LogOut,
+  User2,
+  UserCircle2Icon,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import { SidebarMobile } from "../Sidebar";
 import { useState } from "react";
+import Link from "next/link";
 
 const NavDashboard = () => {
   const [open, setOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(false);
 
   const toggleSidebar = () => {
     setOpen(!open);
+  };
+
+  const toggleDropdown = () => {
+    setOpenDropdown(!openDropdown);
   };
 
   return (
@@ -54,13 +67,31 @@ const NavDashboard = () => {
         </div>
         <div className="flex items-center space-x-3">
           <BellIcon className="w-6 h-6" />
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2" onClick={toggleDropdown}>
             <UserCircle2Icon className="w-6 h-6" />
             <p className="text-sm">User</p>
-            <ChevronDown className={`w-4 h-4 transition-all duration-300 `} />
+            <ChevronDown
+              className={`w-4 h-4 transition-all duration-300 ${openDropdown ? "rotate-180" : "rotate-0"}`}
+            />
           </div>
         </div>
       </div>
+      {openDropdown && (
+        <div className="absolute shadow w-5/12 p-4 rounded-lg bg-[#fff] right-4 z-40">
+          <ul className="space-y-3 text-slate-300">
+            <li>
+              <Link href="/profile" className="flex space-x-3 items-center">
+                <User2 />
+                <p>Profile</p>
+              </Link>
+            </li>
+            <li className="flex space-x-3 items-center">
+              <LogOut />
+              <p>Keluar</p>
+            </li>
+          </ul>
+        </div>
+      )}
       <div
         className={`md:hidden relative block z-50 transition-all duration-300 ${open ? "translate-x-0" : "-translate-x-full"}`}
       >

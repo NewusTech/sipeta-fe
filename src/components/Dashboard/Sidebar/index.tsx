@@ -13,14 +13,28 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Sidebar = ({ type }: { type?: string }) => {
-  const [dropdown, setDropdown] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  const toggleDropdown = () => {
-    setDropdown(!dropdown);
+  const toggleDropdown = (dropdownName: string) => {
+    setOpenDropdown((prev) => (prev === dropdownName ? null : dropdownName));
   };
+
+  // Check if the route matches and set the dropdown open accordingly
+  useEffect(() => {
+    if (pathname.startsWith("/review")) {
+      setOpenDropdown("penelaahan");
+    } else if (pathname.startsWith("/user")) {
+      setOpenDropdown("peran-pengguna");
+    } else if (pathname.startsWith("/master-data")) {
+      setOpenDropdown("master-data");
+    }
+  }, [pathname]);
 
   return (
     <aside
@@ -57,16 +71,16 @@ const Sidebar = ({ type }: { type?: string }) => {
               </Link>
             </li>
             <li
-              onClick={toggleDropdown}
+              onClick={() => toggleDropdown("penelaahan")}
               className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
             >
               <MapPinCheck />
               <p>Penelaahan</p>
               <ChevronDown
-                className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
+                className={`w-4 h-4 transition-all duration-300 ${openDropdown === "penelaahan" ? "rotate-180" : "rotate-0"}`}
               />
             </li>
-            {dropdown && (
+            {openDropdown === "penelaahan" && (
               <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
                 <li className="hover:translate-x-2 duration-300 transition-all">
                   <Link href="/review/has-been-reviewed">Sudah Ditelaah</Link>
@@ -82,16 +96,16 @@ const Sidebar = ({ type }: { type?: string }) => {
               </ul>
             )}
             <li
-              onClick={toggleDropdown}
+              onClick={() => toggleDropdown("peran-pengguna")}
               className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
             >
               <User2Icon className="w-[29px] h-[29px]" />
               <p>Peran Pengguna</p>
               <ChevronDown
-                className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
+                className={`w-4 h-4 transition-all duration-300 ${openDropdown === "peran-pengguna" ? "rotate-180" : "rotate-0"}`}
               />
             </li>
-            {dropdown && (
+            {openDropdown === "peran-pengguna" && (
               <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
                 <li className="hover:translate-x-2 duration-300 transition-all">
                   <Link href="/user/contributor">Kontributor</Link>
@@ -102,16 +116,16 @@ const Sidebar = ({ type }: { type?: string }) => {
               </ul>
             )}
             <li
-              onClick={toggleDropdown}
+              onClick={() => toggleDropdown("master-data")}
               className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
             >
               <Database />
               <p>Master Data</p>
               <ChevronDown
-                className={`w-4 h-4 transition-all duration-300 ${dropdown ? "rotate-180" : "rotate-0"}`}
+                className={`w-4 h-4 transition-all duration-300 ${openDropdown === "master-data" ? "rotate-180" : "rotate-0"}`}
               />
             </li>
-            {dropdown && (
+            {openDropdown === "master-data" && (
               <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
                 <li className="hover:translate-x-2 duration-300 transition-all">
                   <Link href="/master-data/district">Kecamatan</Link>
