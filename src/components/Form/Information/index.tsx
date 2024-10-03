@@ -26,18 +26,16 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { Input } from "../../ui/input";
 import { Check, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
+import { fetcherWithoutAuth } from "constants/fetcher";
+import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
 const languages = [
-  { label: "English", value: "en" },
-  { label: "French", value: "fr" },
-  { label: "German", value: "de" },
-  { label: "Spanish", value: "es" },
-  { label: "Portuguese", value: "pt" },
-  { label: "Russian", value: "ru" },
-  { label: "Japanese", value: "ja" },
-  { label: "Korean", value: "ko" },
-  { label: "Chinese", value: "zh" },
+  { label: "Titik/Point", value: "1" },
+  { label: "Area/Polygon", value: "2" },
+  { label: "Garis/Line String", value: "3" },
 ] as const;
 
 const formSchema = z.object({
@@ -47,17 +45,17 @@ const formSchema = z.object({
   typeGemoetry: z.string({
     required_error: "Pilih tipe geometri.",
   }),
-  classcificationToponim: z.string({
-    required_error: "Masukkan klasifikasi toponim.",
+  classcificationToponim: z.number({
+    required_error: "Pilih klasifikasi toponim.",
   }),
-  unsur: z.string({
+  unsur: z.number({
     required_error: "Pilih unsur.",
   }),
   district: z.string({
-    message: "Pilih kecamatan.",
+    message: "Masukkan kecamatan.",
   }),
   village: z.string({
-    message: "Pilih desa.",
+    message: "Masukkan desa.",
   }),
   name: z.string({
     message: "Masukkan nama lokal.",
@@ -79,28 +77,122 @@ const formSchema = z.object({
   }),
 });
 
-export default function InformationForm() {
+interface LocationDetails {
+  kecamatan: string;
+  desa: string;
+  dms: string;
+  lat: string;
+  lng: string;
+}
+
+export default function InformationForm({
+  locationDetails,
+}: {
+  locationDetails: LocationDetails;
+}) {
   const [step, setStep] = useState(1);
+  const [valueClassify, setValueClassify] = useState<any>({ id: 0, label: "" });
+  const [valueUnsur, setValueUnsur] = useState<any>({ id: 0, label: "" });
+  const [dataResult, setDataResult] = useState<any>([]); // State untuk menyimpan hasil
+  const [isLoading, setIsLoading] = useState(false);
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const { data: classify } = useSWR<any>(
+    `${apiUrl}/klasifikasi/get`,
+    fetcherWithoutAuth
+  );
+  const { data: unsur } = useSWR<any>(
+    `${apiUrl}/unsur/get`,
+    fetcherWithoutAuth
+  );
+  const classifyData = classify?.data;
+  const unsurData = unsur?.data;
+  const newClassify = classifyData?.map(
+    (item: { id: number; name: string }) => ({
+      value: item.id, // id masuk ke value
+      label: item.name, // name masuk ke label
+    })
+  );
+  const newUnsur = unsurData?.map((item: { id: number; name: string }) => ({
+    value: item.id, // id masuk ke value
+    label: item.name, // name masuk ke label
+  }));
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  }
-
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
+
+  useEffect(() => {
+    if (locationDetails) {
+      form.reset({
+        idToponim: "109283",
+        district: locationDetails.kecamatan,
+        village: locationDetails.desa,
+        mainCoordinat: locationDetails.dms,
+        lat: locationDetails.lat,
+        long: locationDetails.lng,
+      });
+    }
+  }, [locationDetails]);
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+
+    const formData = {
+      id_toponim: values.idToponim || "6091821",
+      tipe_geometri: values.typeGemoetry,
+      klasifikasi_id: values.classcificationToponim,
+      unsur_id: values.unsur,
+      nama_lokal: values.name,
+      nama_spesifik: values.nameSpesific,
+      nama_peta: values.nameMap,
+      koordinat: values.mainCoordinat,
+      bujur: values.lat,
+      lintang: values.long,
+      desa: values.village,
+      kecamatan: values.district,
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      }
+    } catch (e: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal delete!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <Form {...form}>
@@ -116,7 +208,7 @@ export default function InformationForm() {
                   <FormLabel>Id Toponim</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Id toponim"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -147,14 +239,14 @@ export default function InformationForm() {
                             ? languages.find(
                                 (language) => language.value === field.value
                               )?.label
-                            : "Select language"}
+                            : "Pilih tipe geometri"}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                       <Command>
-                        <CommandInput placeholder="Search language..." />
+                        <CommandInput placeholder="Cari tipe geometri..." />
                         <CommandList>
                           <CommandEmpty>No language found.</CommandEmpty>
                           <CommandGroup>
@@ -204,26 +296,32 @@ export default function InformationForm() {
                           )}
                         >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
+                            ? newClassify?.find(
+                                (language: any) =>
+                                  language.value === field.value
                               )?.label
-                            : "Select language"}
+                            : "Pilih klasifikasi"}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                       <Command>
-                        <CommandInput placeholder="Search language..." />
+                        <CommandInput placeholder="Cari klasifikasi..." />
                         <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandEmpty>
+                            Klasifikasi tidak ditemukan.
+                          </CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {newClassify?.map((language: any) => (
                               <CommandItem
                                 value={language.label}
                                 key={language.value}
                                 onSelect={() => {
-                                  form.setValue("typeGemoetry", language.value);
+                                  form.setValue(
+                                    "classcificationToponim",
+                                    language.value
+                                  );
                                 }}
                               >
                                 <Check
@@ -264,26 +362,27 @@ export default function InformationForm() {
                           )}
                         >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
+                            ? newUnsur?.find(
+                                (language: any) =>
+                                  language.value === field.value
                               )?.label
-                            : "Select language"}
+                            : "Pilih unsur"}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0">
                       <Command>
-                        <CommandInput placeholder="Search language..." />
+                        <CommandInput placeholder="Cari unsur..." />
                         <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandEmpty>Unsur tidak ditemukan.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {newUnsur?.map((language: any) => (
                               <CommandItem
                                 value={language.label}
                                 key={language.value}
                                 onSelect={() => {
-                                  form.setValue("typeGemoetry", language.value);
+                                  form.setValue("unsur", language.value);
                                 }}
                               >
                                 <Check
@@ -314,7 +413,7 @@ export default function InformationForm() {
                   <FormLabel>Kecamatan</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Kecamatan"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -332,7 +431,7 @@ export default function InformationForm() {
                   <FormLabel>Desa</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Desa"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -365,7 +464,7 @@ export default function InformationForm() {
                   <FormLabel>Nama Lokal</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan nama lokal"
                       className="rounded-full"
                       {...field}
                     />
@@ -382,7 +481,7 @@ export default function InformationForm() {
                   <FormLabel>Nama Spesifik</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan nama spesifik"
                       className="rounded-full"
                       {...field}
                     />
@@ -399,7 +498,7 @@ export default function InformationForm() {
                   <FormLabel>Nama Peta</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan nama peta"
                       className="rounded-full"
                       {...field}
                     />
@@ -416,7 +515,7 @@ export default function InformationForm() {
                   <FormLabel>Koordinat Utama</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Koordinat Utama"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -434,7 +533,7 @@ export default function InformationForm() {
                   <FormLabel>Bujur</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Bujur"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -452,7 +551,7 @@ export default function InformationForm() {
                   <FormLabel>Lintang</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Lintang"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -470,8 +569,12 @@ export default function InformationForm() {
               >
                 Previous
               </Button>
-              <Button type="submit" className="rounded-full bg-primaryy">
-                Submit
+              <Button
+                type="submit"
+                className="rounded-full bg-primaryy"
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading ..." : "Submit"}
               </Button>
             </div>
           </>

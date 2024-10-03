@@ -27,6 +27,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { Input } from "../../ui/input";
 import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import useSWR from "swr";
+import { fetcherWithoutAuth } from "constants/fetcher";
 
 const languages = [
   { label: "English", value: "en" },
@@ -41,6 +43,9 @@ const languages = [
 ] as const;
 
 const formSchema = z.object({
+  idToponim: z.number({
+    required_error: "Pilih id toponim",
+  }),
   zonaUTM: z.string({
     message: "Masukkan zona utm",
   }),
@@ -97,6 +102,20 @@ const formSchema = z.object({
 export default function DetailForm() {
   const [step, setStep] = useState(1);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const { data: classify } = useSWR<any>(
+    `${apiUrl}/datatoponim/get`,
+    fetcherWithoutAuth
+  );
+
+  const classifyData = classify?.data;
+  const newClassify = classifyData?.map(
+    (item: { id: number; id_toponim: string }) => ({
+      value: item.id, // id masuk ke value
+      label: item.id_toponim, // name masuk ke label
+    })
+  );
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -123,6 +142,67 @@ export default function DetailForm() {
         {step === 1 && (
           <>
             {/* Step 1 Fields */}
+            <FormField
+              control={form.control}
+              name="idToponim"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Id Toponim</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full justify-between rounded-full",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? newClassify?.find(
+                                (language: any) =>
+                                  language.value === field.value
+                              )?.label
+                            : "Pilih id toponim"}
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput placeholder="Cari tipe geometri..." />
+                        <CommandList>
+                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandGroup>
+                            {newClassify?.map((language: any) => (
+                              <CommandItem
+                                value={language.label}
+                                key={language.value}
+                                onSelect={() => {
+                                  form.setValue("idToponim", language.value);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    language.value === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {language.label}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="zonaUTM"
@@ -208,6 +288,22 @@ export default function DetailForm() {
                 </FormItem>
               )}
             />
+
+            <div className="flex justify-end">
+              <Button
+                onClick={nextStep}
+                className="bg-primaryy rounded-full"
+                type="button"
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            {/* Step 2 Fields */}
             <FormField
               control={form.control}
               name="languageFrom"
@@ -225,21 +321,6 @@ export default function DetailForm() {
                 </FormItem>
               )}
             />
-            <div className="flex justify-end">
-              <Button
-                onClick={nextStep}
-                className="bg-primaryy rounded-full"
-                type="button"
-              >
-                Next
-              </Button>
-            </div>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            {/* Step 2 Fields */}
             <FormField
               control={form.control}
               name="nameMeaning"
@@ -325,23 +406,7 @@ export default function DetailForm() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="spelling"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ejaan</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="shadcn"
-                      className="rounded-full"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <div className="flex space-x-2 justify-between">
               <Button
                 onClick={prevStep}
@@ -363,6 +428,23 @@ export default function DetailForm() {
         {step === 3 && (
           <>
             {/* Step 2 Fields */}
+            <FormField
+              control={form.control}
+              name="spelling"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ejaan</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="shadcn"
+                      className="rounded-full"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="elevationValue"
