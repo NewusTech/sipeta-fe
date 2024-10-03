@@ -68,6 +68,13 @@ export default function CreateNamingPage() {
   const [searchText, setSearchText] = React.useState("");
   const [currentLocation, setCurrentLocation] = React.useState(null);
   const [addressInfo, setAddressInfo] = React.useState(null);
+  const [locationDetails, setLocationDetails] = React.useState({
+    kecamatan: "",
+    desa: "",
+    dms: "",
+    lat: "",
+    lng: "",
+  });
   const [markerPosition, setMarkerPosition] = React.useState({
     lat: -4.8357, // Default latitude (Lampung Utara)
     lng: 104.9441, // Default longitude (Lampung Utara)
@@ -85,6 +92,24 @@ export default function CreateNamingPage() {
   const mapContainerStyle2 = {
     width: "100%",
     height: "30vh",
+  };
+
+  const convertToDMS = (coordinate: number): string => {
+    const absolute = Math.abs(coordinate);
+    const degrees = Math.floor(absolute);
+    const minutes = Math.floor((absolute - degrees) * 60);
+    const seconds = Math.round((absolute - degrees - minutes / 60) * 3600);
+
+    const direction =
+      coordinate >= 0
+        ? coordinate === absolute
+          ? "N"
+          : "E"
+        : coordinate === absolute
+          ? "S"
+          : "W";
+
+    return `${degrees}°${minutes}'${seconds}" ${direction}`;
   };
 
   const onLoadMap = React.useCallback((map: google.maps.Map) => {
@@ -177,6 +202,34 @@ export default function CreateNamingPage() {
     }
   };
 
+  const handleReverseGeocoding = (lat: number, lng: number) => {
+    const geocoder = new google.maps.Geocoder();
+    const latLng = new google.maps.LatLng(lat, lng);
+
+    geocoder.geocode({ location: latLng }, (results, status) => {
+      if (status === "OK" && results) {
+        const addressComponents = results[0].address_components;
+
+        // Ekstrak kecamatan dan desa dari komponen alamat
+        const kecamatan = addressComponents.find((component) =>
+          component.types.includes("administrative_area_level_3")
+        )?.long_name;
+
+        const desa = addressComponents.find((component) =>
+          component.types.includes("administrative_area_level_4")
+        )?.long_name;
+
+        setLocationDetails({
+          kecamatan: kecamatan || "",
+          desa: desa || "",
+          dms: `${convertToDMS(lat)} - ${convertToDMS(lng)}` || "",
+          lat: lat.toString(),
+          lng: lng.toString(),
+        });
+      }
+    });
+  };
+
   const handleMapInteraction = (latLng: google.maps.LatLng | null) => {
     if (!latLng) return;
 
@@ -212,6 +265,12 @@ export default function CreateNamingPage() {
 
   const onMapClick = (event: google.maps.MapMouseEvent) => {
     handleMapInteraction(event?.latLng);
+    const latLng = event.latLng;
+    if (latLng) {
+      const lat = latLng.lat();
+      const lng = latLng.lng();
+      handleReverseGeocoding(lat, lng);
+    }
   };
 
   const LAMPUNG_UTARA = {
@@ -237,15 +296,6 @@ export default function CreateNamingPage() {
         <h1 className="text-primaryy pt-5 font-semibold text-xl">
           Tambah Data
         </h1>
-        <div className="space-x-2">
-          <Button className="rounded-full bg-green-400 space-x-2">
-            <p>Ajukan</p>
-            <Check className="w-5 h-5" />
-          </Button>
-          <Button className="text-primaryy border bg-transparent border-primaryy rounded-full">
-            Ubah
-          </Button>
-        </div>
       </div>
       <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
         <div className="w-full block md:hidden ">
@@ -300,7 +350,7 @@ export default function CreateNamingPage() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="information">
-              <InformationForm />
+              <InformationForm locationDetails={locationDetails} />
             </TabsContent>
             <TabsContent value="detail">
               <DetailForm />
