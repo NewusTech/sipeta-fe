@@ -14,7 +14,7 @@ import {
 import { Input } from "../../components/ui/input";
 import geoJson from "../../constants/lamtura.json";
 import geoJson2 from "../../constants/lamturaa.json";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import path from "path";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Cookies from "js-cookie";
@@ -23,7 +23,10 @@ const Navbar = () => {
   // const [openDropdown, setOpenDropdown] = useState(false);
   const [openDropdown, setOpenDropdown] = React.useState(false);
   const [openDropdownName, setOpenDropdownName] = React.useState(false);
+  const [openDropdownName2, setOpenDropdownName2] = React.useState(false);
   const pathname = usePathname();
+
+  const router = useRouter();
 
   const token = Cookies.get("token");
 
@@ -35,6 +38,15 @@ const Navbar = () => {
 
   const toggleDropdownName = () => {
     setOpenDropdownName(!openDropdownName);
+  };
+
+  const toggleDropdownName2 = () => {
+    setOpenDropdownName2(!openDropdownName2);
+  };
+
+  const logout = () => {
+    Cookies.remove("token");
+    router.replace("/login");
   };
 
   return (
@@ -56,20 +68,51 @@ const Navbar = () => {
               </p>
             </div>
           </div>
-          <div className="md:flex space-x-2 hidden">
-            <Link
-              href="/register"
-              className="rounded-full w-full h-10 flex items-center px-8 bg-white text-primaryy"
-            >
-              Daftar
-            </Link>
-            <Link
-              href="/login"
-              className="rounded-full h-10 flex items-center px-8 bg-transparent border border-white text-white"
-            >
-              Masuk
-            </Link>
-          </div>
+          {token ? (
+            <div className="relative">
+              <div
+                onClick={toggleDropdownName2}
+                className="text-white rounded-full cursor-pointer bg-primaryy flex space-x-4 items-center"
+              >
+                <p>Aris</p>
+                <ChevronDown
+                  className={`text-white w-5 h-5 transition-all duration-300 ${openDropdownName2 ? "rotate-180" : "rotate-0"}`}
+                />
+              </div>
+              {openDropdownName2 && (
+                <div className="bg-white space-y-2 rounded-lg absolute shadow z-50 w-[175px] h-[84px] mt-5 p-4">
+                  <div className="flex space-x-4 items-center transition-all duration-300 hover:translate-x-2">
+                    <LayoutDashboardIcon className="text-primaryy w-5 h-5" />
+                    <Link href="/dashboard" className="text-primaryy">
+                      Dashboard
+                    </Link>
+                  </div>
+                  <div
+                    onClick={logout}
+                    className="flex cursor-pointer space-x-4 items-center transition-all duration-300 hover:translate-x-2"
+                  >
+                    <LogOut className="text-slate-300 w-5 h-5" />
+                    <p className="text-slate-300">Logout</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="md:flex space-x-2 hidden">
+              <Link
+                href="/register"
+                className="rounded-full w-full h-10 flex items-center px-8 bg-white text-primaryy"
+              >
+                Daftar
+              </Link>
+              <Link
+                href="/login"
+                className="rounded-full h-10 flex items-center px-8 bg-transparent border border-white text-white"
+              >
+                Masuk
+              </Link>
+            </div>
+          )}
         </nav>
       </div>
       <div className="py-5 border-b border-primaryy">
@@ -93,11 +136,12 @@ const Navbar = () => {
                       Dashboard
                     </Link>
                   </div>
-                  <div className="flex space-x-4 items-center transition-all duration-300 hover:translate-x-2">
+                  <div
+                    onClick={logout}
+                    className="flex space-x-4 items-center transition-all duration-300 hover:translate-x-2"
+                  >
                     <LogOut className="text-slate-300 w-5 h-5" />
-                    <Link href="/dashboard" className="text-slate-300">
-                      Dashboard
-                    </Link>
+                    <p className="text-slate-300">Logout</p>
                   </div>
                 </div>
               )}

@@ -12,6 +12,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Swal from "sweetalert2";
 import useAuthStore from "../../../store/useAuthStore";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const loginSchema = z.object({
   username: z.string({ message: "username wajib diisi" }),
@@ -66,6 +68,10 @@ const LoginPage = () => {
         const tokenAuth = data.data.token;
         login(tokenAuth);
         await new Promise((resolve) => setTimeout(resolve, 300));
+
+        const decoded = jwtDecode(tokenAuth) as { role: string };
+        const role = decoded.role;
+
         Swal.fire({
           icon: "success",
           title: "Login berhasil!",
@@ -74,10 +80,14 @@ const LoginPage = () => {
           position: "center",
         });
         // Redirect ke path tujuan setelah login
-        const pathBeforeLogin =
-          sessionStorage.getItem("pathBeforeLogin") || "/";
-        sessionStorage.removeItem("pathBeforeLogin");
-        router.push(pathBeforeLogin);
+        if (role !== "User") {
+          router.replace("/dashboard");
+        } else {
+          const pathBeforeLogin =
+            sessionStorage.getItem("pathBeforeLogin") || "/";
+          sessionStorage.removeItem("pathBeforeLogin");
+          router.replace(pathBeforeLogin);
+        }
       }
     } catch (e: any) {
       Swal.fire({
