@@ -17,6 +17,7 @@ import { MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
 import Link from "next/link";
 import ModalDelete from "../../../../components/Dialog/delete";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 type District = {
   id: number;
@@ -98,21 +99,23 @@ export default function DistrictPage() {
   const result = data?.data;
 
   return (
-    <section className="pl-64 pr-10 pt-32">
-      <h1 className="text-xl font-semibold text-primaryy mb-3">Kecamatan</h1>
-      <div className="flex items-center justify-end">
-        <Link href="/master-data/district/create">
-          <div className="flex px-2 space-x-2 items-center h-[28px] bg-primaryy mt-4 text-white rounded-full ">
-            <Plus className="w-5 h-5" />
-            <p className="text-sm">Tambah Data</p>
-          </div>
-        </Link>
-      </div>
-      <div className="-mt-9">
-        {result && (
-          <DataTables2 columns={columns} filterBy="name" data={result} />
-        )}
-      </div>
-    </section>
+    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+      <section className="pl-64 pr-10 pt-32">
+        <h1 className="text-xl font-semibold text-primaryy mb-3">Kecamatan</h1>
+        <div className="flex items-center justify-end">
+          <Link href="/master-data/district/create">
+            <div className="flex px-2 space-x-2 items-center h-[28px] bg-primaryy mt-4 text-white rounded-full ">
+              <Plus className="w-5 h-5" />
+              <p className="text-sm">Tambah Data</p>
+            </div>
+          </Link>
+        </div>
+        <div className="-mt-9">
+          {result && (
+            <DataTables2 columns={columns} filterBy="name" data={result} />
+          )}
+        </div>
+      </section>
+    </ProtectedRoute>
   );
 }

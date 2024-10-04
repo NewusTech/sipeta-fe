@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import FormDistrict from "../../../../../components/Form/District";
 import { fetcher } from "../../../../../constants/fetcher";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function UpdateDistrictPage({
   params,
@@ -17,11 +18,13 @@ export default function UpdateDistrictPage({
   const result = data?.data;
 
   return (
-    <section className="pl-64 pr-10 pt-32">
-      <h1 className="text-xl font-semibold text-primaryy mb-3">
-        Tambah Kecamatan
-      </h1>
-      <FormDistrict type="update" label="Ubah" data={result} />
-    </section>
+    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+      <section className="pl-64 pr-10 pt-32">
+        <h1 className="text-xl font-semibold text-primaryy mb-3">
+          Tambah Kecamatan
+        </h1>
+        <FormDistrict type="update" label="Ubah" data={result} />
+      </section>
+    </ProtectedRoute>
   );
 }

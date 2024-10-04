@@ -22,9 +22,9 @@ const ProtectedRoute = ({ children, roles }: ProtectedRouteProps) => {
       if (!user) {
         const pathBeforeLogin = window.location.pathname;
         sessionStorage.setItem("pathBeforeLogin", pathBeforeLogin);
-        router.replace("/login");
+        router.push("/login");
       } else if (roles && !roles.includes(user.role)) {
-        router.replace("/");
+        router.push("/");
       }
     }
   }, [user, router, roles, isInitialized]);
