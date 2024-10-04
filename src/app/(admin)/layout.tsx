@@ -51,16 +51,14 @@ export default function RootLayout({
   }
 
   return (
-    <html>
-      <body className={inter.className}>
-        {!isCrudRoute && (
-          <>
-            <NavDashboard />
-            <Sidebar type="large" />
-          </>
-        )}
-        <main className="relative">{children}</main>
-      </body>
-    </html>
+    <div className={inter.className}>
+      {!isCrudRoute && (
+        <>
+          <NavDashboard />
+          <Sidebar type="large" />
+        </>
+      )}
+      <main className="relative">{children}</main>
+    </div>
   );
 }

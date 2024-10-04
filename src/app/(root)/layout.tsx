@@ -12,13 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
-      <body>
-        <section className="">
-          <Navbar />
-          <main>{children}</main>
-        </section>
-      </body>
-    </html>
+    <div>
+      <Navbar />
+      <main>{children}</main>
+    </div>
   );
 }
