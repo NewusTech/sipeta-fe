@@ -75,6 +75,18 @@ const formSchema = z.object({
   long: z.string({
     message: "Masukkan garis lintang.",
   }),
+  headOf: z.string({
+    message: "Masukkan kepala.",
+  }),
+  sekretaris: z.string({
+    message: "Masukkan sekretaris.",
+  }),
+  email: z.string({
+    message: "Masukkan email.",
+  }),
+  telp: z.string({
+    message: "Masukkan no telepon.",
+  }),
 });
 
 interface LocationDetails {
@@ -143,6 +155,27 @@ export default function InformationForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
+    let headOf;
+    let sekretaris;
+    let email;
+    let telp;
+
+    if (values.headOf) {
+      headOf = values.headOf;
+    }
+
+    if (values.sekretaris) {
+      sekretaris = values.sekretaris;
+    }
+
+    if (values.email) {
+      email = values.email;
+    }
+
+    if (values.telp) {
+      telp = values.telp;
+    }
+
     const formData = {
       id_toponim: values.idToponim || "6091821",
       tipe_geometri: values.typeGemoetry,
@@ -156,6 +189,10 @@ export default function InformationForm({
       lintang: values.long,
       desa: values.village,
       kecamatan: values.district,
+      kepala: headOf,
+      sekretaris: sekretaris,
+      email: email,
+      telp: telp,
     };
 
     try {
@@ -569,14 +606,116 @@ export default function InformationForm({
               >
                 Previous
               </Button>
-              <Button
-                type="submit"
-                className="rounded-full bg-primaryy"
-                disabled={isLoading}
-              >
-                {isLoading ? "Loading ..." : "Submit"}
-              </Button>
+              {form.getValues("classcificationToponim") === 6 ? (
+                <Button
+                  onClick={nextStep}
+                  className="bg-primaryy rounded-full"
+                  type="button"
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  className="rounded-full bg-primaryy"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Loading ..." : "Submit"}
+                </Button>
+              )}
             </div>
+          </>
+        )}
+        {step === 3 && (
+          <>
+            {form.getValues("classcificationToponim") === 6 && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="headOf"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kepala</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Masukkan kepala"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="sekretaris"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sekretaris</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Masukkan sekretaris"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Masukkan email"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="telp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>No Telepon</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Masukkan no telepon"
+                          className="rounded-full"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex space-x-2 justify-between">
+                  <Button
+                    onClick={prevStep}
+                    className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
+                    type="button"
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="rounded-full bg-primaryy"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Loading ..." : "Submit"}
+                  </Button>
+                </div>
+              </>
+            )}
           </>
         )}
       </form>

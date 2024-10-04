@@ -3,6 +3,7 @@
 import { DataTables } from "@/components/Datatables";
 import { DataTables2 } from "@/components/Datatables/table2";
 import { Pagination } from "@/components/Pagination";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,7 +15,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { ColumnDef } from "@tanstack/react-table";
 import { fetcher } from "constants/fetcher";
-import { EyeIcon, Key, KeyRound, Link, PenBox, SearchIcon, Trash2 } from "lucide-react";
+import {
+  EyeIcon,
+  Key,
+  KeyRound,
+  Link,
+  PenBox,
+  SearchIcon,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -100,61 +109,63 @@ export default function ContributorPage() {
   };
 
   return (
-    <section className="md:pl-64 pl-10 pr-10 pt-5 md:pt-28">
-      <Breadcrumb className="md:block hidden">
-        <BreadcrumbList>
-          <BreadcrumbItem className="text-primaryy">
-            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-primaryy" />
-          <BreadcrumbItem className="text-primaryy">
-            <BreadcrumbLink href="#">Peran Pengguna</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-primaryy" />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="text-primaryy font-semibold">
-              Kontributor
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <div className="md:hidden block space-y-5">
-        <h1 className="text-primaryy text-xl font-semibold">Kontributor</h1>
-        <div className="flex md:hidden border-primaryy items-center space-x-2 pr-5 w-full rounded-full bg-transparent border">
-          <Input
-            placeholder="Cari..."
-            className="rounded-full border-none w-full"
-          />
-          <SearchIcon className="w-6 h-6 text-primaryy" />
+    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+      <section className="md:pl-64 pl-10 pr-10 pt-5 md:pt-28">
+        <Breadcrumb className="md:block hidden">
+          <BreadcrumbList>
+            <BreadcrumbItem className="text-primaryy">
+              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-primaryy" />
+            <BreadcrumbItem className="text-primaryy">
+              <BreadcrumbLink href="#">Peran Pengguna</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-primaryy" />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-primaryy font-semibold">
+                Kontributor
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="md:hidden block space-y-5">
+          <h1 className="text-primaryy text-xl font-semibold">Kontributor</h1>
+          <div className="flex md:hidden border-primaryy items-center space-x-2 pr-5 w-full rounded-full bg-transparent border">
+            <Input
+              placeholder="Cari..."
+              className="rounded-full border-none w-full"
+            />
+            <SearchIcon className="w-6 h-6 text-primaryy" />
+          </div>
+          <div className="space-y-4 mt-6 md:hidden block">
+            {result ? (
+              result?.map((v: any) => <CardTable key={v.id} data={v} />)
+            ) : (
+              <div className="flex justify-center items-center">
+                <p className="text-slate-400">Tidak ada data</p>
+              </div>
+            )}
+          </div>
+          <div className="w-full flex md:hidden justify-end">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
-        <div className="space-y-4 mt-6 md:hidden block">
-          {result ? (
-            result?.map((v: any) => <CardTable key={v.id} data={v} />)
-          ) : (
-            <div className="flex justify-center items-center">
-              <p className="text-slate-400">Tidak ada data</p>
-            </div>
+        <div className="w-full mt-6 md:block hidden">
+          {result && (
+            <DataTables2
+              columns={columns}
+              data={result}
+              filterBy="name"
+              type="search"
+            />
           )}
         </div>
-        <div className="w-full flex md:hidden justify-end">
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </div>
-      <div className="w-full mt-6 md:block hidden">
-        {result && (
-          <DataTables2
-            columns={columns}
-            data={result}
-            filterBy="name"
-            type="search"
-          />
-        )}
-      </div>
-    </section>
+      </section>
+    </ProtectedRoute>
   );
 }
 

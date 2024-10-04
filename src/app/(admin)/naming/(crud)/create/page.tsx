@@ -37,6 +37,7 @@ import InformationForm from "../../../../../components/Form/Information";
 import DetailForm from "../../../../../components/Form/Detail";
 import DocumentTab from "../../../../../components/Form/Document";
 import Link from "next/link";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const frameworks = [
   {
@@ -285,111 +286,113 @@ export default function CreateNamingPage() {
   if (!isLoaded) return <p>Loading ...</p>;
 
   return (
-    <section className="md:pl-32 pl-10 pr-10 md:pr-0 pb-20 md:pb-0">
-      <div className="flex items-center text-primaryy mt-4">
-        <Link href="/naming" className="cursor-pointer">
-          <ChevronLeft className="w-7 h-7" />
-        </Link>
-        <h4>Kembali</h4>
-      </div>
-      <div className="flex md:flex-row md:space-x-2 space-y-2 mb-2 md:mb-0 flex-col md:items-center">
-        <h1 className="text-primaryy pt-5 font-semibold text-xl">
-          Tambah Data
-        </h1>
-      </div>
-      <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
-        <div className="w-full block md:hidden ">
-          <div className="relative">
-            {/* Input search with Autocomplete */}
-            <StandaloneSearchBox
-              onPlacesChanged={onPlacesChanged}
-              onLoad={(ref) => (searchBoxRef.current = ref)}
+    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+      <section className="md:pl-32 pl-10 pr-10 md:pr-0 pb-20 md:pb-0">
+        <div className="flex items-center text-primaryy mt-4">
+          <Link href="/naming" className="cursor-pointer">
+            <ChevronLeft className="w-7 h-7" />
+          </Link>
+          <h4>Kembali</h4>
+        </div>
+        <div className="flex md:flex-row md:space-x-2 space-y-2 mb-2 md:mb-0 flex-col md:items-center">
+          <h1 className="text-primaryy pt-5 font-semibold text-xl">
+            Tambah Data
+          </h1>
+        </div>
+        <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
+          <div className="w-full block md:hidden ">
+            <div className="relative">
+              {/* Input search with Autocomplete */}
+              <StandaloneSearchBox
+                onPlacesChanged={onPlacesChanged}
+                onLoad={(ref) => (searchBoxRef.current = ref)}
+              >
+                <Input
+                  type="text"
+                  placeholder="Search for a location"
+                  className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
+                />
+              </StandaloneSearchBox>
+            </div>
+            <GoogleMap
+              mapContainerStyle={mapContainerStyle2}
+              center={mapCenter}
+              onLoad={onLoadMap}
+              zoom={10.85}
+              onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+              onClick={onMapClick}
+              // Menangani event klik pada peta
             >
-              <Input
-                type="text"
-                placeholder="Search for a location"
-                className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
+              <Marker
+                position={markerPosition} // Menampilkan marker pada posisi terkini
+                draggable={true} // Memungkinkan marker untuk didrag
               />
-            </StandaloneSearchBox>
+            </GoogleMap>
           </div>
-          <GoogleMap
-            mapContainerStyle={mapContainerStyle2}
-            center={mapCenter}
-            onLoad={onLoadMap}
-            zoom={10.85}
-            onDragEnd={onMapDragEnd} // Menangani event drag pada peta
-            onClick={onMapClick}
-            // Menangani event klik pada peta
-          >
-            <Marker
-              position={markerPosition} // Menampilkan marker pada posisi terkini
-              draggable={true} // Memungkinkan marker untuk didrag
-            />
-          </GoogleMap>
-        </div>
-        <div className="mt-4 md:w-[38%] w-full p-5 shadow-md rounded-xl">
-          <Tabs defaultValue="information">
-            <TabsList className="w-full rounded-full border bg-slate-100 space-x-2">
-              <TabsTrigger
-                className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
-                value="information"
+          <div className="mt-4 md:w-[38%] w-full p-5 shadow-md rounded-xl">
+            <Tabs defaultValue="information">
+              <TabsList className="w-full rounded-full border bg-slate-100 space-x-2">
+                <TabsTrigger
+                  className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                  value="information"
+                >
+                  Informasi
+                </TabsTrigger>
+                <TabsTrigger
+                  className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                  value="detail"
+                >
+                  Detail
+                </TabsTrigger>
+                <TabsTrigger
+                  className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
+                  value="document"
+                >
+                  Dokumen
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="information">
+                <InformationForm locationDetails={locationDetails} />
+              </TabsContent>
+              <TabsContent value="detail">
+                <DetailForm />
+              </TabsContent>
+              <TabsContent value="document">
+                <DocumentTab />
+              </TabsContent>
+            </Tabs>
+          </div>
+          <div className="w-1/2 right-0 -mt-[100px] md:fixed md:block hidden">
+            <div className="relative">
+              {/* Input search with Autocomplete */}
+              <StandaloneSearchBox
+                onPlacesChanged={onPlacesChanged}
+                onLoad={(ref) => (searchBoxRef.current = ref)}
               >
-                Informasi
-              </TabsTrigger>
-              <TabsTrigger
-                className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
-                value="detail"
-              >
-                Detail
-              </TabsTrigger>
-              <TabsTrigger
-                className="w-full px-2 rounded-full text-black data-[state=active]:bg-primaryy  data-[state=active]:text-white"
-                value="document"
-              >
-                Dokumen
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="information">
-              <InformationForm locationDetails={locationDetails} />
-            </TabsContent>
-            <TabsContent value="detail">
-              <DetailForm />
-            </TabsContent>
-            <TabsContent value="document">
-              <DocumentTab />
-            </TabsContent>
-          </Tabs>
-        </div>
-        <div className="w-1/2 right-0 -mt-[100px] md:fixed md:block hidden">
-          <div className="relative">
-            {/* Input search with Autocomplete */}
-            <StandaloneSearchBox
-              onPlacesChanged={onPlacesChanged}
-              onLoad={(ref) => (searchBoxRef.current = ref)}
+                <Input
+                  type="text"
+                  placeholder="Search for a location"
+                  className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
+                />
+              </StandaloneSearchBox>
+            </div>
+            <GoogleMap
+              mapContainerStyle={mapContainerStyle}
+              center={mapCenter}
+              onLoad={onLoadMap}
+              zoom={10.85}
+              onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+              onClick={onMapClick}
+              // Menangani event klik pada peta
             >
-              <Input
-                type="text"
-                placeholder="Search for a location"
-                className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
+              <Marker
+                position={markerPosition} // Menampilkan marker pada posisi terkini
+                draggable={true} // Memungkinkan marker untuk didrag
               />
-            </StandaloneSearchBox>
+            </GoogleMap>
           </div>
-          <GoogleMap
-            mapContainerStyle={mapContainerStyle}
-            center={mapCenter}
-            onLoad={onLoadMap}
-            zoom={10.85}
-            onDragEnd={onMapDragEnd} // Menangani event drag pada peta
-            onClick={onMapClick}
-            // Menangani event klik pada peta
-          >
-            <Marker
-              position={markerPosition} // Menampilkan marker pada posisi terkini
-              draggable={true} // Memungkinkan marker untuk didrag
-            />
-          </GoogleMap>
         </div>
-      </div>
-    </section>
+      </section>
+    </ProtectedRoute>
   );
 }
