@@ -19,12 +19,8 @@ export default function AuthLayout({
   }, [router, token]);
 
   return (
-    <html>
-      <body>
-        <section className="mt-10">
-          <main>{children}</main>
-        </section>
-      </body>
-    </html>
+    <section className="mt-10">
+      <main>{children}</main>
+    </section>
   );
 }
