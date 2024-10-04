@@ -29,6 +29,8 @@ import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import useSWR from "swr";
 import { fetcherWithoutAuth } from "constants/fetcher";
+import Cookies from "js-cookie";
+import Swal from "sweetalert2";
 
 const languages = [
   { label: "English", value: "en" },
@@ -82,12 +84,16 @@ const formSchema = z.object({
   spelling: z.string({
     message: "Masukkan ejaan",
   }),
-  elevationValue: z.string({
-    message: "Masukkan nilai ketinggian",
-  }),
-  accuration: z.string({
-    message: "Masukkan akurasi",
-  }),
+  elevationValue: z
+    .string({
+      message: "Masukkan nilai ketinggian",
+    })
+    .optional(),
+  accuration: z
+    .string({
+      message: "Masukkan akurasi",
+    })
+    .optional(),
   source: z.string({
     message: "Masukkan narasumber",
   }),
@@ -101,6 +107,7 @@ const formSchema = z.object({
 
 export default function DetailForm() {
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
@@ -122,15 +129,66 @@ export default function DetailForm() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    const formData = {
+      datatoponim_id: values.idToponim,
+      zona_utm: values.zonaUTM,
+      nlp: values.nlp,
+      lcode: values.lcode,
+      nama_gazeter: values.gazeterName,
+      nama_lain: values.otherName,
+      asal_bahasa: values.languageFrom,
+      arti_nama: values.nameMeaning,
+      sejarah_nama: values.nameHistory,
+      nama_sebelumnya: values.before,
+      nama_rekomendasi: values.recommend,
+      ucapan: values.speech,
+      ejaan: values.spelling,
+      nilai_ketinggian: Number(values.elevationValue),
+      akurasi: Number(values.accuration),
+      narasumber: values.source,
+      sumber_data: values.dataSource,
+      catatan: values.note,
+    };
+
+    console.log(formData);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/detailtoponim/input`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      }
+
+      console.log(data);
+    } catch (e) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal submit!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const nextStep = () => setStep(step + 1);
@@ -211,7 +269,7 @@ export default function DetailForm() {
                   <FormLabel>Zona UTM</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="MAsukkan zona UTM"
                       className="rounded-full"
                       {...field}
                     />
@@ -228,7 +286,7 @@ export default function DetailForm() {
                   <FormLabel>NLP</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan NLP"
                       className="rounded-full"
                       {...field}
                     />
@@ -245,7 +303,7 @@ export default function DetailForm() {
                   <FormLabel>LCODE</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan LCODE"
                       className="rounded-full"
                       {...field}
                     />
@@ -262,7 +320,7 @@ export default function DetailForm() {
                   <FormLabel>Nama Gazeter</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan nama gazeter"
                       className="rounded-full"
                       {...field}
                     />
@@ -279,7 +337,7 @@ export default function DetailForm() {
                   <FormLabel>Nama Lain</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan nama lain"
                       className="rounded-full"
                       {...field}
                     />
@@ -312,7 +370,7 @@ export default function DetailForm() {
                   <FormLabel>Asal Bahasa</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan asal bahasa"
                       className="rounded-full"
                       {...field}
                     />
@@ -329,7 +387,7 @@ export default function DetailForm() {
                   <FormLabel>Arti Nama</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan arti nama"
                       className="rounded-full"
                       {...field}
                     />
@@ -346,7 +404,7 @@ export default function DetailForm() {
                   <FormLabel>Sejarah Nama</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan sejarah nama"
                       className="rounded-full"
                       {...field}
                     />
@@ -363,7 +421,7 @@ export default function DetailForm() {
                   <FormLabel>Nama Sebelumnya</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan nama sebelumnya"
                       className="rounded-full"
                       {...field}
                     />
@@ -380,7 +438,7 @@ export default function DetailForm() {
                   <FormLabel>Nama Rekomendasi</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan nama rekomendasi"
                       className="rounded-full"
                       {...field}
                     />
@@ -397,7 +455,7 @@ export default function DetailForm() {
                   <FormLabel>Ucapan</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan ucapan"
                       className="rounded-full"
                       {...field}
                     />
@@ -436,7 +494,7 @@ export default function DetailForm() {
                   <FormLabel>Ejaan</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan ejaan"
                       className="rounded-full"
                       {...field}
                     />
@@ -453,9 +511,10 @@ export default function DetailForm() {
                   <FormLabel>Nilai Ketinggian</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan nilai ketinggian"
                       className="rounded-full"
                       {...field}
+                      type="number"
                     />
                   </FormControl>
                   <FormMessage />
@@ -470,9 +529,10 @@ export default function DetailForm() {
                   <FormLabel>Akurasi</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan akurasi"
                       className="rounded-full"
                       {...field}
+                      type="number"
                     />
                   </FormControl>
                   <FormMessage />
@@ -487,7 +547,7 @@ export default function DetailForm() {
                   <FormLabel>Narasumber</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan narasumber"
                       className="rounded-full"
                       {...field}
                     />
@@ -504,7 +564,7 @@ export default function DetailForm() {
                   <FormLabel>Sumber Data</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan sumber data"
                       className="rounded-full"
                       {...field}
                     />
@@ -521,7 +581,7 @@ export default function DetailForm() {
                   <FormLabel>Catatan</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="shadcn"
+                      placeholder="Masukkan catatan"
                       className="rounded-full"
                       {...field}
                     />
@@ -538,8 +598,12 @@ export default function DetailForm() {
               >
                 Previous
               </Button>
-              <Button type="submit" className="rounded-full bg-primaryy">
-                Submit
+              <Button
+                type="submit"
+                className="rounded-full bg-primaryy"
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading..." : "Submit"}
               </Button>
             </div>
           </>

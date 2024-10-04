@@ -1,5 +1,6 @@
 "use client";
 
+import { CardTable } from "@/components/Card/CardTable";
 import { DataTables } from "@/components/Datatables";
 import { Pagination } from "@/components/Pagination";
 import {
@@ -13,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ColumnDef } from "@tanstack/react-table";
-import { CardTable } from "app/(admin)/naming/page";
 import { fetcher } from "constants/fetcher";
 import {
   Download,
