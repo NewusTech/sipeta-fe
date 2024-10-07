@@ -18,7 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isCrudRoute = pathname.includes("/naming/create");
+  const isCrudRoute =
+    pathname.includes("/naming/create") ||
+    pathname.includes("/naming/detail") ||
+    pathname.includes("/naming/update");
 
   const { initialize, isInitialized, user } = useAuthStore((state) => ({
     initialize: state.initialize,
