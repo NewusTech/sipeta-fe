@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "lib/utils";
-import { CheckSquare2, EyeIcon, PenBox, Trash2 } from "lucide-react";
+import { CheckSquare2, EyeIcon, PenBox, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 export type Payment = {
@@ -28,10 +28,15 @@ export const columnsData: ColumnDef<Payment>[] = [
     header: "Aksi",
     cell: ({ row }) => {
       return (
-        <div>
-          <div className="p-1 w-7 bg-orange-400 hover:bg-orange-500 rounded-sm cursor-pointer">
-            <Link href={`/list-name/${row.original.id}`}>
+        <div className="flex space-x-2">
+          <div className="p-1 w-7 bg-blue-400 hover:bg-blue-500 rounded-sm cursor-pointer">
+            <Link href={`/naming/detail/${row.original.id}`}>
               <EyeIcon className="w-5 h-5 text-white" />
+            </Link>
+          </div>
+          <div className="p-1 w-7 flex justify-center items-center bg-yellow-400 hover:bg-yellow-500 rounded-sm cursor-pointer">
+            <Link href={`/naming/update/${row.original.id}`}>
+              <Pencil className="w-4 h-4 text-white" />
             </Link>
           </div>
         </div>
