@@ -120,7 +120,7 @@ export default function DetailFormDetail({ data }: { data: any }) {
   useEffect(() => {
     if (data) {
       form.reset({
-        idToponim: data.datatoponim_id,
+        idToponim: data.id,
         zonaUTM: data.zona_utm,
         nlp: data.nlp,
         lcode: data.lcode,
@@ -159,7 +159,7 @@ export default function DetailFormDetail({ data }: { data: any }) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     const formData = {
-      datatoponim_id: values.idToponim,
+      datatoponim_id: data?.id,
       zona_utm: values.zonaUTM,
       nlp: values.nlp,
       lcode: values.lcode,
@@ -225,68 +225,6 @@ export default function DetailFormDetail({ data }: { data: any }) {
         {step === 1 && (
           <>
             {/* Step 1 Fields */}
-            <FormField
-              control={form.control}
-              name="idToponim"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Id Toponim</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full justify-between rounded-full",
-                            !field.value && "text-muted-foreground"
-                          )}
-                          disabled
-                        >
-                          {field.value
-                            ? newClassify?.find(
-                                (language: any) =>
-                                  language.value === field.value
-                              )?.label
-                            : "Pilih id toponim"}
-                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandInput placeholder="Cari tipe geometri..." />
-                        <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
-                          <CommandGroup>
-                            {newClassify?.map((language: any) => (
-                              <CommandItem
-                                value={language.label}
-                                key={language.value}
-                                onSelect={() => {
-                                  form.setValue("idToponim", language.value);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    language.value === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {language.label}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="zonaUTM"
@@ -377,22 +315,6 @@ export default function DetailFormDetail({ data }: { data: any }) {
                 </FormItem>
               )}
             />
-
-            <div className="flex justify-end">
-              <Button
-                onClick={nextStep}
-                className="bg-primaryy rounded-full"
-                type="button"
-              >
-                Next
-              </Button>
-            </div>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            {/* Step 2 Fields */}
             <FormField
               control={form.control}
               name="languageFrom"
@@ -411,6 +333,22 @@ export default function DetailFormDetail({ data }: { data: any }) {
                 </FormItem>
               )}
             />
+            <div className="flex justify-end">
+              <Button
+                onClick={nextStep}
+                className="bg-primaryy rounded-full"
+                type="button"
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            {/* Step 2 Fields */}
+
             <FormField
               control={form.control}
               name="nameMeaning"
@@ -501,7 +439,24 @@ export default function DetailFormDetail({ data }: { data: any }) {
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="spelling"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ejaan</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Masukkan ejaan"
+                      className="rounded-full"
+                      {...field}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="flex space-x-2 justify-between">
               <Button
                 onClick={prevStep}
@@ -523,24 +478,6 @@ export default function DetailFormDetail({ data }: { data: any }) {
         {step === 3 && (
           <>
             {/* Step 2 Fields */}
-            <FormField
-              control={form.control}
-              name="spelling"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ejaan</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Masukkan ejaan"
-                      className="rounded-full"
-                      {...field}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="elevationValue"

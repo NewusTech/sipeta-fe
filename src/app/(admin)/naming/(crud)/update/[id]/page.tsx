@@ -38,6 +38,11 @@ import DetailForm from "../../../../../../components/Form/Detail";
 import DocumentTab from "../../../../../../components/Form/Document";
 import Link from "next/link";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import InformationFormUpdate from "@/components/Form/Information/update";
+import useSWR from "swr";
+import { fetcher } from "constants/fetcher";
+import DetailFormUpdate from "@/components/Form/Detail/update";
+import DocumentTabUpdate from "@/components/Form/Document/update";
 
 const frameworks = [
   {
@@ -62,7 +67,11 @@ const frameworks = [
   },
 ];
 
-export default function UpdateNamingPage() {
+export default function UpdateNamingPage({
+  params,
+}: {
+  params: { id: number };
+}) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const [onEdit, setOnEdit] = React.useState(false);
@@ -283,6 +292,109 @@ export default function UpdateNamingPage() {
     setMapCenter(LAMPUNG_UTARA); // Center back to Lampung Timur after drag
   };
 
+  const { data } = useSWR<any>(
+    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get/${params.id}`,
+    fetcher
+  );
+
+  const resultData = data?.data;
+  const resultFoto = data?.data?.Fototoponims;
+
+  let resultInformation = {};
+  let resultDetail = {};
+  let resultDocument = {};
+
+  if (resultData) {
+    const {
+      id,
+      id_toponim,
+      tipe_geometri,
+      klasifikasi_id,
+      unsur_id,
+      Kecamatan: { name: kecamatanName },
+      Desa: { name: desaName },
+      nama_lokal,
+      nama_spesifik,
+      nama_peta,
+      koordinat,
+      bujur,
+      lintang,
+      kepala,
+      sekretaris,
+      email,
+      telp,
+      Detailtoponim: {
+        akurasi,
+        arti_nama,
+        asal_bahasa,
+        catatan,
+        datatoponim_id,
+        ejaan,
+        lcode,
+        nama_gazeter,
+        nama_lain,
+        nama_rekomendasi,
+        nama_sebelumnya,
+        narasumber,
+        nilai_ketinggian,
+        nlp,
+        sejarah_nama,
+        sumber_data,
+        ucapan,
+        zona_utm,
+      },
+      sketsa,
+      docpendukung,
+    } = resultData;
+
+    resultInformation = {
+      id,
+      id_toponim,
+      tipe_geometri,
+      klasifikasi_id,
+      unsur_id,
+      kecamatanName,
+      desaName,
+      nama_lokal,
+      nama_spesifik,
+      nama_peta,
+      koordinat,
+      bujur,
+      lintang,
+      kepala,
+      sekretaris,
+      email,
+      telp,
+    };
+
+    resultDocument = {
+      sketsa,
+      docpendukung,
+    };
+
+    resultDetail = {
+      id,
+      akurasi,
+      arti_nama,
+      asal_bahasa,
+      catatan,
+      datatoponim_id,
+      ejaan,
+      lcode,
+      nama_gazeter,
+      nama_lain,
+      nama_rekomendasi,
+      nama_sebelumnya,
+      narasumber,
+      nilai_ketinggian,
+      nlp,
+      sejarah_nama,
+      sumber_data,
+      ucapan,
+      zona_utm,
+    };
+  }
+
   if (!isLoaded) return <p>Loading ...</p>;
 
   return (
@@ -296,7 +408,7 @@ export default function UpdateNamingPage() {
         </div>
         <div className="flex md:flex-row md:space-x-2 space-y-2 mb-2 md:mb-0 flex-col md:items-center">
           <h1 className="text-primaryy pt-5 font-semibold text-xl">
-            Tambah Data
+            Ubah Data
           </h1>
         </div>
         <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
@@ -352,13 +464,20 @@ export default function UpdateNamingPage() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="information">
-                <InformationForm locationDetails={locationDetails} />
+                <InformationFormUpdate
+                  data={resultInformation}
+                  locationDetails={locationDetails}
+                />
               </TabsContent>
               <TabsContent value="detail">
-                <DetailForm />
+                <DetailFormUpdate data={resultDetail} id={params.id} />
               </TabsContent>
               <TabsContent value="document">
-                <DocumentTab />
+                <DocumentTabUpdate
+                  data={resultDocument}
+                  foto={resultFoto}
+                  id={params.id}
+                />
               </TabsContent>
             </Tabs>
           </div>

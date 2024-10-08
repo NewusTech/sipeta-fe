@@ -91,7 +91,15 @@ const formSchema = z.object({
   }),
 });
 
-export default function DocumentTab() {
+export default function DocumentTabUpdate({
+  data,
+  foto,
+  id,
+}: {
+  data: any;
+  foto: any;
+  id: number;
+}) {
   const [selectedImages, setSelectedImages] = useState(["", "", "", ""]);
 
   const [selectedImagesOri, setSelectedImagesOri] = useState([
@@ -100,6 +108,12 @@ export default function DocumentTab() {
     null,
     null,
   ]);
+  const [selectedSketsa, setSelectedSketsa] = useState("");
+  const [selectedSketsaOri, setSelectedSketsaOri] = useState(null);
+  const [selectedDoc, setSelectedDoc] = useState("");
+  const [selectedDocOri, setSelectedDocOri] = useState(null);
+
+  console.log(data, foto);
 
   const [valueClassify, setValueClassify] = useState<any>({ id: 0, label: "" });
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -108,6 +122,8 @@ export default function DocumentTab() {
     fetcherWithoutAuth
   );
   const [isLoading, setIsLoading] = useState([false, false, false, false]); // State isLoading per button
+  const [isLoadingSkesta, setIsLoadingSketsa] = useState(false);
+  const [isLoadingDoc, setIsLoadingDoc] = useState(false);
 
   const classifyData = classify?.data;
   const newClassify = classifyData?.map(
@@ -135,20 +151,46 @@ export default function DocumentTab() {
     setSelectedImages(updatedImages);
   };
 
-  const handleSubmit = async (index: number) => {
-    const file = selectedImagesOri[index];
+  const handleFileChangeSketsa = (e: any) => {
+    const file = e.target.files[0];
+
     if (file) {
-      const updatedLoadingState = [...isLoading];
-      updatedLoadingState[index] = true; // Set loading true untuk button yang sesuai
-      setIsLoading(updatedLoadingState);
+      setSelectedSketsa(URL.createObjectURL(file)); // Preview file
+      setSelectedSketsaOri(file);
+    }
+  };
+
+  const handleRemoveSektsa = () => {
+    setSelectedSketsa(""); // Hapus file yang dipilih
+    setSelectedSketsaOri(null);
+  };
+
+  const handleFileChangeDoc = (e: any) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      setSelectedDoc(URL.createObjectURL(file)); // Preview file
+      setSelectedDocOri(file);
+    }
+  };
+
+  const handleRemoveDoc = () => {
+    setSelectedDoc(""); // Hapus file yang dipilih
+    setSelectedDocOri(null);
+  };
+
+  const handleSubmitSketsa = async () => {
+    const file = selectedSketsaOri;
+    if (file) {
+      setIsLoadingSketsa(true); // Set loading true untuk button
       const formData = new FormData();
-      formData.append("foto", file); // Tambahkan file ke FormData
+      formData.append("sketsa", file); // Tambahkan file ke FormData
 
       try {
         const response = await fetch(
-          `${apiUrl}/fototoponim/upload-foto/${valueClassify.id}`,
+          `${apiUrl}/fototoponim/update-sketsa/${id}`,
           {
-            method: "POST",
+            method: "PUT",
             headers: {
               Authorization: `Bearer ${Cookies.get("token")}`,
             },
@@ -171,7 +213,103 @@ export default function DocumentTab() {
       } catch (error) {
         Swal.fire({
           icon: "error",
-          title: "Gagal delete!",
+          title: "Gagal upload!",
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      } finally {
+        setIsLoadingSketsa(false); // Set loading false setelah upload selesai
+      }
+    } else {
+      console.warn("No file selected for this upload.");
+    }
+  };
+
+  const handleSubmitDoc = async () => {
+    const file = selectedDocOri;
+    if (file) {
+      setIsLoadingDoc(true); // Set loading true untuk button
+      const formData = new FormData();
+      formData.append("docpendukung", file); // Tambahkan file ke FormData
+
+      try {
+        const response = await fetch(
+          `${apiUrl}/fototoponim/update-docs/${id}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${Cookies.get("token")}`,
+            },
+            body: formData,
+          }
+        );
+
+        const data = await response.json();
+        console.log(data);
+
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: `${data.message}`,
+            timer: 2000,
+            showConfirmButton: false,
+            position: "center",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal upload!",
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      } finally {
+        setIsLoadingDoc(false); // Set loading false setelah upload selesai
+      }
+    } else {
+      console.warn("No file selected for this upload.");
+    }
+  };
+
+  const handleSubmit = async (index: number, id: number) => {
+    const file = selectedImagesOri[index];
+    if (file) {
+      const updatedLoadingState = [...isLoading];
+      updatedLoadingState[index] = true; // Set loading true untuk button yang sesuai
+      setIsLoading(updatedLoadingState);
+      const formData = new FormData();
+      formData.append("foto", file); // Tambahkan file ke FormData
+
+      try {
+        const response = await fetch(
+          `${apiUrl}/fototoponim/update-foto/${id}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${Cookies.get("token")}`,
+            },
+            body: formData,
+          }
+        );
+
+        const data = await response.json();
+        console.log(data);
+
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: `${data.message}`,
+            timer: 2000,
+            showConfirmButton: false,
+            position: "center",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Update!",
           timer: 2000,
           showConfirmButton: false,
           position: "center",
@@ -185,36 +323,116 @@ export default function DocumentTab() {
     }
   };
 
-  console.log(selectedImagesOri);
+  const handleDeleteSektsa = async () => {
+    // Tambahkan file ke FormData
 
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
+    try {
+      const response = await fetch(
+        `${apiUrl}/fototoponim/delete-sketsa/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
 
-  // 2. Define a submit handler.
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  }
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal delete!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    }
+  };
+
+  const handleDeleteDoc = async () => {
+    // Tambahkan file ke FormData
+
+    try {
+      const response = await fetch(`${apiUrl}/fototoponim/delete-docs/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal delete!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    }
+  };
+
+  const handleDeleteImage = async (index: number) => {
+    // Tambahkan file ke FormData
+
+    try {
+      const response = await fetch(
+        `${apiUrl}/fototoponim/delete-foto/${index}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal delete!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    }
+  };
 
   return (
     <div className="mt-4">
-      <div className="space-y-4 flex flex-col mb-5">
-        <Label htmlFor="id-toponim">Id Toponim</Label>
-        <SelectSearch
-          data={newClassify}
-          valueId={valueClassify}
-          setValueId={setValueClassify}
-          placeholder="Id Toponim"
-        />
-      </div>
       <h1 className="font-medium">Foto Toponim</h1>
       <div className="grid grid-cols-2 gap-x-4">
         {selectedImages.map((image, index) => (
@@ -232,25 +450,64 @@ export default function DocumentTab() {
                 height={80}
               />
             ) : (
-              <div className="w-full rounded-lg h-20 bg-transparent border border-dashed"></div>
+              // Tampilkan foto default sekali saja, berdasarkan index
+              foto &&
+              foto[index] && (
+                <div className="flex flex-col justify-center items-center space-y-2">
+                  <Image
+                    src={foto[index].foto_url}
+                    alt={`Default ${index + 1}`}
+                    className="w-full rounded-lg h-20 object-cover"
+                    width={80}
+                    height={80}
+                  />
+                  <div className="flex space-x-2">
+                    <div>
+                      <label
+                        htmlFor={`image-${index}`}
+                        className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded cursor-pointer"
+                      >
+                        <Folder className="w-6 h-6 text-white" />
+                      </label>
+                      <Input
+                        placeholder="shadcn"
+                        className="rounded-full hidden"
+                        type="file"
+                        name={`image-${index}`}
+                        id={`image-${index}`}
+                        onChange={(e) => handleFileChange(e, index)}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="flex items-center justify-center w-6 h-6 bg-error p-1 rounded shadow cursor-pointer"
+                      onClick={() => handleDeleteImage(foto[index].id)}
+                    >
+                      <Trash2 className="w-6 h-6 text-white" />
+                    </button>
+                  </div>
+                </div>
+              )
             )}
             <div className="flex space-x-2">
-              <div>
-                <label
-                  htmlFor={`image-${index}`}
-                  className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded cursor-pointer"
-                >
-                  <Folder className="w-6 h-6 text-white" />
-                </label>
-                <Input
-                  placeholder="shadcn"
-                  className="rounded-full hidden"
-                  type="file"
-                  name={`image-${index}`}
-                  id={`image-${index}`}
-                  onChange={(e) => handleFileChange(e, index)}
-                />
-              </div>
+              {image && (
+                <div>
+                  <label
+                    htmlFor={`image-${index}`}
+                    className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded cursor-pointer"
+                  >
+                    <Folder className="w-6 h-6 text-white" />
+                  </label>
+                  <Input
+                    placeholder="shadcn"
+                    className="rounded-full hidden"
+                    type="file"
+                    name={`image-${index}`}
+                    id={`image-${index}`}
+                    onChange={(e) => handleFileChange(e, index)}
+                  />
+                </div>
+              )}
               {image && (
                 <div>
                   <button
@@ -262,11 +519,11 @@ export default function DocumentTab() {
                   </button>
                 </div>
               )}
-              {image && (
+              {image && foto && foto[index] && (
                 <button
                   type="button"
                   className="flex items-center justify-center w-6 h-6 text-white bg-success p-1 rounded cursor-pointer"
-                  onClick={() => handleSubmit(index)}
+                  onClick={() => handleSubmit(index, foto[index].id)}
                   disabled={isLoading[index]} // Submit per file
                 >
                   {isLoading[index] ? (
@@ -282,87 +539,156 @@ export default function DocumentTab() {
       </div>
       <h1 className="font-medium mt-7">Sketsa Toponim</h1>
       <div className="grid grid-cols-2 gap-x-4">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-2"
-          >
-            <FormField
-              control={form.control}
-              name="idToponim"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="space-y-2 flex flex-col items-start">
-                      <div className="w-full rounded-lg h-20 bg-transparent border border-dashed"></div>
-                      <div className="flex space-x-2">
-                        <div>
-                          <label
-                            htmlFor="image-one"
-                            className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded shadow cursor-pointer"
-                          >
-                            <Folder className="w-6 h-6 text-white" />
-                          </label>
-                          <Input
-                            placeholder="shadcn"
-                            className="rounded-full hidden"
-                            {...field}
-                            type="file"
-                            name="image-one"
-                            id="image-one"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <div className="space-y-2 flex flex-col items-start">
+          {selectedSketsa ? (
+            <Image
+              src={selectedSketsa}
+              alt="image"
+              className="w-full rounded-lg h-20 object-cover"
+              width={80}
+              height={80}
             />
-          </form>
-        </Form>
+          ) : data?.sketsa ? (
+            <Image
+              src={data?.sketsa}
+              alt="image"
+              className="w-full rounded-lg h-20 object-cover"
+              width={80}
+              height={80}
+            />
+          ) : (
+            <p className="py-5">Tidak ada image</p>
+          )}
+          <div className="flex space-x-2">
+            <div>
+              <label
+                htmlFor="image-one"
+                className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded shadow cursor-pointer"
+              >
+                <Folder className="w-6 h-6 text-white" />
+              </label>
+              <Input
+                placeholder="shadcn"
+                className="rounded-full hidden"
+                type="file"
+                name="image-one"
+                id="image-one"
+                onChange={(e) => handleFileChangeSketsa(e)}
+              />
+            </div>
+            {selectedSketsa ? (
+              <div>
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-6 h-6 bg-error p-1 rounded shadow cursor-pointer"
+                  onClick={handleRemoveSektsa}
+                >
+                  <Trash2 className="w-6 h-6 text-white" />
+                </button>
+              </div>
+            ) : data?.sketsa ? (
+              <div>
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-6 h-6 bg-error p-1 rounded shadow cursor-pointer"
+                  onClick={handleDeleteSektsa}
+                >
+                  <Trash2 className="w-6 h-6 text-white" />
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
+            {selectedSketsa && (
+              <button
+                type="button"
+                className="flex items-center justify-center w-6 h-6 text-white bg-success p-1 rounded cursor-pointer"
+                onClick={handleSubmitSketsa}
+                disabled={isLoadingSkesta} // Submit per file
+              >
+                {isLoadingSkesta ? (
+                  <Loader className="animate-spin" />
+                ) : (
+                  <Check />
+                )}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
       <h1 className="font-medium mt-7">Dokumen Pendukung</h1>
       <div className="grid grid-cols-2 gap-x-4">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-2"
-          >
-            <FormField
-              control={form.control}
-              name="idToponim"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="space-y-2 flex flex-col items-start">
-                      <div className="w-full rounded-lg h-20 bg-transparent border border-dashed"></div>
-                      <div className="flex space-x-2">
-                        <div>
-                          <label
-                            htmlFor="image-one"
-                            className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded shadow cursor-pointer"
-                          >
-                            <Folder className="w-6 h-6 text-white" />
-                          </label>
-                          <Input
-                            placeholder="shadcn"
-                            className="rounded-full hidden"
-                            {...field}
-                            type="file"
-                            name="image-one"
-                            id="image-one"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <div className="space-y-2 flex flex-col items-start">
+          {selectedDoc ? (
+            <Image
+              src={selectedDoc}
+              alt="image"
+              className="w-full rounded-lg h-20 object-cover"
+              width={80}
+              height={80}
             />
-          </form>
-        </Form>
+          ) : data?.docpendukung ? (
+            <Image
+              src={data?.docpendukung}
+              alt="image"
+              className="w-full rounded-lg h-20 object-cover"
+              width={80}
+              height={80}
+            />
+          ) : (
+            <p className="py-5">Tidak ada image</p>
+          )}
+          <div className="flex space-x-2">
+            <div>
+              <label
+                htmlFor="image-two"
+                className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded shadow cursor-pointer"
+              >
+                <Folder className="w-6 h-6 text-white" />
+              </label>
+              <Input
+                placeholder="shadcn"
+                className="rounded-full hidden"
+                type="file"
+                name="image-two"
+                id="image-two"
+                onChange={(e) => handleFileChangeDoc(e)}
+              />
+            </div>
+            {data?.docpendukung && (
+              <div>
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-6 h-6 bg-error p-1 rounded shadow cursor-pointer"
+                  onClick={handleDeleteDoc}
+                >
+                  <Trash2 className="w-6 h-6 text-white" />
+                </button>
+              </div>
+            )}
+            {selectedDoc && (
+              <div>
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-6 h-6 bg-error p-1 rounded shadow cursor-pointer"
+                  onClick={handleRemoveDoc}
+                >
+                  <Trash2 className="w-6 h-6 text-white" />
+                </button>
+              </div>
+            )}
+            {selectedDoc && (
+              <button
+                type="button"
+                className="flex items-center justify-center w-6 h-6 text-white bg-success p-1 rounded cursor-pointer"
+                onClick={handleSubmitDoc}
+                disabled={isLoadingDoc} // Submit per file
+              >
+                {isLoadingDoc ? <Loader className="animate-spin" /> : <Check />}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -97,9 +97,11 @@ interface LocationDetails {
   lng: string;
 }
 
-export default function InformationForm({
+export default function InformationFormUpdate({
   locationDetails,
+  data,
 }: {
+  data: any;
   locationDetails: LocationDetails;
 }) {
   const [step, setStep] = useState(1);
@@ -139,17 +141,29 @@ export default function InformationForm({
   const prevStep = () => setStep(step - 1);
 
   useEffect(() => {
-    if (locationDetails) {
+    if (locationDetails || data) {
       form.reset({
-        idToponim: "109283",
-        district: locationDetails.kecamatan,
-        village: locationDetails.desa,
-        mainCoordinat: locationDetails.dms,
-        lat: locationDetails.lat,
-        long: locationDetails.lng,
+        idToponim: data?.id_toponim || "6091821",
+        district: locationDetails.kecamatan || data?.kecamatanName,
+        village: locationDetails.desa || data?.desaName,
+        mainCoordinat: locationDetails.dms || data?.koordinat,
+        lat: locationDetails.lat || data?.bujur,
+        long: locationDetails.lng || data?.lintang,
+        typeGemoetry: data?.tipe_geometri?.toString(),
+        classcificationToponim: data?.klasifikasi_id,
+        unsur: data?.unsur_id,
+        name: data?.nama_lokal,
+        nameSpesific: data?.nama_spesifik,
+        nameMap: data?.nama_peta,
+        headOf: data?.kepala,
+        sekretaris: data?.sekretaris,
+        email: data?.email,
+        telp: data?.telp,
       });
     }
-  }, [locationDetails]);
+  }, [locationDetails, data]);
+
+  console.log(data);
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -197,9 +211,9 @@ export default function InformationForm({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/create`,
+        `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/update/${data?.id}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${Cookies.get("token")}`,
@@ -208,11 +222,13 @@ export default function InformationForm({
         }
       );
 
-      const data = await response.json();
+      const res = await response.json();
+
+      console.log(res);
       if (response.ok) {
         Swal.fire({
           icon: "success",
-          title: `${data.message}`,
+          title: `${res.message}`,
           timer: 2000,
           showConfirmButton: false,
           position: "center",
