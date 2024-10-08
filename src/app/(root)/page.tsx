@@ -2,18 +2,40 @@
 
 import { Button } from "../../components/ui/button";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   GoogleMap,
   Marker,
   StandaloneSearchBox,
   useLoadScript,
+  InfoWindow
 } from "@react-google-maps/api";
+import useSWR from "swr";
 import { Input } from "../../components/ui/input";
 import geoJson from "../../constants/lamtura.json";
 import geoJson2 from "../../constants/lamturaa.json";
+import { fetcherWithoutAuth } from "../../constants/fetcher";
 
 export default function Home() {
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
+
+  // Fetch data dengan SWR berdasarkan halaman saat ini
+  const { data } = useSWR<any>(
+    `${apiUrl}/datatoponim/get`,
+    fetcherWithoutAuth
+  );
+
+  const result = data?.data;
+
+  const parseLatLong = (latlong: string) => {
+    const [lat, lng] = latlong.split(",").map(Number);
+    console.log(lat, lng)
+    // Ensure the coordinates are in the correct format
+    return { lat, lng };
+  };
+
   const [markerPosition, setMarkerPosition] = React.useState({
     lat: -4.8357, // Default latitude (Lampung Utara)
     lng: 104.9441, // Default longitude (Lampung Utara)
@@ -34,10 +56,8 @@ export default function Home() {
 
     // Mengatur tampilan visual untuk wilayah choropleth
     map.data.setStyle((feature) => {
-      // const color = getColorForFeature(feature); // Fungsi untuk mengatur warna berdasarkan data
       return {
         fillColor: "#7295FF",
-        // fillColor: "#A7E9C6",
         strokeColor: "#000",
         strokeWeight: 0.1,
         fillOpacity: 0.3,
@@ -45,19 +65,8 @@ export default function Home() {
       };
     });
 
-    map.data.addListener("click", (event: any) => {
-      const feature = event.feature;
-      console.log("Feature clicked:", feature);
-      // Lakukan sesuatu ketika fitur di klik, misalnya highlight atau update form
-    });
-
     map.setOptions({
       styles: [
-        // {
-        //   featureType: "all",
-        //   elementType: "geometry",
-        //   // stylers: [{ color: "#FFCCCC" }] // Warna merah redup di luar GeoJSON
-        // },
         {
           featureType: "administrative.province",
           elementType: "labels",
@@ -73,16 +82,6 @@ export default function Home() {
           elementType: "labels",
           stylers: [{ visibility: "off" }], // Sembunyikan semua point of interest (kantor, masjid, dll.)
         },
-        // {
-        //   featureType: "road",
-        //   elementType: "geometry",
-        //   stylers: [{ visibility: "on" }], // Sembunyikan jalan
-        // },
-        // {
-        //   featureType: "water",
-        //   elementType: "geometry",
-        //   stylers: [{ color: "#A1CAF1" }] // Warna biru muda untuk laut
-        // },
         {
           featureType: "landscape",
           elementType: "geometry",
@@ -189,14 +188,69 @@ export default function Home() {
           center={mapCenter}
           onLoad={onLoadMap}
           zoom={10.85}
-          onDragEnd={onMapDragEnd} // Menangani event drag pada peta
-          onClick={onMapClick}
-          // Menangani event klik pada peta
+        // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+        // onClick={onMapClick}
+        // Menangani event klik pada peta
         >
-          <Marker
-            position={markerPosition} // Menampilkan marker pada posisi terkini
-            // Memungkinkan marker untuk didrag
-          />
+          {result?.map((location: any, index: number) => {
+            const { lat, lng } = parseLatLong(location.latlong);
+            return (
+              <Marker
+                key={index}
+                position={{ lat, lng }}
+                onClick={() => setSelectedLocation(location)}
+              />
+            );
+          })}
+
+          {selectedLocation && (
+            <InfoWindow
+              position={parseLatLong(selectedLocation.latlong)}
+              onCloseClick={() => setSelectedLocation(null)}
+            >
+              <div className="max-h-[400px] overflow-auto space-y-3">
+                <h1 className="font-bold text-[16px]">{selectedLocation.nama_lokal}</h1>
+                <p><strong>Nama Lokal:</strong> {selectedLocation.nama_lokal}</p>
+                <p><strong>Nama Spesifik:</strong> {selectedLocation.nama_spesifik}</p>
+                <p><strong>Nama Peta:</strong> {selectedLocation.nama_peta}</p>
+                <p><strong>Klasifikasi:</strong> {selectedLocation.Klasifikasi?.name}</p>
+                <p><strong>Unsur:</strong> {selectedLocation.Unsur?.name}</p>
+                <p><strong>Kecamatan:</strong> {selectedLocation.Kecamatan?.name}</p>
+                <p><strong>Desa:</strong> {selectedLocation.Desa?.name}</p>
+                <p><strong>Koordinat:</strong> {selectedLocation.koordinat}</p>
+                <p><strong>Kepala:</strong> {selectedLocation.kepala}</p>
+                <p><strong>Telp:</strong> {selectedLocation.telp}</p>
+                <p><strong>Email:</strong> {selectedLocation.email}</p>
+                <p><strong>Verified at:</strong> {new Date(selectedLocation.verifiedat).toLocaleString()}</p>
+
+                {/* Display additional Detailtoponim data if exists */}
+                {selectedLocation.Detailtoponim && (
+                  <>
+                    <h1 className="font-bold text-[16px]">Detail Toponim</h1>
+                    <p><strong>Zona UTM:</strong> {selectedLocation.Detailtoponim.zona_utm}</p>
+                    <p><strong>NLP:</strong> {selectedLocation.Detailtoponim.nlp}</p>
+                    <p><strong>L-Code:</strong> {selectedLocation.Detailtoponim.lcode}</p>
+                    <p><strong>Nama Gazeter:</strong> {selectedLocation.Detailtoponim.nama_gazeter}</p>
+                    <p><strong>Nama Lain:</strong> {selectedLocation.Detailtoponim.nama_lain}</p>
+                    <p><strong>Arti Nama:</strong> {selectedLocation.Detailtoponim.arti_nama}</p>
+                    <p><strong>Sejarah Nama:</strong> {selectedLocation.Detailtoponim.sejarah_nama}</p>
+                  </>
+                )}
+
+                {/* Display any Fototoponims */}
+                {selectedLocation.Fototoponims.length > 0 && (
+                  <>
+                    <h1 className="font-bold text-[16px]">Foto Toponim</h1>
+                    {selectedLocation.Fototoponims.map((foto: any, idx: number) => (
+                      <div key={idx}>
+                        <img src={foto.foto_url} alt={`Foto ${idx}`} width="100" height="100" />
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            </InfoWindow>
+          )}
         </GoogleMap>
       </div>
     </div>
