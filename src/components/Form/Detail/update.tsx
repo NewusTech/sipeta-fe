@@ -26,7 +26,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { Input } from "../../ui/input";
 import { Check, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetcherWithoutAuth } from "constants/fetcher";
 import Cookies from "js-cookie";
@@ -45,9 +45,6 @@ const languages = [
 ] as const;
 
 const formSchema = z.object({
-  idToponim: z.number({
-    required_error: "Pilih id toponim",
-  }),
   zonaUTM: z.string({
     message: "Masukkan zona utm",
   }),
@@ -105,7 +102,7 @@ const formSchema = z.object({
   }),
 });
 
-export default function DetailForm() {
+export default function DetailFormUpdate({ data, id }: { data: any; id: any }) {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -128,11 +125,37 @@ export default function DetailForm() {
     resolver: zodResolver(formSchema),
   });
 
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        zonaUTM: data.zona_utm,
+        nlp: data.nlp,
+        lcode: data.lcode,
+        gazeterName: data.nama_gazeter,
+        otherName: data.nama_lain,
+        languageFrom: data.asal_bahasa,
+        nameMeaning: data.arti_nama,
+        nameHistory: data.sejarah_nama,
+        before: data.nama_sebelumnya,
+        recommend: data.nama_rekomendasi,
+        speech: data.ucapan,
+        spelling: data.ejaan,
+        elevationValue: data?.nilai_ketinggian?.toString(),
+        accuration: data?.akurasi?.toString(),
+        source: data.narasumber,
+        dataSource: data.sumber_data,
+        note: data.catatan,
+      });
+    }
+  }, [data]);
+
+  console.log(id);
+
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
+    // setIsLoading(true);
     const formData = {
-      datatoponim_id: values.idToponim,
+      datatoponim_id: Number(id),
       zona_utm: values.zonaUTM,
       nlp: values.nlp,
       lcode: values.lcode,
@@ -166,18 +189,17 @@ export default function DetailForm() {
           body: JSON.stringify(formData),
         }
       );
-      const data = await response.json();
+      const res = await response.json();
+      console.log(res);
       if (response.ok) {
         Swal.fire({
           icon: "success",
-          title: `${data.message}`,
+          title: `${res.message}`,
           timer: 2000,
           showConfirmButton: false,
           position: "center",
         });
       }
-
-      console.log(data);
     } catch (e) {
       Swal.fire({
         icon: "error",
@@ -200,67 +222,6 @@ export default function DetailForm() {
         {step === 1 && (
           <>
             {/* Step 1 Fields */}
-            <FormField
-              control={form.control}
-              name="idToponim"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Id Toponim</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full justify-between rounded-full",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? newClassify?.find(
-                                (language: any) =>
-                                  language.value === field.value
-                              )?.label
-                            : "Pilih id toponim"}
-                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandInput placeholder="Cari tipe geometri..." />
-                        <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
-                          <CommandGroup>
-                            {newClassify?.map((language: any) => (
-                              <CommandItem
-                                value={language.label}
-                                key={language.value}
-                                onSelect={() => {
-                                  form.setValue("idToponim", language.value);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    language.value === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {language.label}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="zonaUTM"
@@ -346,22 +307,6 @@ export default function DetailForm() {
                 </FormItem>
               )}
             />
-
-            <div className="flex justify-end">
-              <Button
-                onClick={nextStep}
-                className="bg-primaryy rounded-full"
-                type="button"
-              >
-                Next
-              </Button>
-            </div>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            {/* Step 2 Fields */}
             <FormField
               control={form.control}
               name="languageFrom"
@@ -379,6 +324,21 @@ export default function DetailForm() {
                 </FormItem>
               )}
             />
+            <div className="flex justify-end">
+              <Button
+                onClick={nextStep}
+                className="bg-primaryy rounded-full"
+                type="button"
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            {/* Step 2 Fields */}
             <FormField
               control={form.control}
               name="nameMeaning"
@@ -464,7 +424,23 @@ export default function DetailForm() {
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="spelling"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ejaan</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Masukkan ejaan"
+                      className="rounded-full"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="flex space-x-2 justify-between">
               <Button
                 onClick={prevStep}
@@ -488,23 +464,6 @@ export default function DetailForm() {
             {/* Step 2 Fields */}
             <FormField
               control={form.control}
-              name="spelling"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ejaan</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Masukkan ejaan"
-                      className="rounded-full"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="elevationValue"
               render={({ field }) => (
                 <FormItem>
@@ -513,8 +472,8 @@ export default function DetailForm() {
                     <Input
                       placeholder="Masukkan nilai ketinggian"
                       className="rounded-full"
-                      {...field}
                       type="number"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -531,8 +490,8 @@ export default function DetailForm() {
                     <Input
                       placeholder="Masukkan akurasi"
                       className="rounded-full"
-                      {...field}
                       type="number"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

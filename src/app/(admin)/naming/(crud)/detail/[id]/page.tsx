@@ -330,7 +330,7 @@ export default function DetailNamingPage({
         arti_nama,
         asal_bahasa,
         catatan,
-        datatoponim_id,
+        id,
         ejaan,
         lcode,
         nama_gazeter,
@@ -350,6 +350,7 @@ export default function DetailNamingPage({
     } = resultData;
 
     resultInformation = {
+      id,
       id_toponim,
       tipe_geometri,
       klasifikasi_id,
@@ -374,11 +375,11 @@ export default function DetailNamingPage({
     };
 
     resultDetail = {
+      id,
       akurasi,
       arti_nama,
       asal_bahasa,
       catatan,
-      datatoponim_id,
       ejaan,
       lcode,
       nama_gazeter,

@@ -94,6 +94,11 @@ const formSchema = z.object({
 export default function DocumentTab() {
   const [selectedImages, setSelectedImages] = useState(["", "", "", ""]);
 
+  const [selectedSketsa, setSelectedSketsa] = useState("");
+  const [selectedSketsaOri, setSelectedSketsaOri] = useState(null);
+  const [selectedDoc, setSelectedDoc] = useState("");
+  const [selectedDocOri, setSelectedDocOri] = useState(null);
+
   const [selectedImagesOri, setSelectedImagesOri] = useState([
     null,
     null,
@@ -107,7 +112,9 @@ export default function DocumentTab() {
     `${apiUrl}/datatoponim/get`,
     fetcherWithoutAuth
   );
-  const [isLoading, setIsLoading] = useState([false, false, false, false]); // State isLoading per button
+  const [isLoading, setIsLoading] = useState([false, false, false, false]);
+  const [isLoadingSkesta, setIsLoadingSketsa] = useState(false);
+  const [isLoadingDoc, setIsLoadingDoc] = useState(false); // State isLoading per button
 
   const classifyData = classify?.data;
   const newClassify = classifyData?.map(
@@ -133,6 +140,128 @@ export default function DocumentTab() {
     const updatedImages = [...selectedImages];
     updatedImages[index] = ""; // Hapus file yang dipilih
     setSelectedImages(updatedImages);
+  };
+
+  const handleFileChangeSketsa = (e: any) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      setSelectedSketsa(URL.createObjectURL(file)); // Preview file
+      setSelectedSketsaOri(file);
+    }
+  };
+
+  const handleRemoveSektsa = () => {
+    setSelectedSketsa(""); // Hapus file yang dipilih
+    setSelectedSketsaOri(null);
+  };
+
+  const handleFileChangeDoc = (e: any) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      setSelectedDoc(URL.createObjectURL(file)); // Preview file
+      setSelectedDocOri(file);
+    }
+  };
+
+  const handleRemoveDoc = () => {
+    setSelectedDoc(""); // Hapus file yang dipilih
+    setSelectedDocOri(null);
+  };
+
+  const handleSubmitSketsa = async () => {
+    const file = selectedSketsaOri;
+    if (file) {
+      setIsLoadingSketsa(true); // Set loading true untuk button
+      const formData = new FormData();
+      formData.append("sketsa", file); // Tambahkan file ke FormData
+
+      try {
+        const response = await fetch(
+          `${apiUrl}/fototoponim/update-sketsa/${valueClassify.id}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${Cookies.get("token")}`,
+            },
+            body: formData,
+          }
+        );
+
+        const data = await response.json();
+        console.log(data);
+
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: `${data.message}`,
+            timer: 2000,
+            showConfirmButton: false,
+            position: "center",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal upload!",
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      } finally {
+        setIsLoadingSketsa(false); // Set loading false setelah upload selesai
+      }
+    } else {
+      console.warn("No file selected for this upload.");
+    }
+  };
+
+  const handleSubmitDoc = async () => {
+    const file = selectedDocOri;
+    if (file) {
+      setIsLoadingDoc(true); // Set loading true untuk button
+      const formData = new FormData();
+      formData.append("docpendukung", file); // Tambahkan file ke FormData
+
+      try {
+        const response = await fetch(
+          `${apiUrl}/fototoponim/update-docs/${valueClassify.id}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${Cookies.get("token")}`,
+            },
+            body: formData,
+          }
+        );
+
+        const data = await response.json();
+        console.log(data);
+
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: `${data.message}`,
+            timer: 2000,
+            showConfirmButton: false,
+            position: "center",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal upload!",
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      } finally {
+        setIsLoadingDoc(false); // Set loading false setelah upload selesai
+      }
+    } else {
+      console.warn("No file selected for this upload.");
+    }
   };
 
   const handleSubmit = async (index: number) => {
@@ -184,25 +313,6 @@ export default function DocumentTab() {
       console.warn("No file selected for this upload.");
     }
   };
-
-  console.log(selectedImagesOri);
-
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
-
-  // 2. Define a submit handler.
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  }
 
   return (
     <div className="mt-4">
@@ -282,87 +392,117 @@ export default function DocumentTab() {
       </div>
       <h1 className="font-medium mt-7">Sketsa Toponim</h1>
       <div className="grid grid-cols-2 gap-x-4">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-2"
-          >
-            <FormField
-              control={form.control}
-              name="idToponim"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="space-y-2 flex flex-col items-start">
-                      <div className="w-full rounded-lg h-20 bg-transparent border border-dashed"></div>
-                      <div className="flex space-x-2">
-                        <div>
-                          <label
-                            htmlFor="image-one"
-                            className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded shadow cursor-pointer"
-                          >
-                            <Folder className="w-6 h-6 text-white" />
-                          </label>
-                          <Input
-                            placeholder="shadcn"
-                            className="rounded-full hidden"
-                            {...field}
-                            type="file"
-                            name="image-one"
-                            id="image-one"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <div className="space-y-2 flex flex-col items-start">
+          {selectedSketsa ? (
+            <Image
+              src={selectedSketsa}
+              alt="image"
+              className="w-full rounded-lg h-20 object-cover"
+              width={80}
+              height={80}
             />
-          </form>
-        </Form>
+          ) : (
+            <div className="w-full rounded-lg h-20 bg-transparent border border-dashed"></div>
+          )}
+          <div className="flex space-x-2">
+            <div>
+              <label
+                htmlFor="image-one"
+                className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded shadow cursor-pointer"
+              >
+                <Folder className="w-6 h-6 text-white" />
+              </label>
+              <Input
+                placeholder="shadcn"
+                className="rounded-full hidden"
+                type="file"
+                name="image-one"
+                id="image-one"
+                onChange={(e) => handleFileChangeSketsa(e)}
+              />
+            </div>
+            {selectedSketsa && (
+              <div>
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-6 h-6 bg-error p-1 rounded shadow cursor-pointer"
+                  onClick={handleRemoveSektsa}
+                >
+                  <Trash2 className="w-6 h-6 text-white" />
+                </button>
+              </div>
+            )}
+            {selectedSketsa && (
+              <button
+                type="button"
+                className="flex items-center justify-center w-6 h-6 text-white bg-success p-1 rounded cursor-pointer"
+                onClick={handleSubmitSketsa}
+                disabled={isLoadingSkesta} // Submit per file
+              >
+                {isLoadingSkesta ? (
+                  <Loader className="animate-spin" />
+                ) : (
+                  <Check />
+                )}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
       <h1 className="font-medium mt-7">Dokumen Pendukung</h1>
       <div className="grid grid-cols-2 gap-x-4">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-2"
-          >
-            <FormField
-              control={form.control}
-              name="idToponim"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="space-y-2 flex flex-col items-start">
-                      <div className="w-full rounded-lg h-20 bg-transparent border border-dashed"></div>
-                      <div className="flex space-x-2">
-                        <div>
-                          <label
-                            htmlFor="image-one"
-                            className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded shadow cursor-pointer"
-                          >
-                            <Folder className="w-6 h-6 text-white" />
-                          </label>
-                          <Input
-                            placeholder="shadcn"
-                            className="rounded-full hidden"
-                            {...field}
-                            type="file"
-                            name="image-one"
-                            id="image-one"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <div className="space-y-2 flex flex-col items-start">
+          {selectedDoc ? (
+            <Image
+              src={selectedDoc}
+              alt="image"
+              className="w-full rounded-lg h-20 object-cover"
+              width={80}
+              height={80}
             />
-          </form>
-        </Form>
+          ) : (
+            <div className="w-full rounded-lg h-20 bg-transparent border border-dashed"></div>
+          )}
+          <div className="flex space-x-2">
+            <div>
+              <label
+                htmlFor="image-two"
+                className="flex items-center justify-center w-6 h-6 bg-primaryy p-1 rounded shadow cursor-pointer"
+              >
+                <Folder className="w-6 h-6 text-white" />
+              </label>
+              <Input
+                placeholder="shadcn"
+                className="rounded-full hidden"
+                type="file"
+                name="image-two"
+                id="image-two"
+                onChange={(e) => handleFileChangeDoc(e)}
+              />
+            </div>
+            {selectedDoc && (
+              <div>
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-6 h-6 bg-error p-1 rounded shadow cursor-pointer"
+                  onClick={handleRemoveDoc}
+                >
+                  <Trash2 className="w-6 h-6 text-white" />
+                </button>
+              </div>
+            )}
+            {selectedDoc && (
+              <button
+                type="button"
+                className="flex items-center justify-center w-6 h-6 text-white bg-success p-1 rounded cursor-pointer"
+                onClick={handleSubmitDoc}
+                disabled={isLoadingDoc} // Submit per file
+              >
+                {isLoadingDoc ? <Loader className="animate-spin" /> : <Check />}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
