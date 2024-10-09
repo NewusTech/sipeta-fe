@@ -20,7 +20,7 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
             position={parseLatLong(location.latlong)}
             onCloseClick={onCloseClick}
         >
-            <div className="max-h-[400px] w-[400px] overflow-auto">
+            <div className="max-h-[400px] md:w-[400px] overflow-auto">
                 <h1 className="font-bold text-[16px] mt-1 mb-2">{location.nama_lokal.toUpperCase()}</h1>
                 <div className="grid grid-cols-3 gap-1">
                     <div className="space-y-2">
