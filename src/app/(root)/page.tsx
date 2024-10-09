@@ -6,6 +6,8 @@ import React, { useState } from "react";
 import {
   GoogleMap,
   Marker,
+  Polyline,
+  Polygon,
   StandaloneSearchBox,
   useLoadScript,
   InfoWindow
@@ -15,6 +17,7 @@ import { Input } from "../../components/ui/input";
 import geoJson from "../../constants/lamtura.json";
 import geoJson2 from "../../constants/lamturaa.json";
 import { fetcherWithoutAuth } from "../../constants/fetcher";
+import LocationInfoWindow from "../../components/ui/locationdialog";
 
 export default function Home() {
 
@@ -23,7 +26,7 @@ export default function Home() {
 
   // Fetch data dengan SWR berdasarkan halaman saat ini
   const { data } = useSWR<any>(
-    `${apiUrl}/datatoponim/get`,
+    `${apiUrl}/datatoponim/get?limit=1000`,
     fetcherWithoutAuth
   );
 
@@ -48,6 +51,15 @@ export default function Home() {
   const mapContainerStyle = {
     width: "100%",
     height: "100vh",
+  };
+
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
   };
 
   const onLoadMap = React.useCallback((map: google.maps.Map) => {
@@ -190,66 +202,60 @@ export default function Home() {
           zoom={10.85}
         // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
         // onClick={onMapClick}
-        // Menangani event klik pada peta
         >
           {result?.map((location: any, index: number) => {
-            const { lat, lng } = parseLatLong(location.latlong);
-            return (
-              <Marker
-                key={index}
-                position={{ lat, lng }}
-                onClick={() => setSelectedLocation(location)}
-              />
-            );
+            const { latlong, tipe_geometri } = location;
+
+            const coordinates = latlong.split(";").map((coord: string) => {
+              const [lat, lng] = coord.split(",").map(Number);
+              return { lat, lng };
+            });
+
+            if (tipe_geometri === 1) {
+              const { lat, lng } = coordinates[0];
+              return (
+                <Marker
+                  key={index}
+                  position={{ lat, lng }}
+                  onClick={() => setSelectedLocation(location)}
+                />
+              );
+            } else if (tipe_geometri === 3) {
+              return (
+                <Polyline
+                  key={index}
+                  path={coordinates} 
+                  options={{
+                    strokeColor: getRandomColor(), 
+                    strokeOpacity: 1,
+                    strokeWeight: 2,
+                  }}
+                  onClick={() => setSelectedLocation(location)}
+                />
+              );
+            } else if (tipe_geometri === 2) {
+              return (
+                <Polygon
+                  key={index}
+                  paths={coordinates}
+                  options={{
+                    fillColor: getRandomColor(),
+                    fillOpacity: 0.4,
+                    strokeOpacity: 0.5,
+                    strokeWeight: 0.5,
+                  }}
+                  onClick={() => setSelectedLocation(location)}
+                />
+              );
+            }
+            return null;
           })}
 
           {selectedLocation && (
-            <InfoWindow
-              position={parseLatLong(selectedLocation.latlong)}
+            <LocationInfoWindow
+              location={selectedLocation}
               onCloseClick={() => setSelectedLocation(null)}
-            >
-              <div className="max-h-[400px] overflow-auto space-y-3">
-                <h1 className="font-bold text-[16px]">{selectedLocation.nama_lokal}</h1>
-                <p><strong>Nama Lokal:</strong> {selectedLocation.nama_lokal}</p>
-                <p><strong>Nama Spesifik:</strong> {selectedLocation.nama_spesifik}</p>
-                <p><strong>Nama Peta:</strong> {selectedLocation.nama_peta}</p>
-                <p><strong>Klasifikasi:</strong> {selectedLocation.Klasifikasi?.name}</p>
-                <p><strong>Unsur:</strong> {selectedLocation.Unsur?.name}</p>
-                <p><strong>Kecamatan:</strong> {selectedLocation.Kecamatan?.name}</p>
-                <p><strong>Desa:</strong> {selectedLocation.Desa?.name}</p>
-                <p><strong>Koordinat:</strong> {selectedLocation.koordinat}</p>
-                <p><strong>Kepala:</strong> {selectedLocation.kepala}</p>
-                <p><strong>Telp:</strong> {selectedLocation.telp}</p>
-                <p><strong>Email:</strong> {selectedLocation.email}</p>
-                <p><strong>Verified at:</strong> {new Date(selectedLocation.verifiedat).toLocaleString()}</p>
-
-                {/* Display additional Detailtoponim data if exists */}
-                {selectedLocation.Detailtoponim && (
-                  <>
-                    <h1 className="font-bold text-[16px]">Detail Toponim</h1>
-                    <p><strong>Zona UTM:</strong> {selectedLocation.Detailtoponim.zona_utm}</p>
-                    <p><strong>NLP:</strong> {selectedLocation.Detailtoponim.nlp}</p>
-                    <p><strong>L-Code:</strong> {selectedLocation.Detailtoponim.lcode}</p>
-                    <p><strong>Nama Gazeter:</strong> {selectedLocation.Detailtoponim.nama_gazeter}</p>
-                    <p><strong>Nama Lain:</strong> {selectedLocation.Detailtoponim.nama_lain}</p>
-                    <p><strong>Arti Nama:</strong> {selectedLocation.Detailtoponim.arti_nama}</p>
-                    <p><strong>Sejarah Nama:</strong> {selectedLocation.Detailtoponim.sejarah_nama}</p>
-                  </>
-                )}
-
-                {/* Display any Fototoponims */}
-                {selectedLocation.Fototoponims.length > 0 && (
-                  <>
-                    <h1 className="font-bold text-[16px]">Foto Toponim</h1>
-                    {selectedLocation.Fototoponims.map((foto: any, idx: number) => (
-                      <div key={idx}>
-                        <img src={foto.foto_url} alt={`Foto ${idx}`} width="100" height="100" />
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
-            </InfoWindow>
+            />
           )}
         </GoogleMap>
       </div>
