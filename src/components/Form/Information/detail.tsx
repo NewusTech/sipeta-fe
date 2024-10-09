@@ -101,11 +101,15 @@ interface LocationDetails {
 }
 
 export default function InformationFormDetail({
-  locationDetails,
   data,
+  locationDetails,
+  onTypeGeometryChange,
+  polyString,
 }: {
   data: any;
+  polyString: string;
   locationDetails: LocationDetails;
+  onTypeGeometryChange: (newType: string) => void;
 }) {
   const [step, setStep] = useState(1);
   const [valueClassify, setValueClassify] = useState<any>({ id: 0, label: "" });
@@ -144,13 +148,24 @@ export default function InformationFormDetail({
   const prevStep = () => setStep(step - 1);
 
   useEffect(() => {
+    let newPolyString;
+
+    if (
+      form.getValues("typeGemoetry") === "2" ||
+      form.getValues("typeGemoetry") === "3"
+    ) {
+      newPolyString = polyString;
+    } else {
+      newPolyString = `${data.bujur}, ${data.lintang}`;
+    }
+
     if (locationDetails || data) {
       form.reset({
         idToponim: data.id_toponim,
         district: data.kecamatanName,
         village: data.desaName,
         mainCoordinat: data.koordinat,
-        latLong: `${data.bujur}, ${data.lintang}`,
+        latLong: newPolyString,
         lat: data.bujur,
         long: data.lintang,
         typeGemoetry: data?.tipe_geometri?.toString(),
@@ -306,6 +321,7 @@ export default function InformationFormDetail({
                                 key={language.value}
                                 onSelect={() => {
                                   form.setValue("typeGemoetry", language.value);
+                                  onTypeGeometryChange(language.value);
                                 }}
                               >
                                 <Check

@@ -103,7 +103,9 @@ interface LocationDetails {
 export default function InformationForm({
   locationDetails,
   onTypeGeometryChange,
+  polyString,
 }: {
+  polyString: string;
   locationDetails: LocationDetails;
   onTypeGeometryChange: (newType: string) => void;
 }) {
@@ -155,13 +157,24 @@ export default function InformationForm({
   const prevStep = () => setStep(step - 1);
 
   useEffect(() => {
+    let newPolyString;
+
+    if (
+      form.getValues("typeGemoetry") === "2" ||
+      form.getValues("typeGemoetry") === "3"
+    ) {
+      newPolyString = polyString;
+    } else {
+      newPolyString = `${locationDetails.lat}, ${locationDetails.lng}`;
+    }
+
     if (locationDetails) {
       form.reset({
         idToponim: "109283",
         district: locationDetails.kecamatan,
         village: locationDetails.desa,
         mainCoordinat: locationDetails.dms,
-        latLong: `${locationDetails.lat}, ${locationDetails.lng}`,
+        latLong: newPolyString,
         lat: locationDetails.lat,
         long: locationDetails.lng,
       });
@@ -193,6 +206,17 @@ export default function InformationForm({
       telp = values.telp;
     }
 
+    let newPolyString;
+
+    if (
+      form.getValues("typeGemoetry") === "2" ||
+      form.getValues("typeGemoetry") === "3"
+    ) {
+      newPolyString = polyString;
+    } else {
+      newPolyString = values.latLong;
+    }
+
     const formData = {
       id_toponim: values.idToponim || "6091821",
       tipe_geometri: values.typeGemoetry,
@@ -202,7 +226,7 @@ export default function InformationForm({
       nama_spesifik: values.nameSpesific,
       nama_peta: values.nameMap,
       koordinat: values.mainCoordinat,
-      latlong: values.latLong,
+      latlong: newPolyString,
       bujur: values.lat,
       lintang: values.long,
       desa: values.village,
