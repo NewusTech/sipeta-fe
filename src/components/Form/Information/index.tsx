@@ -69,6 +69,9 @@ const formSchema = z.object({
   mainCoordinat: z.string({
     message: "Masukan koordinat utama.",
   }),
+  latLong: z.string({
+    message: "Masukan koordinat utama.",
+  }),
   lat: z.string({
     message: "Masukan garis bujur.",
   }),
@@ -99,24 +102,40 @@ interface LocationDetails {
 
 export default function InformationForm({
   locationDetails,
+  onTypeGeometryChange,
 }: {
   locationDetails: LocationDetails;
+  onTypeGeometryChange: (newType: string) => void;
 }) {
   const [step, setStep] = useState(1);
   const [valueClassify, setValueClassify] = useState<any>({ id: 0, label: "" });
   const [valueUnsur, setValueUnsur] = useState<any>({ id: 0, label: "" });
   const [dataResult, setDataResult] = useState<any>([]); // State untuk menyimpan hasil
   const [isLoading, setIsLoading] = useState(false);
-
+  const [classification, setClassification] = useState<number | null>(null);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
     `${apiUrl}/klasifikasi/get`,
     fetcherWithoutAuth
   );
-  const { data: unsur } = useSWR<any>(
-    `${apiUrl}/unsur/get`,
+  const { data: unsur } = useSWR(
+    classification ? `${apiUrl}/unsur/get/${classification}` : null,
     fetcherWithoutAuth
   );
+
+  useEffect(() => {
+    const classificationValue = form.getValues("classcificationToponim");
+    // Update state hanya jika ada nilai yang valid
+    if (classificationValue) {
+      setClassification(classificationValue);
+    } else {
+      setClassification(null); // Reset jika tidak ada nilai
+    }
+  }, [form.watch("classcificationToponim")]);
+
   const classifyData = classify?.data;
   const unsurData = unsur?.data;
   const newClassify = classifyData?.map(
@@ -131,9 +150,6 @@ export default function InformationForm({
   }));
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -145,6 +161,7 @@ export default function InformationForm({
         district: locationDetails.kecamatan,
         village: locationDetails.desa,
         mainCoordinat: locationDetails.dms,
+        latLong: `${locationDetails.lat}, ${locationDetails.lng}`,
         lat: locationDetails.lat,
         long: locationDetails.lng,
       });
@@ -185,6 +202,7 @@ export default function InformationForm({
       nama_spesifik: values.nameSpesific,
       nama_peta: values.nameMap,
       koordinat: values.mainCoordinat,
+      latlong: values.latLong,
       bujur: values.lat,
       lintang: values.long,
       desa: values.village,
@@ -293,6 +311,7 @@ export default function InformationForm({
                                 key={language.value}
                                 onSelect={() => {
                                   form.setValue("typeGemoetry", language.value);
+                                  onTypeGeometryChange(language.value);
                                 }}
                               >
                                 <Check
@@ -564,6 +583,24 @@ export default function InformationForm({
             />
             <FormField
               control={form.control}
+              name="latLong"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Koordinat</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Koordinat"
+                      className="rounded-full"
+                      {...field}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="lat"
               render={({ field }) => (
                 <FormItem>
@@ -580,6 +617,27 @@ export default function InformationForm({
                 </FormItem>
               )}
             />
+
+            <div className="flex space-x-2 justify-between">
+              <Button
+                onClick={prevStep}
+                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
+                type="button"
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={nextStep}
+                className="bg-primaryy rounded-full"
+                type="button"
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        )}
+        {step === 3 && (
+          <>
             <FormField
               control={form.control}
               name="long"
@@ -598,36 +656,6 @@ export default function InformationForm({
                 </FormItem>
               )}
             />
-            <div className="flex space-x-2 justify-between">
-              <Button
-                onClick={prevStep}
-                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
-                type="button"
-              >
-                Previous
-              </Button>
-              {form.getValues("classcificationToponim") === 6 ? (
-                <Button
-                  onClick={nextStep}
-                  className="bg-primaryy rounded-full"
-                  type="button"
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  className="rounded-full bg-primaryy"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Loading ..." : "Submit"}
-                </Button>
-              )}
-            </div>
-          </>
-        )}
-        {step === 3 && (
-          <>
             {form.getValues("classcificationToponim") === 6 && (
               <>
                 <FormField
@@ -698,24 +726,24 @@ export default function InformationForm({
                     </FormItem>
                   )}
                 />
-                <div className="flex space-x-2 justify-between">
-                  <Button
-                    onClick={prevStep}
-                    className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
-                    type="button"
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="rounded-full bg-primaryy"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Loading ..." : "Submit"}
-                  </Button>
-                </div>
               </>
             )}
+            <div className="flex space-x-2 justify-between">
+              <Button
+                onClick={prevStep}
+                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
+                type="button"
+              >
+                Previous
+              </Button>
+              <Button
+                type="submit"
+                className="rounded-full bg-primaryy"
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading ..." : "Submit"}
+              </Button>
+            </div>
           </>
         )}
       </form>

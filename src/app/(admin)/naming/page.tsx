@@ -14,6 +14,7 @@ import {
   Download,
   EyeIcon,
   ListFilter,
+  Loader,
   MapPinPlus,
   PenBox,
   Printer,
@@ -22,7 +23,6 @@ import {
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import Link from "next/link";
-import useSWR from "swr";
 import { fetcher } from "constants/fetcher";
 import { formatDate } from "lib/utils";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,8 @@ import { useState } from "react";
 import { Pagination } from "@/components/Pagination";
 import { CardTable, columnsData } from "@/components/Card/CardTable";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import useSWR from "swr";
+import Swal from "sweetalert2";
 
 // type PaymentS = {
 //   id: string;
@@ -68,7 +70,18 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function NamingPage() {
   const [page, setPage] = useState(1);
+  const [dropdown, setDropdown] = useState(false);
+  const [loadingState, setLoadingState] = useState({
+    pdf: false,
+    excel: false,
+    csv: false,
+    json: false,
+    shp: false,
+  });
 
+  const toggleDropdown = () => {
+    setDropdown(!dropdown);
+  };
   const { data } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get?limit=10000000`,
     fetcher
@@ -80,6 +93,47 @@ export default function NamingPage() {
   // Fungsi untuk mengubah halaman
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
+  };
+
+  const handleDownload = async (route: string, extension: string) => {
+    setLoadingState((prevState) => ({ ...prevState, [route]: true }));
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/${route}?status=1`,
+        {
+          method: "GET",
+        }
+      );
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `data-toponim.${extension}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil download",
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      }
+    } catch (e: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal download!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    } finally {
+      setLoadingState((prevState) => ({ ...prevState, [route]: false }));
+    }
   };
 
   return (
@@ -96,20 +150,83 @@ export default function NamingPage() {
               <SearchIcon className="w-6 h-6 text-primaryy" />
             </div>
             <div className="flex space-x-2">
-              <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
+              <Button
+                onClick={toggleDropdown}
+                className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2"
+              >
                 <Download className="h-4 w-4 text-primaryy group-hover:text-white" />
                 <p className="text-primaryy group-hover:text-white hidden md:block">
                   Download
                 </p>
               </Button>
-              <Button className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2">
-                <Printer className="h-4 w-4 text-primaryy group-hover:text-white" />
-                <p className="text-primaryy group-hover:text-white hidden md:block">
-                  Print
-                </p>
-              </Button>
             </div>
           </div>
+          {dropdown && (
+            <div className="absolute right-0 mr-10 mt-2 bg-white z-10 shadow w-32">
+              <ul className="p-3 space-y-2">
+                <li
+                  onClick={() => handleDownload("pdf", "pdf")}
+                  className="hover:translate-x-2 duration-300 transition-all cursor-pointer"
+                >
+                  <p className="text-primaryy">
+                    {loadingState.pdf ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "PDF"
+                    )}
+                  </p>
+                </li>
+                <li
+                  onClick={() => handleDownload("excel", "xlxs")}
+                  className="hover:translate-x-2 duration-300 transition-all cursor-pointer"
+                >
+                  <p className="text-primaryy">
+                    {loadingState.excel ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "Excel"
+                    )}
+                  </p>
+                </li>
+                <li
+                  onClick={() => handleDownload("csv", "csv")}
+                  className="hover:translate-x-2 duration-300 transition-all cursor-pointer"
+                >
+                  <p className="text-primaryy">
+                    {loadingState.csv ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "CSV"
+                    )}
+                  </p>
+                </li>
+                <li
+                  onClick={() => handleDownload("json", "json")}
+                  className="hover:translate-x-2 duration-300 transition-all cursor-pointer"
+                >
+                  <p className="text-primaryy">
+                    {loadingState.json ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "JSON"
+                    )}
+                  </p>
+                </li>
+                <li
+                  onClick={() => handleDownload("shp", "shp")}
+                  className="hover:translate-x-2 duration-300 transition-all cursor-pointer"
+                >
+                  <p className="text-primaryy">
+                    {loadingState.shp ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "SHP"
+                    )}
+                  </p>
+                </li>
+              </ul>
+            </div>
+          )}
           <div className="flex items-center space-x-2 md:space-x-11">
             <div className="flex rounded-full w-[80px] h-[28px] items-center px-2 justify-between border border-primaryy mt-[15px]">
               <ListFilter className="h-4 w-4 text-primaryy" />

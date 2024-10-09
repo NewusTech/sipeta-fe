@@ -21,7 +21,10 @@ export default function RootLayout({
   const isCrudRoute =
     pathname.includes("/naming/create") ||
     pathname.includes("/naming/detail") ||
-    pathname.includes("/naming/update");
+    pathname.includes("/naming/update") ||
+    pathname.includes("/detail");
+
+  const reviewRoute = pathname.includes("/detail");
 
   const { initialize, isInitialized, user } = useAuthStore((state) => ({
     initialize: state.initialize,
@@ -59,6 +62,11 @@ export default function RootLayout({
         <>
           <NavDashboard />
           <Sidebar type="large" />
+        </>
+      )}
+      {reviewRoute && (
+        <>
+          <Sidebar />
         </>
       )}
       <main className="relative">{children}</main>

@@ -35,7 +35,7 @@ const ModalVerif = ({ id }: { id: number }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${Cookies.get("token")}`,
           },
-          body: JSON.stringify({ status: 2, verifiedat: new Date() }),
+          body: JSON.stringify({ status: 1, verifiedat: new Date() }),
         }
       );
 
