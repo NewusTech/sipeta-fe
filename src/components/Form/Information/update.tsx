@@ -69,6 +69,9 @@ const formSchema = z.object({
   mainCoordinat: z.string({
     message: "Masukan koordinat utama.",
   }),
+  latLong: z.string({
+    message: "Masukan koordinat utama.",
+  }),
   lat: z.string({
     message: "Masukan garis bujur.",
   }),
@@ -147,6 +150,9 @@ export default function InformationFormUpdate({
         district: locationDetails.kecamatan || data?.kecamatanName,
         village: locationDetails.desa || data?.desaName,
         mainCoordinat: locationDetails.dms || data?.koordinat,
+        latLong:
+          `${locationDetails.lat}, ${locationDetails.lng}` ||
+          `${data.bujur}, ${data.lintang}`,
         lat: locationDetails.lat || data?.bujur,
         long: locationDetails.lng || data?.lintang,
         typeGemoetry: data?.tipe_geometri?.toString(),
@@ -199,6 +205,7 @@ export default function InformationFormUpdate({
       nama_spesifik: values.nameSpesific,
       nama_peta: values.nameMap,
       koordinat: values.mainCoordinat,
+      latlong: values.latLong,
       bujur: values.lat,
       lintang: values.long,
       desa: values.village,
@@ -580,6 +587,24 @@ export default function InformationFormUpdate({
             />
             <FormField
               control={form.control}
+              name="latLong"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Koordinat</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Koordinat"
+                      className="rounded-full"
+                      {...field}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="lat"
               render={({ field }) => (
                 <FormItem>
@@ -596,6 +621,27 @@ export default function InformationFormUpdate({
                 </FormItem>
               )}
             />
+            <div className="flex space-x-2 justify-between">
+              <Button
+                onClick={prevStep}
+                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
+                type="button"
+              >
+                Previous
+              </Button>
+
+              <Button
+                onClick={nextStep}
+                className="bg-primaryy rounded-full"
+                type="button"
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        )}
+        {step === 3 && (
+          <>
             <FormField
               control={form.control}
               name="long"
@@ -614,36 +660,6 @@ export default function InformationFormUpdate({
                 </FormItem>
               )}
             />
-            <div className="flex space-x-2 justify-between">
-              <Button
-                onClick={prevStep}
-                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
-                type="button"
-              >
-                Previous
-              </Button>
-              {form.getValues("classcificationToponim") === 6 ? (
-                <Button
-                  onClick={nextStep}
-                  className="bg-primaryy rounded-full"
-                  type="button"
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  className="rounded-full bg-primaryy"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Loading ..." : "Submit"}
-                </Button>
-              )}
-            </div>
-          </>
-        )}
-        {step === 3 && (
-          <>
             {form.getValues("classcificationToponim") === 6 && (
               <>
                 <FormField
@@ -714,24 +730,24 @@ export default function InformationFormUpdate({
                     </FormItem>
                   )}
                 />
-                <div className="flex space-x-2 justify-between">
-                  <Button
-                    onClick={prevStep}
-                    className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
-                    type="button"
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="rounded-full bg-primaryy"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Loading ..." : "Submit"}
-                  </Button>
-                </div>
               </>
             )}
+            <div className="flex space-x-2 justify-between">
+              <Button
+                onClick={prevStep}
+                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
+                type="button"
+              >
+                Previous
+              </Button>
+              <Button
+                type="submit"
+                className="rounded-full bg-primaryy"
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading ..." : "Submit"}
+              </Button>
+            </div>
           </>
         )}
       </form>

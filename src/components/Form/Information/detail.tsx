@@ -69,6 +69,9 @@ const formSchema = z.object({
   mainCoordinat: z.string({
     message: "Masukan koordinat utama.",
   }),
+  latLong: z.string({
+    message: "Masukan koordinat utama.",
+  }),
   lat: z.string({
     message: "Masukan garis bujur.",
   }),
@@ -143,12 +146,13 @@ export default function InformationFormDetail({
   useEffect(() => {
     if (locationDetails || data) {
       form.reset({
-        idToponim: data.id_toponim || "6091821",
-        district: locationDetails.kecamatan || data.kecamatanName,
-        village: locationDetails.desa || data.desaName,
-        mainCoordinat: locationDetails.dms || data.koordinat,
-        lat: locationDetails.lat || data.bujur,
-        long: locationDetails.lng || data.lintang,
+        idToponim: data.id_toponim,
+        district: data.kecamatanName,
+        village: data.desaName,
+        mainCoordinat: data.koordinat,
+        latLong: `${data.bujur}, ${data.lintang}`,
+        lat: data.bujur,
+        long: data.lintang,
         typeGemoetry: data?.tipe_geometri?.toString(),
         classcificationToponim: data?.klasifikasi_id,
         unsur: data?.unsur_id,
@@ -578,6 +582,24 @@ export default function InformationFormDetail({
             />
             <FormField
               control={form.control}
+              name="latLong"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Koordinat</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Koordinat"
+                      className="rounded-full"
+                      {...field}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="lat"
               render={({ field }) => (
                 <FormItem>
@@ -594,6 +616,27 @@ export default function InformationFormDetail({
                 </FormItem>
               )}
             />
+            <div className="flex space-x-2 justify-between">
+              <Button
+                onClick={prevStep}
+                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
+                type="button"
+              >
+                Previous
+              </Button>
+
+              <Button
+                onClick={nextStep}
+                className="bg-primaryy rounded-full"
+                type="button"
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        )}
+        {step === 3 && (
+          <>
             <FormField
               control={form.control}
               name="long"
@@ -612,28 +655,6 @@ export default function InformationFormDetail({
                 </FormItem>
               )}
             />
-            <div className="flex space-x-2 justify-between">
-              <Button
-                onClick={prevStep}
-                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
-                type="button"
-              >
-                Previous
-              </Button>
-              {form.getValues("classcificationToponim") === 6 && (
-                <Button
-                  onClick={nextStep}
-                  className="bg-primaryy rounded-full"
-                  type="button"
-                >
-                  Next
-                </Button>
-              )}
-            </div>
-          </>
-        )}
-        {step === 3 && (
-          <>
             {form.getValues("classcificationToponim") === 6 && (
               <>
                 <FormField
@@ -707,17 +728,17 @@ export default function InformationFormDetail({
                     </FormItem>
                   )}
                 />
-                <div className="flex space-x-2 justify-between">
-                  <Button
-                    onClick={prevStep}
-                    className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
-                    type="button"
-                  >
-                    Previous
-                  </Button>
-                </div>
               </>
             )}
+            <div className="flex space-x-2 justify-between">
+              <Button
+                onClick={prevStep}
+                className="rounded-full bg-transparent border border-primaryy text-primaryy hover:bg-primaryy hover:text-white"
+                type="button"
+              >
+                Previous
+              </Button>
+            </div>
           </>
         )}
       </form>

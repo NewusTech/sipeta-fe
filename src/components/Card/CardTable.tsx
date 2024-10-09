@@ -4,10 +4,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "lib/utils";
 import { CheckSquare2, EyeIcon, PenBox, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
+import ModalDelete from "../Dialog/delete";
 
 export type Payment = {
   createdAt: string;
-  id: string;
+  id: number;
   status: number;
   id_toponim: string;
   nama_lokal: number;
@@ -39,6 +40,10 @@ export const columnsData: ColumnDef<Payment>[] = [
               <Pencil className="w-4 h-4 text-white" />
             </Link>
           </div>
+          <ModalDelete
+            type="icon"
+            endpoint={`datatoponim/delete/${row.original.id}`}
+          />
         </div>
       );
     },
@@ -53,6 +58,19 @@ export const columnsData: ColumnDef<Payment>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      const bgColor =
+        status === 0 ? "bg-primaryy" : status === 1 ? "bg-success" : "bg-error";
+
+      return (
+        <p
+          className={`text-white text-center ${bgColor} text-[10px] py-[2px] px-2 rounded-full`}
+        >
+          {status === 0 ? "Menunggu" : status === 1 ? "Verif" : "Ditolak"}
+        </p>
+      );
+    },
   },
   {
     accessorKey: "id_toponim",

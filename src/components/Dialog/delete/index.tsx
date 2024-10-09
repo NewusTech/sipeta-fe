@@ -9,10 +9,16 @@ import {
   AlertDialogFooter,
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
-import { Loader } from "lucide-react";
+import { Loader, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
 
-const ModalDelete = ({ endpoint }: { endpoint: string }) => {
+const ModalDelete = ({
+  endpoint,
+  type,
+}: {
+  endpoint: string;
+  type?: string;
+}) => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const handleOpenAddModal = () => {
@@ -65,12 +71,21 @@ const ModalDelete = ({ endpoint }: { endpoint: string }) => {
   return (
     <AlertDialog open={addModalOpen}>
       <AlertDialogTrigger asChild>
-        <div
-          onClick={handleOpenAddModal}
-          className="py-1 px-2 w-full hover:bg-slate-100 cursor-pointer"
-        >
-          <p className="text-sm">Delete</p>
-        </div>
+        {type === "icon" ? (
+          <div
+            onClick={handleOpenAddModal}
+            className="p-1 w-7 flex justify-center items-center bg-error hover:bg-red-500 rounded-sm cursor-pointer"
+          >
+            <Trash2 className="w-4 h-4 text-white" />
+          </div>
+        ) : (
+          <div
+            onClick={handleOpenAddModal}
+            className="py-1 px-2 w-full hover:bg-slate-100 cursor-pointer"
+          >
+            <p className="text-sm">Delete</p>
+          </div>
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col items-center w-96 justify-center border-0 rounded-[20px] overflow-auto gap-y-10">
         <Image src="/assets/icons/info.svg" alt="info" height={50} width={50} />

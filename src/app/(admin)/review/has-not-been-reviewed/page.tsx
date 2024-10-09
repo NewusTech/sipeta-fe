@@ -113,7 +113,7 @@ export default function HasNotBeenReviewedPage() {
     setLoadingState((prevState) => ({ ...prevState, [route]: true }));
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/${route}?status=0`,
+        `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/${route}?status=0`,
         {
           method: "GET",
         }

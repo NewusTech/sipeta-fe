@@ -25,6 +25,7 @@ import {
   TabsTrigger,
 } from "../../../../../components/ui/tabs";
 import {
+  DrawingManager,
   GoogleMap,
   Marker,
   StandaloneSearchBox,
@@ -75,6 +76,7 @@ export default function CreateNamingPage() {
     dms: "",
     lat: "",
     lng: "",
+    latlong: "",
   });
   const [markerPosition, setMarkerPosition] = React.useState({
     lat: -4.8357, // Default latitude (Lampung Utara)
@@ -84,6 +86,12 @@ export default function CreateNamingPage() {
     lat: -4.8357, // Default center latitude (Lampung Utara)
     lng: 104.9441, // Default center longitude (Lampung Utara)
   });
+  const [typeGeometry, setTypeGeometry] = React.useState("");
+
+  const handleTypeGeometryChange = (newType: string) => {
+    setTypeGeometry(newType);
+    console.log("Selected Type Geometry:", newType); // You can also do more here.
+  };
 
   const mapContainerStyle = {
     width: "100%",
@@ -184,7 +192,7 @@ export default function CreateNamingPage() {
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ["places", "geometry"],
+    libraries: ["places", "geometry", "drawing"],
     language: "id",
   });
 
@@ -226,6 +234,7 @@ export default function CreateNamingPage() {
           dms: `${convertToDMS(lat)} - ${convertToDMS(lng)}` || "",
           lat: lat.toString(),
           lng: lng.toString(),
+          latlong: "",
         });
       }
     });
@@ -281,6 +290,24 @@ export default function CreateNamingPage() {
 
   const onMapDragEnd = () => {
     setMapCenter(LAMPUNG_UTARA); // Center back to Lampung Timur after drag
+  };
+
+  const onPolygonComplete = (polygon: any) => {
+    const polygonPath = polygon.getPath();
+    const polygonLatLngs = polygonPath.getArray().map((latLng: any) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+    console.log("Polygon coordinates:", polygonLatLngs);
+  };
+
+  const onPolylineComplete = (polyline: any) => {
+    const polylinePath = polyline.getPath();
+    const polylineLatLngs = polylinePath.getArray().map((latLng: any) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+    console.log("Polyline coordinates:", polylineLatLngs);
   };
 
   if (!isLoaded) return <p>Loading ...</p>;
@@ -352,7 +379,10 @@ export default function CreateNamingPage() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="information">
-                <InformationForm locationDetails={locationDetails} />
+                <InformationForm
+                  locationDetails={locationDetails}
+                  onTypeGeometryChange={handleTypeGeometryChange}
+                />
               </TabsContent>
               <TabsContent value="detail">
                 <DetailForm />
@@ -363,8 +393,7 @@ export default function CreateNamingPage() {
             </Tabs>
           </div>
           <div className="w-1/2 right-0 -mt-[100px] md:fixed md:block hidden">
-            <div className="relative">
-              {/* Input search with Autocomplete */}
+            {/* <div className="relative">
               <StandaloneSearchBox
                 onPlacesChanged={onPlacesChanged}
                 onLoad={(ref) => (searchBoxRef.current = ref)}
@@ -375,20 +404,57 @@ export default function CreateNamingPage() {
                   className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
                 />
               </StandaloneSearchBox>
-            </div>
+            </div> */}
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               center={mapCenter}
               onLoad={onLoadMap}
               zoom={10.85}
-              onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+              // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
               onClick={onMapClick}
               // Menangani event klik pada peta
             >
-              <Marker
-                position={markerPosition} // Menampilkan marker pada posisi terkini
-                draggable={true} // Memungkinkan marker untuk didrag
-              />
+              {typeGeometry === "1" && (
+                <Marker
+                  position={markerPosition} // Menampilkan marker pada posisi terkini
+                  draggable={true} // Memungkinkan marker untuk didrag
+                />
+              )}
+
+              {typeGeometry !== "1" && (
+                <DrawingManager
+                  options={{
+                    drawingControl: true,
+                    drawingControlOptions: {
+                      drawingModes: [
+                        typeGeometry === "2"
+                          ? ("polygon" as google.maps.drawing.OverlayType)
+                          : typeGeometry === "3"
+                            ? ("polyline" as google.maps.drawing.OverlayType)
+                            : ("marker" as google.maps.drawing.OverlayType),
+                      ],
+                    },
+                    polygonOptions: {
+                      fillColor: "#FF0000",
+                      fillOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                    polylineOptions: {
+                      strokeColor: "#0000FF",
+                      strokeOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                  }}
+                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
+                  onPolylineComplete={onPolylineComplete}
+                />
+              )}
             </GoogleMap>
           </div>
         </div>
