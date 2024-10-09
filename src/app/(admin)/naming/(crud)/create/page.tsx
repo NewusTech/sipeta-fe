@@ -3,21 +3,6 @@
 import * as React from "react";
 import { Check, ChevronDown, ChevronLeft } from "lucide-react";
 
-import { cn } from "../../../../../lib/utils";
-import { Button } from "../../../../../components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../../../../../components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../../../../components/ui/popover";
 import {
   Tabs,
   TabsContent,
@@ -64,19 +49,14 @@ const frameworks = [
 ];
 
 export default function CreateNamingPage() {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const [onEdit, setOnEdit] = React.useState(false);
-  const [searchText, setSearchText] = React.useState("");
-  const [currentLocation, setCurrentLocation] = React.useState(null);
-  const [addressInfo, setAddressInfo] = React.useState(null);
+  const [polygonString, setPolygonString] = React.useState<string>("");
+  const [polylineString, setPolylineString] = React.useState<string>("");
   const [locationDetails, setLocationDetails] = React.useState({
     kecamatan: "",
     desa: "",
     dms: "",
     lat: "",
     lng: "",
-    latlong: "",
   });
   const [markerPosition, setMarkerPosition] = React.useState({
     lat: -4.8357, // Default latitude (Lampung Utara)
@@ -234,7 +214,6 @@ export default function CreateNamingPage() {
           dms: `${convertToDMS(lat)} - ${convertToDMS(lng)}` || "",
           lat: lat.toString(),
           lng: lng.toString(),
-          latlong: "",
         });
       }
     });
@@ -298,6 +277,13 @@ export default function CreateNamingPage() {
       lat: latLng.lat(),
       lng: latLng.lng(),
     }));
+    const polygonString = polygonLatLngs
+      .map((latLng: any) => `${latLng.lat}, ${latLng.lng}`)
+      .join("; ");
+
+    // Menyimpan string ke dalam state
+    setPolygonString(polygonString);
+    handleReverseGeocoding(polygonLatLngs[0].lat, polygonLatLngs[0].lng);
     console.log("Polygon coordinates:", polygonLatLngs);
   };
 
@@ -307,6 +293,13 @@ export default function CreateNamingPage() {
       lat: latLng.lat(),
       lng: latLng.lng(),
     }));
+    const polylineString = polylineLatLngs
+      .map((latLng: any) => `${latLng.lat}, ${latLng.lng}`)
+      .join("; ");
+
+    // Menyimpan string ke dalam state
+    setPolylineString(polylineString);
+    handleReverseGeocoding(polylineLatLngs[0].lat, polylineLatLngs[0].lng);
     console.log("Polyline coordinates:", polylineLatLngs);
   };
 
@@ -380,6 +373,13 @@ export default function CreateNamingPage() {
               </TabsList>
               <TabsContent value="information">
                 <InformationForm
+                  polyString={
+                    typeGeometry === "2"
+                      ? polygonString
+                      : typeGeometry === "3"
+                        ? polylineString
+                        : ""
+                  }
                   locationDetails={locationDetails}
                   onTypeGeometryChange={handleTypeGeometryChange}
                 />

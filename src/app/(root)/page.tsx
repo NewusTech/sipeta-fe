@@ -10,7 +10,7 @@ import {
   Polygon,
   StandaloneSearchBox,
   useLoadScript,
-  InfoWindow
+  InfoWindow,
 } from "@react-google-maps/api";
 import useSWR from "swr";
 import { Input } from "../../components/ui/input";
@@ -20,7 +20,6 @@ import { fetcherWithoutAuth } from "../../constants/fetcher";
 import LocationInfoWindow from "../../components/ui/locationdialog";
 
 export default function Home() {
-
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
 
@@ -34,7 +33,7 @@ export default function Home() {
 
   const parseLatLong = (latlong: string) => {
     const [lat, lng] = latlong.split(",").map(Number);
-    console.log(lat, lng)
+    console.log(lat, lng);
     // Ensure the coordinates are in the correct format
     return { lat, lng };
   };
@@ -54,8 +53,8 @@ export default function Home() {
   };
 
   const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
+    const letters = "0123456789ABCDEF";
+    let color = "#";
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
@@ -200,18 +199,18 @@ export default function Home() {
           center={mapCenter}
           onLoad={onLoadMap}
           zoom={10.85}
-        // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
-        // onClick={onMapClick}
+          // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+          // onClick={onMapClick}
         >
           {result?.map((location: any, index: number) => {
             const { latlong, tipe_geometri } = location;
 
-            const coordinates = latlong.split(";").map((coord: string) => {
-              const [lat, lng] = coord.split(",").map(Number);
+            const coordinates = latlong?.split(";").map((coord: string) => {
+              const [lat, lng] = coord?.split(",").map(Number);
               return { lat, lng };
             });
 
-            if (tipe_geometri === 1) {
+            if (tipe_geometri === "1") {
               const { lat, lng } = coordinates[0];
               return (
                 <Marker
@@ -220,20 +219,20 @@ export default function Home() {
                   onClick={() => setSelectedLocation(location)}
                 />
               );
-            } else if (tipe_geometri === 3) {
+            } else if (tipe_geometri === "3") {
               return (
                 <Polyline
                   key={index}
-                  path={coordinates} 
+                  path={coordinates}
                   options={{
-                    strokeColor: getRandomColor(), 
+                    strokeColor: getRandomColor(),
                     strokeOpacity: 1,
                     strokeWeight: 2,
                   }}
                   onClick={() => setSelectedLocation(location)}
                 />
               );
-            } else if (tipe_geometri === 2) {
+            } else if (tipe_geometri === "2") {
               return (
                 <Polygon
                   key={index}

@@ -25,6 +25,7 @@ import {
   TabsTrigger,
 } from "../../../../../../components/ui/tabs";
 import {
+  DrawingManager,
   GoogleMap,
   Marker,
   StandaloneSearchBox,
@@ -45,6 +46,7 @@ import DetailFormDetail from "@/components/Form/Detail/detail";
 import DocumentTabDetail from "@/components/Form/Document/detail";
 import ModalVerif from "@/components/Dialog/verif";
 import ModalDecline from "@/components/Dialog/decline";
+import { set } from "zod";
 
 const frameworks = [
   {
@@ -74,12 +76,8 @@ export default function DetailNamingPage({
 }: {
   params: { id: number };
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const [onEdit, setOnEdit] = React.useState(false);
-  const [searchText, setSearchText] = React.useState("");
-  const [currentLocation, setCurrentLocation] = React.useState(null);
-  const [addressInfo, setAddressInfo] = React.useState(null);
+  const [polygonString, setPolygonString] = React.useState<string>("");
+  const [polylineString, setPolylineString] = React.useState<string>("");
   const [locationDetails, setLocationDetails] = React.useState({
     kecamatan: "",
     desa: "",
@@ -95,6 +93,12 @@ export default function DetailNamingPage({
     lat: -4.8357, // Default center latitude (Lampung Utara)
     lng: 104.9441, // Default center longitude (Lampung Utara)
   });
+  const [typeGeometry, setTypeGeometry] = React.useState("");
+
+  const handleTypeGeometryChange = (newType: string) => {
+    setTypeGeometry(newType);
+    console.log("Selected Type Geometry:", newType); // You can also do more here.
+  };
 
   const mapContainerStyle = {
     width: "100%",
@@ -195,7 +199,7 @@ export default function DetailNamingPage({
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ["places", "geometry"],
+    libraries: ["places", "geometry", "drawing"],
     language: "id",
   });
 
@@ -412,6 +416,8 @@ export default function DetailNamingPage({
       const latitude = parseFloat(latStr);
       const longitude = parseFloat(lngStr);
 
+      setTypeGeometry(resultData.tipe_geometri);
+
       if (!isNaN(latitude) && !isNaN(longitude)) {
         setMarkerPosition({
           lat: latitude,
@@ -425,6 +431,42 @@ export default function DetailNamingPage({
       }
     }
   }, [resultData]);
+
+  console.log("Marker Position:", markerPosition);
+
+  const onPolygonComplete = (polygon: any) => {
+    const polygonPath = polygon.getPath();
+    const polygonLatLngs = polygonPath.getArray().map((latLng: any) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+    const polygonString = polygonLatLngs
+      .map((latLng: any) => `${latLng.lat}, ${latLng.lng}`)
+      .join("; ");
+
+    // Menyimpan string ke dalam state
+    setPolygonString(polygonString);
+    handleReverseGeocoding(polygonLatLngs[0].lat, polygonLatLngs[0].lng);
+    console.log("Polygon coordinates:", polygonLatLngs);
+  };
+
+  const onPolylineComplete = (polyline: any) => {
+    const polylinePath = polyline.getPath();
+    const polylineLatLngs = polylinePath.getArray().map((latLng: any) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+    const polylineString = polylineLatLngs
+      .map((latLng: any) => `${latLng.lat}, ${latLng.lng}`)
+      .join("; ");
+
+    // Menyimpan string ke dalam state
+    setPolylineString(polylineString);
+    handleReverseGeocoding(polylineLatLngs[0].lat, polylineLatLngs[0].lng);
+    console.log("Polyline coordinates:", polylineLatLngs);
+  };
+
+  console.log(typeGeometry);
 
   if (!isLoaded) return <p>Loading ...</p>;
 
@@ -467,9 +509,46 @@ export default function DetailNamingPage({
               // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
               // Menangani event klik pada peta
             >
-              <Marker
-                position={markerPosition} // Menampilkan marker pada posisi terkini
-              />
+              {typeGeometry === "1" && (
+                <Marker
+                  position={markerPosition} // Menampilkan marker pada posisi terkini
+                />
+              )}
+
+              {typeGeometry !== "1" && (
+                <DrawingManager
+                  options={{
+                    drawingControl: true,
+                    drawingControlOptions: {
+                      drawingModes: [
+                        typeGeometry === "2"
+                          ? ("polygon" as google.maps.drawing.OverlayType)
+                          : typeGeometry === "3"
+                            ? ("polyline" as google.maps.drawing.OverlayType)
+                            : ("marker" as google.maps.drawing.OverlayType),
+                      ],
+                    },
+                    polygonOptions: {
+                      fillColor: "#FF0000",
+                      fillOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                    polylineOptions: {
+                      strokeColor: "#0000FF",
+                      strokeOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                  }}
+                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
+                  onPolylineComplete={onPolylineComplete}
+                />
+              )}
             </GoogleMap>
           </div>
           <div className="mt-4 md:w-[38%] w-full p-5 shadow-md rounded-xl">
@@ -498,6 +577,14 @@ export default function DetailNamingPage({
                 <InformationFormDetail
                   data={resultInformation}
                   locationDetails={locationDetails}
+                  polyString={
+                    typeGeometry === "2"
+                      ? polygonString
+                      : typeGeometry === "3"
+                        ? polylineString
+                        : ""
+                  }
+                  onTypeGeometryChange={handleTypeGeometryChange}
                 />
               </TabsContent>
               <TabsContent value="detail">
@@ -509,8 +596,7 @@ export default function DetailNamingPage({
             </Tabs>
           </div>
           <div className="w-1/2 right-0 -mt-[100px] md:fixed md:block hidden">
-            <div className="relative">
-              {/* Input search with Autocomplete */}
+            {/* <div className="relative">
               <StandaloneSearchBox
                 onPlacesChanged={onPlacesChanged}
                 onLoad={(ref) => (searchBoxRef.current = ref)}
@@ -521,7 +607,7 @@ export default function DetailNamingPage({
                   className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
                 />
               </StandaloneSearchBox>
-            </div>
+            </div> */}
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               center={mapCenter}
@@ -530,9 +616,47 @@ export default function DetailNamingPage({
               // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
               // Menangani event klik pada peta
             >
-              <Marker
-                position={markerPosition} // Menampilkan marker pada posisi terkini
-              />
+              {typeGeometry === "1" && (
+                <Marker
+                  position={markerPosition} // Menampilkan marker pada posisi terkini
+                  draggable={true} // Memungkinkan marker untuk didrag
+                />
+              )}
+
+              {typeGeometry !== "1" && (
+                <DrawingManager
+                  options={{
+                    drawingControl: true,
+                    drawingControlOptions: {
+                      drawingModes: [
+                        typeGeometry === "2"
+                          ? ("polygon" as google.maps.drawing.OverlayType)
+                          : typeGeometry === "3"
+                            ? ("polyline" as google.maps.drawing.OverlayType)
+                            : ("marker" as google.maps.drawing.OverlayType),
+                      ],
+                    },
+                    polygonOptions: {
+                      fillColor: "#FF0000",
+                      fillOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                    polylineOptions: {
+                      strokeColor: "#0000FF",
+                      strokeOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                  }}
+                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
+                  onPolylineComplete={onPolylineComplete}
+                />
+              )}
             </GoogleMap>
           </div>
         </div>
