@@ -619,10 +619,10 @@ export default function InformationFormDetail({
               name="lat"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bujur</FormLabel>
+                  <FormLabel>Lintang</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Bujur"
+                      placeholder="Lintang"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -658,10 +658,10 @@ export default function InformationFormDetail({
               name="long"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lintang</FormLabel>
+                  <FormLabel>Bujur</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Lintang"
+                      placeholder="Bujur"
                       className="rounded-full"
                       {...field}
                       disabled

@@ -118,8 +118,8 @@ export default function DetailForm() {
   const classifyData = classify?.data;
   const newClassify = classifyData?.map(
     (item: { id: number; id_toponim: string }) => ({
-      value: item.id, // id masuk ke value
-      label: item.id_toponim, // name masuk ke label
+      value: item?.id, // id masuk ke value
+      label: item?.id_toponim, // name masuk ke label
     })
   );
 
@@ -235,10 +235,10 @@ export default function DetailForm() {
                           <CommandGroup>
                             {newClassify?.map((language: any) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
+                                value={language?.label}
+                                key={language?.value}
                                 onSelect={() => {
-                                  form.setValue("idToponim", language.value);
+                                  form.setValue("idToponim", language?.value);
                                 }}
                               >
                                 <Check

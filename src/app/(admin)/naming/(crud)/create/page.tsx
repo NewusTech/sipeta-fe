@@ -343,10 +343,47 @@ export default function CreateNamingPage() {
               onClick={onMapClick}
               // Menangani event klik pada peta
             >
-              <Marker
-                position={markerPosition} // Menampilkan marker pada posisi terkini
-                draggable={true} // Memungkinkan marker untuk didrag
-              />
+              {typeGeometry === "1" && (
+                <Marker
+                  position={markerPosition} // Menampilkan marker pada posisi terkini
+                  draggable={true} // Memungkinkan marker untuk didrag
+                />
+              )}
+
+              {typeGeometry !== "1" && (
+                <DrawingManager
+                  options={{
+                    drawingControl: true,
+                    drawingControlOptions: {
+                      drawingModes: [
+                        typeGeometry === "2"
+                          ? ("polygon" as google.maps.drawing.OverlayType)
+                          : typeGeometry === "3"
+                            ? ("polyline" as google.maps.drawing.OverlayType)
+                            : ("marker" as google.maps.drawing.OverlayType),
+                      ],
+                    },
+                    polygonOptions: {
+                      fillColor: "#FF0000",
+                      fillOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                    polylineOptions: {
+                      strokeColor: "#0000FF",
+                      strokeOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                  }}
+                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
+                  onPolylineComplete={onPolylineComplete}
+                />
+              )}
             </GoogleMap>
           </div>
           <div className="mt-4 md:w-[38%] w-full p-5 shadow-md rounded-xl">

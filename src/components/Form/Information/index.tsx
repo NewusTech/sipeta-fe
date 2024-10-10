@@ -39,57 +39,91 @@ const languages = [
 ] as const;
 
 const formSchema = z.object({
-  idToponim: z.string({
-    message: "Mauskann ID Toponim",
-  }),
-  typeGemoetry: z.string({
-    required_error: "Pilih tipe geometri.",
-  }),
-  classcificationToponim: z.number({
-    required_error: "Pilih klasifikasi toponim.",
-  }),
-  unsur: z.number({
-    required_error: "Pilih unsur.",
-  }),
-  district: z.string({
-    message: "Masukkan kecamatan.",
-  }),
-  village: z.string({
-    message: "Masukkan desa.",
-  }),
-  name: z.string({
-    message: "Masukkan nama lokal.",
-  }),
-  nameSpesific: z.string({
-    message: "Masukkan nama spesifik.",
-  }),
-  nameMap: z.string({
-    message: "Masukan nama peta.",
-  }),
-  mainCoordinat: z.string({
-    message: "Masukan koordinat utama.",
-  }),
-  latLong: z.string({
-    message: "Masukan koordinat utama.",
-  }),
-  lat: z.string({
-    message: "Masukan garis bujur.",
-  }),
-  long: z.string({
-    message: "Masukkan garis lintang.",
-  }),
-  headOf: z.string({
-    message: "Masukkan kepala.",
-  }),
-  sekretaris: z.string({
-    message: "Masukkan sekretaris.",
-  }),
-  email: z.string({
-    message: "Masukkan email.",
-  }),
-  telp: z.string({
-    message: "Masukkan no telepon.",
-  }),
+  idToponim: z
+    .string({
+      message: "Mauskann ID Toponim",
+    })
+    .optional(),
+  typeGemoetry: z
+    .string({
+      required_error: "Pilih tipe geometri.",
+    })
+    .optional(),
+  classcificationToponim: z
+    .number({
+      required_error: "Pilih klasifikasi toponim.",
+    })
+    .optional(),
+  unsur: z
+    .number({
+      required_error: "Pilih unsur.",
+    })
+    .optional(),
+  district: z
+    .string({
+      message: "Masukkan kecamatan.",
+    })
+    .optional(),
+  village: z
+    .string({
+      message: "Masukkan desa.",
+    })
+    .optional(),
+  name: z
+    .string({
+      message: "Masukkan nama lokal.",
+    })
+    .optional(),
+  nameSpesific: z
+    .string({
+      message: "Masukkan nama spesifik.",
+    })
+    .optional(),
+  nameMap: z
+    .string({
+      message: "Masukan nama peta.",
+    })
+    .optional(),
+  mainCoordinat: z
+    .string({
+      message: "Masukan koordinat utama.",
+    })
+    .optional(),
+  latLong: z
+    .any({
+      message: "Masukan koordinat utama.",
+    })
+    .optional(),
+  lat: z
+    .string({
+      message: "Masukan garis bujur.",
+    })
+    .optional(),
+  long: z
+    .string({
+      message: "Masukkan garis lintang.",
+    })
+    .optional(),
+  headOf: z
+    .string({
+      message: "Masukkan kepala.",
+    })
+    .optional(),
+  sekretaris: z
+    .string({
+      message: "Masukkan sekretaris.",
+    })
+    .optional(),
+  email: z
+    .string({
+      message: "Masukkan email.",
+    })
+    .optional(),
+  telp: z
+    .string({
+      message: "Masukkan no telepon.",
+    })
+    .optional(),
 });
 
 interface LocationDetails {
@@ -227,8 +261,8 @@ export default function InformationForm({
       nama_peta: values.nameMap,
       koordinat: values.mainCoordinat,
       latlong: newPolyString,
-      bujur: values.lat,
-      lintang: values.long,
+      bujur: values.long,
+      lintang: values.lat,
       desa: values.village,
       kecamatan: values.district,
       kepala: headOf,
@@ -628,10 +662,10 @@ export default function InformationForm({
               name="lat"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bujur</FormLabel>
+                  <FormLabel>Lintang</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Bujur"
+                      placeholder="Lintang"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -667,10 +701,10 @@ export default function InformationForm({
               name="long"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lintang</FormLabel>
+                  <FormLabel>Bujur</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Lintang"
+                      placeholder="Bujur"
                       className="rounded-full"
                       {...field}
                       disabled

@@ -103,9 +103,13 @@ interface LocationDetails {
 export default function InformationFormUpdate({
   locationDetails,
   data,
+  onTypeGeometryChange,
+  polyString,
 }: {
   data: any;
+  polyString: string;
   locationDetails: LocationDetails;
+  onTypeGeometryChange: (newType: string) => void;
 }) {
   const [step, setStep] = useState(1);
   const [valueClassify, setValueClassify] = useState<any>({ id: 0, label: "" });
@@ -144,15 +148,24 @@ export default function InformationFormUpdate({
   const prevStep = () => setStep(step - 1);
 
   useEffect(() => {
+    let newPolyString;
+
+    if (
+      form.getValues("typeGemoetry") === "2" ||
+      form.getValues("typeGemoetry") === "3"
+    ) {
+      newPolyString = polyString;
+    } else {
+      newPolyString = `${data.bujur}, ${data.lintang}`;
+    }
+
     if (locationDetails || data) {
       form.reset({
         idToponim: data?.id_toponim || "6091821",
         district: locationDetails.kecamatan || data?.kecamatanName,
         village: locationDetails.desa || data?.desaName,
         mainCoordinat: locationDetails.dms || data?.koordinat,
-        latLong:
-          `${locationDetails.lat}, ${locationDetails.lng}` ||
-          `${data.bujur}, ${data.lintang}`,
+        latLong: newPolyString,
         lat: locationDetails.lat || data?.bujur,
         long: locationDetails.lng || data?.lintang,
         typeGemoetry: data?.tipe_geometri?.toString(),
@@ -169,7 +182,7 @@ export default function InformationFormUpdate({
     }
   }, [locationDetails, data]);
 
-  console.log(data);
+  console.log(polyString);
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -316,6 +329,7 @@ export default function InformationFormUpdate({
                                 key={language.value}
                                 onSelect={() => {
                                   form.setValue("typeGemoetry", language.value);
+                                  onTypeGeometryChange(language.value);
                                 }}
                               >
                                 <Check
@@ -608,10 +622,10 @@ export default function InformationFormUpdate({
               name="lat"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bujur</FormLabel>
+                  <FormLabel>Lintang</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Bujur"
+                      placeholder="Lintang"
                       className="rounded-full"
                       {...field}
                       disabled
@@ -647,10 +661,10 @@ export default function InformationFormUpdate({
               name="long"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lintang</FormLabel>
+                  <FormLabel>Bujur</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Lintang"
+                      placeholder="Bujur"
                       className="rounded-full"
                       {...field}
                       disabled

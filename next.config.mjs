@@ -5,7 +5,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "newus-bucket.s3.ap-southeast-2.amazonaws.com",
-        pathname: "**"
+        pathname: "**",
       },
       {
         protocol: "https",
@@ -16,7 +16,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "ui-avatars.com",
         pathname: "**",
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "sinar.big.go.id",
+        pathname: "**",
+      },
     ],
   },
 };

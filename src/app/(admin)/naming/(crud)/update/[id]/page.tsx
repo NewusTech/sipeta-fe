@@ -25,8 +25,11 @@ import {
   TabsTrigger,
 } from "../../../../../../components/ui/tabs";
 import {
+  DrawingManager,
   GoogleMap,
   Marker,
+  Polygon,
+  Polyline,
   StandaloneSearchBox,
   useLoadScript,
 } from "@react-google-maps/api";
@@ -72,12 +75,8 @@ export default function UpdateNamingPage({
 }: {
   params: { id: number };
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const [onEdit, setOnEdit] = React.useState(false);
-  const [searchText, setSearchText] = React.useState("");
-  const [currentLocation, setCurrentLocation] = React.useState(null);
-  const [addressInfo, setAddressInfo] = React.useState(null);
+  const [polygonString, setPolygonString] = React.useState<string>("");
+  const [polylineString, setPolylineString] = React.useState<string>("");
   const [locationDetails, setLocationDetails] = React.useState({
     kecamatan: "",
     desa: "",
@@ -85,6 +84,13 @@ export default function UpdateNamingPage({
     lat: "",
     lng: "",
   });
+  const [typeGeometry, setTypeGeometry] = React.useState(0);
+
+  const handleTypeGeometryChange = (newType: string) => {
+    setTypeGeometry(Number(newType));
+    console.log("Selected Type Geometry:", newType); // You can also do more here.
+  };
+
   const [markerPosition, setMarkerPosition] = React.useState({
     lat: -4.8357, // Default latitude (Lampung Utara)
     lng: 104.9441, // Default longitude (Lampung Utara)
@@ -193,7 +199,7 @@ export default function UpdateNamingPage({
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ["places", "geometry"],
+    libraries: ["places", "geometry", "drawing"],
     language: "id",
   });
 
@@ -395,6 +401,67 @@ export default function UpdateNamingPage({
     };
   }
 
+  const latLong = resultData?.latlong;
+  const polyString = latLong?.split(";").map((coord: string) => {
+    const [lat, lng] = coord?.split(",").map(Number);
+    return { lat, lng };
+  });
+
+  React.useEffect(() => {
+    if (resultData) {
+      setTypeGeometry(resultData?.tipe_geometri);
+      setPolygonString(resultData?.latlong);
+      setPolylineString(resultData?.latlong);
+      const latitude = parseFloat(resultData.lintang);
+      const longitude = parseFloat(resultData.bujur);
+
+      if (typeGeometry === 1) {
+        setMarkerPosition({
+          lat: latitude,
+          lng: longitude,
+        });
+      }
+      setMapCenter({
+        lat: latitude,
+        lng: longitude,
+      });
+    }
+  }, [resultData]);
+
+  const onPolygonComplete = (polygon: any) => {
+    const polygonPath = polygon.getPath();
+    const polygonLatLngs = polygonPath.getArray().map((latLng: any) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+    const polygonString = polygonLatLngs
+      .map((latLng: any) => `${latLng.lat}, ${latLng.lng}`)
+      .join("; ");
+
+    // Menyimpan string ke dalam state
+    setPolygonString(polygonString);
+    handleReverseGeocoding(polygonLatLngs[0].lat, polygonLatLngs[0].lng);
+    console.log("Polygon coordinates:", polygonLatLngs);
+  };
+
+  const onPolylineComplete = (polyline: any) => {
+    const polylinePath = polyline.getPath();
+    const polylineLatLngs = polylinePath.getArray().map((latLng: any) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+    const polylineString = polylineLatLngs
+      .map((latLng: any) => `${latLng.lat}, ${latLng.lng}`)
+      .join("; ");
+
+    // Menyimpan string ke dalam state
+    setPolylineString(polylineString);
+    handleReverseGeocoding(polylineLatLngs[0].lat, polylineLatLngs[0].lng);
+    console.log("Polyline coordinates:", polylineLatLngs);
+  };
+
+  console.log(polygonString);
+
   if (!isLoaded) return <p>Loading ...</p>;
 
   return (
@@ -413,8 +480,8 @@ export default function UpdateNamingPage({
         </div>
         <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
           <div className="w-full block md:hidden ">
-            <div className="relative">
-              {/* Input search with Autocomplete */}
+            {/* <div className="relative">
+              Input search with Autocomplete
               <StandaloneSearchBox
                 onPlacesChanged={onPlacesChanged}
                 onLoad={(ref) => (searchBoxRef.current = ref)}
@@ -425,20 +492,56 @@ export default function UpdateNamingPage({
                   className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
                 />
               </StandaloneSearchBox>
-            </div>
+            </div> */}
             <GoogleMap
               mapContainerStyle={mapContainerStyle2}
               center={mapCenter}
               onLoad={onLoadMap}
-              zoom={10.85}
-              onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+              zoom={10.85} // Menangani event drag pada peta
               onClick={onMapClick}
               // Menangani event klik pada peta
             >
-              <Marker
-                position={markerPosition} // Menampilkan marker pada posisi terkini
-                draggable={true} // Memungkinkan marker untuk didrag
-              />
+              {typeGeometry === 1 && (
+                <Marker
+                  position={markerPosition} // Menampilkan marker pada posisi terkini
+                  draggable={true} // Memungkinkan marker untuk didrag
+                />
+              )}
+
+              {typeGeometry !== 1 && (
+                <DrawingManager
+                  options={{
+                    drawingControl: true,
+                    drawingControlOptions: {
+                      drawingModes: [
+                        typeGeometry === 2
+                          ? ("polygon" as google.maps.drawing.OverlayType)
+                          : typeGeometry === 3
+                            ? ("polyline" as google.maps.drawing.OverlayType)
+                            : ("marker" as google.maps.drawing.OverlayType),
+                      ],
+                    },
+                    polygonOptions: {
+                      fillColor: "#FF0000",
+                      fillOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                    polylineOptions: {
+                      strokeColor: "#0000FF",
+                      strokeOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                  }}
+                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
+                  onPolylineComplete={onPolylineComplete}
+                />
+              )}
             </GoogleMap>
           </div>
           <div className="mt-4 md:w-[38%] w-full p-5 shadow-md rounded-xl">
@@ -467,6 +570,14 @@ export default function UpdateNamingPage({
                 <InformationFormUpdate
                   data={resultInformation}
                   locationDetails={locationDetails}
+                  polyString={
+                    typeGeometry === 2
+                      ? polygonString
+                      : typeGeometry === 3
+                        ? polylineString
+                        : ""
+                  }
+                  onTypeGeometryChange={handleTypeGeometryChange}
                 />
               </TabsContent>
               <TabsContent value="detail">
@@ -482,8 +593,8 @@ export default function UpdateNamingPage({
             </Tabs>
           </div>
           <div className="w-1/2 right-0 -mt-[100px] md:fixed md:block hidden">
-            <div className="relative">
-              {/* Input search with Autocomplete */}
+            {/* <div className="relative">
+              Input search with Autocomplete
               <StandaloneSearchBox
                 onPlacesChanged={onPlacesChanged}
                 onLoad={(ref) => (searchBoxRef.current = ref)}
@@ -494,20 +605,56 @@ export default function UpdateNamingPage({
                   className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
                 />
               </StandaloneSearchBox>
-            </div>
+            </div> */}
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               center={mapCenter}
               onLoad={onLoadMap}
-              zoom={10.85}
-              onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+              zoom={10.85} // Menangani event drag pada peta
               onClick={onMapClick}
               // Menangani event klik pada peta
             >
-              <Marker
-                position={markerPosition} // Menampilkan marker pada posisi terkini
-                draggable={true} // Memungkinkan marker untuk didrag
-              />
+              {typeGeometry === 1 && (
+                <Marker
+                  position={markerPosition} // Menampilkan marker pada posisi terkini
+                  draggable={true} // Memungkinkan marker untuk didrag
+                />
+              )}
+
+              {typeGeometry !== 1 && (
+                <DrawingManager
+                  options={{
+                    drawingControl: true,
+                    drawingControlOptions: {
+                      drawingModes: [
+                        typeGeometry === 2
+                          ? ("polygon" as google.maps.drawing.OverlayType)
+                          : typeGeometry === 3
+                            ? ("polyline" as google.maps.drawing.OverlayType)
+                            : ("marker" as google.maps.drawing.OverlayType),
+                      ],
+                    },
+                    polygonOptions: {
+                      fillColor: "#FF0000",
+                      fillOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                    polylineOptions: {
+                      strokeColor: "#0000FF",
+                      strokeOpacity: 0.5,
+                      strokeWeight: 2,
+                      clickable: true,
+                      editable: true,
+                      draggable: true,
+                    },
+                  }}
+                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
+                  onPolylineComplete={onPolylineComplete}
+                />
+              )}
             </GoogleMap>
           </div>
         </div>

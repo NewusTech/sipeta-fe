@@ -210,8 +210,9 @@ export default function Home() {
               return { lat, lng };
             });
 
-            if (tipe_geometri === "1") {
+            if (tipe_geometri === 1) {
               const { lat, lng } = coordinates[0];
+              console.log(lat, lng);
               return (
                 <Marker
                   key={index}
@@ -219,7 +220,7 @@ export default function Home() {
                   onClick={() => setSelectedLocation(location)}
                 />
               );
-            } else if (tipe_geometri === "3") {
+            } else if (tipe_geometri === 3) {
               return (
                 <Polyline
                   key={index}
@@ -232,7 +233,7 @@ export default function Home() {
                   onClick={() => setSelectedLocation(location)}
                 />
               );
-            } else if (tipe_geometri === "2") {
+            } else if (tipe_geometri === 2) {
               return (
                 <Polygon
                   key={index}
