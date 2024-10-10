@@ -28,6 +28,8 @@ import {
   DrawingManager,
   GoogleMap,
   Marker,
+  Polygon,
+  Polyline,
   StandaloneSearchBox,
   useLoadScript,
 } from "@react-google-maps/api";
@@ -46,7 +48,6 @@ import DetailFormDetail from "@/components/Form/Detail/detail";
 import DocumentTabDetail from "@/components/Form/Document/detail";
 import ModalVerif from "@/components/Dialog/verif";
 import ModalDecline from "@/components/Dialog/decline";
-import { set } from "zod";
 
 const frameworks = [
   {
@@ -93,10 +94,10 @@ export default function DetailNamingPage({
     lat: -4.8357, // Default center latitude (Lampung Utara)
     lng: 104.9441, // Default center longitude (Lampung Utara)
   });
-  const [typeGeometry, setTypeGeometry] = React.useState("");
+  const [typeGeometry, setTypeGeometry] = React.useState(0);
 
   const handleTypeGeometryChange = (newType: string) => {
-    setTypeGeometry(newType);
+    setTypeGeometry(Number(newType));
     console.log("Selected Type Geometry:", newType); // You can also do more here.
   };
 
@@ -199,7 +200,7 @@ export default function DetailNamingPage({
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ["places", "geometry", "drawing"],
+    libraries: ["places", "geometry"],
     language: "id",
   });
 
@@ -406,67 +407,43 @@ export default function DetailNamingPage({
   //   setMapCenter(LAMPUNG_UTARA); // Center back to Lampung Timur after drag
   // };
 
-  console.log("resultData", resultData);
+  const latLong = resultData?.latlong;
+  const polyString = latLong?.split(";").map((coord: string) => {
+    const [lat, lng] = coord?.split(",").map(Number);
+    return { lat, lng };
+  });
 
   React.useEffect(() => {
     if (resultData) {
-      const latLongString = resultData.latlong; // Ambil string lintang dan bujur
-      const [latStr, lngStr] = latLongString.split(","); // Pisahkan lintang dan bujur
+      setTypeGeometry(resultData?.tipe_geometri);
+      setPolygonString(resultData?.latlong);
+      setPolylineString(resultData?.latlong);
+      const latitude = parseFloat(resultData.lintang);
+      const longitude = parseFloat(resultData.bujur);
 
-      const latitude = parseFloat(latStr);
-      const longitude = parseFloat(lngStr);
-
-      setTypeGeometry(resultData.tipe_geometri);
-
-      if (!isNaN(latitude) && !isNaN(longitude)) {
+      if (typeGeometry === 1) {
         setMarkerPosition({
           lat: latitude,
           lng: longitude,
         });
-
-        setMapCenter({
-          lat: latitude,
-          lng: longitude,
-        });
       }
+      setMapCenter({
+        lat: latitude,
+        lng: longitude,
+      });
     }
   }, [resultData]);
 
-  console.log("Marker Position:", markerPosition);
-
-  const onPolygonComplete = (polygon: any) => {
-    const polygonPath = polygon.getPath();
-    const polygonLatLngs = polygonPath.getArray().map((latLng: any) => ({
-      lat: latLng.lat(),
-      lng: latLng.lng(),
-    }));
-    const polygonString = polygonLatLngs
-      .map((latLng: any) => `${latLng.lat}, ${latLng.lng}`)
-      .join("; ");
-
-    // Menyimpan string ke dalam state
-    setPolygonString(polygonString);
-    handleReverseGeocoding(polygonLatLngs[0].lat, polygonLatLngs[0].lng);
-    console.log("Polygon coordinates:", polygonLatLngs);
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
   };
 
-  const onPolylineComplete = (polyline: any) => {
-    const polylinePath = polyline.getPath();
-    const polylineLatLngs = polylinePath.getArray().map((latLng: any) => ({
-      lat: latLng.lat(),
-      lng: latLng.lng(),
-    }));
-    const polylineString = polylineLatLngs
-      .map((latLng: any) => `${latLng.lat}, ${latLng.lng}`)
-      .join("; ");
-
-    // Menyimpan string ke dalam state
-    setPolylineString(polylineString);
-    handleReverseGeocoding(polylineLatLngs[0].lat, polylineLatLngs[0].lng);
-    console.log("Polyline coordinates:", polylineLatLngs);
-  };
-
-  console.log(typeGeometry);
+  console.log("Result Data:", polygonString);
 
   if (!isLoaded) return <p>Loading ...</p>;
 
@@ -509,46 +486,41 @@ export default function DetailNamingPage({
               // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
               // Menangani event klik pada peta
             >
-              {typeGeometry === "1" && (
-                <Marker
-                  position={markerPosition} // Menampilkan marker pada posisi terkini
-                />
-              )}
-
-              {typeGeometry !== "1" && (
-                <DrawingManager
-                  options={{
-                    drawingControl: true,
-                    drawingControlOptions: {
-                      drawingModes: [
-                        typeGeometry === "2"
-                          ? ("polygon" as google.maps.drawing.OverlayType)
-                          : typeGeometry === "3"
-                            ? ("polyline" as google.maps.drawing.OverlayType)
-                            : ("marker" as google.maps.drawing.OverlayType),
-                      ],
-                    },
-                    polygonOptions: {
-                      fillColor: "#FF0000",
-                      fillOpacity: 0.5,
-                      strokeWeight: 2,
-                      clickable: true,
-                      editable: true,
-                      draggable: true,
-                    },
-                    polylineOptions: {
-                      strokeColor: "#0000FF",
-                      strokeOpacity: 0.5,
-                      strokeWeight: 2,
-                      clickable: true,
-                      editable: true,
-                      draggable: true,
-                    },
-                  }}
-                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
-                  onPolylineComplete={onPolylineComplete}
-                />
-              )}
+              {(() => {
+                switch (typeGeometry) {
+                  case 1:
+                    return (
+                      <Marker
+                        position={markerPosition} // Menampilkan marker pada posisi terkini
+                      />
+                    );
+                  case 3:
+                    return (
+                      <Polyline
+                        path={polyString}
+                        options={{
+                          strokeColor: getRandomColor(),
+                          strokeOpacity: 1,
+                          strokeWeight: 2,
+                        }}
+                      />
+                    );
+                  case 2:
+                    return (
+                      <Polygon
+                        paths={polyString}
+                        options={{
+                          fillColor: getRandomColor(),
+                          fillOpacity: 0.4,
+                          strokeOpacity: 0.5,
+                          strokeWeight: 0.5,
+                        }}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              })()}
             </GoogleMap>
           </div>
           <div className="mt-4 md:w-[38%] w-full p-5 shadow-md rounded-xl">
@@ -578,9 +550,9 @@ export default function DetailNamingPage({
                   data={resultInformation}
                   locationDetails={locationDetails}
                   polyString={
-                    typeGeometry === "2"
+                    typeGeometry === 2
                       ? polygonString
-                      : typeGeometry === "3"
+                      : typeGeometry === 3
                         ? polylineString
                         : ""
                   }
@@ -616,47 +588,41 @@ export default function DetailNamingPage({
               // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
               // Menangani event klik pada peta
             >
-              {typeGeometry === "1" && (
-                <Marker
-                  position={markerPosition} // Menampilkan marker pada posisi terkini
-                  draggable={true} // Memungkinkan marker untuk didrag
-                />
-              )}
-
-              {typeGeometry !== "1" && (
-                <DrawingManager
-                  options={{
-                    drawingControl: true,
-                    drawingControlOptions: {
-                      drawingModes: [
-                        typeGeometry === "2"
-                          ? ("polygon" as google.maps.drawing.OverlayType)
-                          : typeGeometry === "3"
-                            ? ("polyline" as google.maps.drawing.OverlayType)
-                            : ("marker" as google.maps.drawing.OverlayType),
-                      ],
-                    },
-                    polygonOptions: {
-                      fillColor: "#FF0000",
-                      fillOpacity: 0.5,
-                      strokeWeight: 2,
-                      clickable: true,
-                      editable: true,
-                      draggable: true,
-                    },
-                    polylineOptions: {
-                      strokeColor: "#0000FF",
-                      strokeOpacity: 0.5,
-                      strokeWeight: 2,
-                      clickable: true,
-                      editable: true,
-                      draggable: true,
-                    },
-                  }}
-                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
-                  onPolylineComplete={onPolylineComplete}
-                />
-              )}
+              {(() => {
+                switch (typeGeometry) {
+                  case 1:
+                    return (
+                      <Marker
+                        position={markerPosition} // Menampilkan marker pada posisi terkini
+                      />
+                    );
+                  case 3:
+                    return (
+                      <Polyline
+                        path={polyString}
+                        options={{
+                          strokeColor: getRandomColor(),
+                          strokeOpacity: 1,
+                          strokeWeight: 2,
+                        }}
+                      />
+                    );
+                  case 2:
+                    return (
+                      <Polygon
+                        paths={polyString}
+                        options={{
+                          fillColor: getRandomColor(),
+                          fillOpacity: 0.4,
+                          strokeOpacity: 0.5,
+                          strokeWeight: 0.5,
+                        }}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              })()}
             </GoogleMap>
           </div>
         </div>
