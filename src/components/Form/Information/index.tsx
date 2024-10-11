@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { cn } from "../../../lib/utils";
+import { cn, generateUniqueId } from "../../../lib/utils";
 import { Button } from "../../ui/button";
 import { toast } from "../../../hooks/use-toast";
 import {
@@ -187,6 +187,8 @@ export default function InformationForm({
 
   // 1. Define your form.
 
+  // const idToponim = generateUniqueId();
+
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
@@ -204,7 +206,7 @@ export default function InformationForm({
 
     if (locationDetails) {
       form.reset({
-        idToponim: "109283",
+        idToponim: "112311",
         district: locationDetails.kecamatan,
         village: locationDetails.desa,
         mainCoordinat: locationDetails.dms,
@@ -252,7 +254,7 @@ export default function InformationForm({
     }
 
     const formData = {
-      id_toponim: values.idToponim || "6091821",
+      id_toponim: values.idToponim,
       tipe_geometri: values.typeGemoetry,
       klasifikasi_id: values.classcificationToponim,
       unsur_id: values.unsur,
@@ -285,6 +287,7 @@ export default function InformationForm({
       );
 
       const data = await response.json();
+      console.log(data);
       if (response.ok) {
         Swal.fire({
           icon: "success",
