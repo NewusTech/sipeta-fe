@@ -27,6 +27,8 @@ import {
 import {
   GoogleMap,
   Marker,
+  Polygon,
+  Polyline,
   StandaloneSearchBox,
   useLoadScript,
 } from "@react-google-maps/api";
@@ -69,17 +71,19 @@ const frameworks = [
   },
 ];
 
-export default function DetailNamingPage({
+export default function DetailHasNotBeenReviewed({
   params,
 }: {
   params: { id: number };
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const [onEdit, setOnEdit] = React.useState(false);
-  const [searchText, setSearchText] = React.useState("");
-  const [currentLocation, setCurrentLocation] = React.useState(null);
-  const [addressInfo, setAddressInfo] = React.useState(null);
+  const [polygonString, setPolygonString] = React.useState<string>("");
+  const [polylineString, setPolylineString] = React.useState<string>("");
+  const [typeGeometry, setTypeGeometry] = React.useState(0);
+
+  const handleTypeGeometryChange = (newType: string) => {
+    setTypeGeometry(Number(newType));
+    console.log("Selected Type Geometry:", newType); // You can also do more here.
+  };
   const [locationDetails, setLocationDetails] = React.useState({
     kecamatan: "",
     desa: "",
@@ -404,27 +408,41 @@ export default function DetailNamingPage({
 
   console.log("resultData", resultData);
 
+  const latLong = resultData?.latlong;
+  const polyString = latLong?.split(";").map((coord: string) => {
+    const [lat, lng] = coord?.split(",").map(Number);
+    return { lat, lng };
+  });
+
   React.useEffect(() => {
     if (resultData) {
-      const latLongString = resultData.latlong; // Ambil string lintang dan bujur
-      const [latStr, lngStr] = latLongString.split(","); // Pisahkan lintang dan bujur
+      setTypeGeometry(resultData?.tipe_geometri);
+      setPolygonString(resultData?.latlong);
+      setPolylineString(resultData?.latlong);
+      const latitude = parseFloat(resultData.lintang);
+      const longitude = parseFloat(resultData.bujur);
 
-      const latitude = parseFloat(latStr);
-      const longitude = parseFloat(lngStr);
-
-      if (!isNaN(latitude) && !isNaN(longitude)) {
+      if (typeGeometry === 1) {
         setMarkerPosition({
           lat: latitude,
           lng: longitude,
         });
-
-        setMapCenter({
-          lat: latitude,
-          lng: longitude,
-        });
       }
+      setMapCenter({
+        lat: latitude,
+        lng: longitude,
+      });
     }
   }, [resultData]);
+
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
 
   if (!isLoaded) return <p>Loading ...</p>;
 
@@ -463,9 +481,41 @@ export default function DetailNamingPage({
               // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
               // Menangani event klik pada peta
             >
-              <Marker
-                position={markerPosition} // Menampilkan marker pada posisi terkini
-              />
+              {(() => {
+                switch (typeGeometry) {
+                  case 1:
+                    return (
+                      <Marker
+                        position={markerPosition} // Menampilkan marker pada posisi terkini
+                      />
+                    );
+                  case 3:
+                    return (
+                      <Polyline
+                        path={polyString}
+                        options={{
+                          strokeColor: getRandomColor(),
+                          strokeOpacity: 1,
+                          strokeWeight: 2,
+                        }}
+                      />
+                    );
+                  case 2:
+                    return (
+                      <Polygon
+                        paths={polyString}
+                        options={{
+                          fillColor: getRandomColor(),
+                          fillOpacity: 0.4,
+                          strokeOpacity: 0.5,
+                          strokeWeight: 0.5,
+                        }}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              })()}
             </GoogleMap>
           </div>
           <div className="mt-4 md:w-[38%] w-full p-5 shadow-md rounded-xl">
@@ -494,6 +544,14 @@ export default function DetailNamingPage({
                 <InformationFormDetail
                   data={resultInformation}
                   locationDetails={locationDetails}
+                  polyString={
+                    typeGeometry === 2
+                      ? polygonString
+                      : typeGeometry === 3
+                        ? polylineString
+                        : ""
+                  }
+                  onTypeGeometryChange={handleTypeGeometryChange}
                 />
               </TabsContent>
               <TabsContent value="detail">
@@ -526,9 +584,41 @@ export default function DetailNamingPage({
               // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
               // Menangani event klik pada peta
             >
-              <Marker
-                position={markerPosition} // Menampilkan marker pada posisi terkini
-              />
+              {(() => {
+                switch (typeGeometry) {
+                  case 1:
+                    return (
+                      <Marker
+                        position={markerPosition} // Menampilkan marker pada posisi terkini
+                      />
+                    );
+                  case 3:
+                    return (
+                      <Polyline
+                        path={polyString}
+                        options={{
+                          strokeColor: getRandomColor(),
+                          strokeOpacity: 1,
+                          strokeWeight: 2,
+                        }}
+                      />
+                    );
+                  case 2:
+                    return (
+                      <Polygon
+                        paths={polyString}
+                        options={{
+                          fillColor: getRandomColor(),
+                          fillOpacity: 0.4,
+                          strokeOpacity: 0.5,
+                          strokeWeight: 0.5,
+                        }}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              })()}
             </GoogleMap>
           </div>
         </div>
