@@ -13,6 +13,9 @@ import {
   CheckSquare2,
   Download,
   EyeIcon,
+  FolderDown,
+  FolderUp,
+  Import,
   ListFilter,
   Loader,
   MapPinPlus,
@@ -32,6 +35,7 @@ import { CardTable, columnsData } from "@/components/Card/CardTable";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import useSWR from "swr";
 import Swal from "sweetalert2";
+import UploadFileDialog from "@/components/Dialog/UploadFIle";
 
 // type PaymentS = {
 //   id: string;
@@ -71,6 +75,7 @@ import Swal from "sweetalert2";
 export default function NamingPage() {
   const [page, setPage] = useState(1);
   const [dropdown, setDropdown] = useState(false);
+  const [dropdown2, setDropdown2] = useState(false);
   const [loadingState, setLoadingState] = useState({
     pdf: false,
     excel: false,
@@ -82,6 +87,11 @@ export default function NamingPage() {
   const toggleDropdown = () => {
     setDropdown(!dropdown);
   };
+
+  const toggleDropdown2 = () => {
+    setDropdown2(!dropdown2);
+  };
+
   const { data } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get?limit=10000000`,
     fetcher
@@ -154,15 +164,36 @@ export default function NamingPage() {
                 onClick={toggleDropdown}
                 className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2"
               >
-                <Download className="h-4 w-4 text-primaryy group-hover:text-white" />
+                <FolderUp className="h-4 w-4 text-primaryy group-hover:text-white" />
                 <p className="text-primaryy group-hover:text-white hidden md:block">
-                  Download
+                  Ekspor
+                </p>
+              </Button>
+              <Button
+                onClick={toggleDropdown2}
+                className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2"
+              >
+                <FolderDown className="h-4 w-4 text-primaryy group-hover:text-white" />
+                <p className="text-primaryy group-hover:text-white hidden md:block">
+                  Impor
                 </p>
               </Button>
             </div>
           </div>
-          {dropdown && (
+          {dropdown2 && (
             <div className="absolute right-0 mr-10 mt-2 bg-white z-10 shadow w-32">
+              <ul className="p-3 space-y-2">
+                <li>
+                  <UploadFileDialog title="Excel" endpoint="excel" />
+                </li>
+                <li></li>
+                <li></li>
+                <li></li>
+              </ul>
+            </div>
+          )}
+          {dropdown && (
+            <div className="absolute right-20 mr-10 mt-2 bg-white z-10 shadow w-32">
               <ul className="p-3 space-y-2">
                 <li
                   onClick={() => handleDownload("pdf", "pdf")}

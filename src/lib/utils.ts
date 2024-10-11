@@ -13,3 +13,23 @@ export function formatDate(isoDateString: string): string {
 
   return `${day}-${month}-${year}`;
 }
+
+const generatedIds = new Set();
+
+export const generateUniqueId = () => {
+  let uniqueId;
+
+  do {
+    // Mengambil timestamp saat ini dalam milidetik
+    const timestamp = Date.now();
+    // Mengambil 6 digit terakhir dari timestamp
+    const idFromTimestamp = timestamp.toString().slice(-6);
+    // Menghasilkan 2 digit angka acak
+    const randomNum = Math.floor(Math.random() * 100); // Angka acak 0-99
+    // Menggabungkan angka dari timestamp dan angka acak
+    uniqueId = (parseInt(idFromTimestamp) + randomNum).toString();
+  } while (generatedIds.has(uniqueId) || uniqueId.length < 8); // Pastikan panjangnya 8 dan tidak ada duplikasi
+
+  generatedIds.add(uniqueId); // Tambahkan ID yang dihasilkan ke Set
+  return uniqueId;
+};

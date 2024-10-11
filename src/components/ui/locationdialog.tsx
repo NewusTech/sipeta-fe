@@ -1,5 +1,6 @@
 import React from "react";
 import { InfoWindow } from "@react-google-maps/api";
+import Image from "next/image";
 
 const parseLatLong = (latlong: string) => {
   const [lat, lng] = latlong.split(",").map(Number);
@@ -20,7 +21,7 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
       position={parseLatLong(location.latlong)}
       onCloseClick={onCloseClick}
     >
-      <div className="max-h-[400px] md:w-[400px] overflow-auto">
+      <div className="max-h-[700px] md:w-[600px] overflow-auto">
         <h1 className="font-bold text-[16px] mt-1 mb-2">
           {location.nama_lokal.toUpperCase()}
         </h1>
@@ -134,12 +135,13 @@ const LocationDialog: React.FC<LocationDialogProps> = ({
           <>
             <h1 className="font-bold text-[16px] mt-6 mb-2">Foto Toponim</h1>
             {location.Fototoponims.map((foto: any, idx: number) => (
-              <div key={idx}>
-                <img
+              <div key={idx} className="w-full">
+                <Image
                   src={foto.foto_url}
                   alt={`Foto ${idx}`}
-                  width="100"
-                  height="100"
+                  width={400}
+                  height={400}
+                  className="w-full"
                 />
               </div>
             ))}

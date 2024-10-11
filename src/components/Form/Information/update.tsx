@@ -39,57 +39,95 @@ const languages = [
 ] as const;
 
 const formSchema = z.object({
-  idToponim: z.string({
-    message: "Mauskann ID Toponim",
-  }),
-  typeGemoetry: z.string({
-    required_error: "Pilih tipe geometri.",
-  }),
-  classcificationToponim: z.number({
-    required_error: "Pilih klasifikasi toponim.",
-  }),
-  unsur: z.number({
-    required_error: "Pilih unsur.",
-  }),
-  district: z.string({
-    message: "Masukkan kecamatan.",
-  }),
-  village: z.string({
-    message: "Masukkan desa.",
-  }),
-  name: z.string({
-    message: "Masukkan nama lokal.",
-  }),
-  nameSpesific: z.string({
-    message: "Masukkan nama spesifik.",
-  }),
-  nameMap: z.string({
-    message: "Masukan nama peta.",
-  }),
-  mainCoordinat: z.string({
-    message: "Masukan koordinat utama.",
-  }),
-  latLong: z.string({
-    message: "Masukan koordinat utama.",
-  }),
-  lat: z.string({
-    message: "Masukan garis bujur.",
-  }),
-  long: z.string({
-    message: "Masukkan garis lintang.",
-  }),
-  headOf: z.string({
-    message: "Masukkan kepala.",
-  }),
-  sekretaris: z.string({
-    message: "Masukkan sekretaris.",
-  }),
-  email: z.string({
-    message: "Masukkan email.",
-  }),
-  telp: z.string({
-    message: "Masukkan no telepon.",
-  }),
+  idToponim: z
+    .string({
+      message: "Mauskann ID Toponim",
+    })
+    .optional(),
+  typeGemoetry: z
+    .string({
+      required_error: "Pilih tipe geometri.",
+    })
+    .optional(),
+  classcificationToponim: z
+    .number({
+      required_error: "Pilih klasifikasi toponim.",
+    })
+    .optional(),
+  unsur: z
+    .number({
+      required_error: "Pilih unsur.",
+    })
+    .optional(),
+  district: z
+    .string({
+      message: "Masukkan kecamatan.",
+    })
+    .optional(),
+  village: z
+    .string({
+      message: "Masukkan desa.",
+    })
+    .optional(),
+  name: z
+    .string({
+      message: "Masukkan nama lokal.",
+    })
+    .optional(),
+  nameSpesific: z
+    .string({
+      message: "Masukkan nama spesifik.",
+    })
+    .optional(),
+  nameMap: z
+    .string({
+      message: "Masukan nama peta.",
+    })
+    .optional(),
+  mainCoordinat: z
+    .string({
+      message: "Masukan koordinat utama.",
+    })
+    .optional(),
+  latLong: z
+    .any({
+      message: "Masukan koordinat utama.",
+    })
+    .optional(),
+  lat: z
+    .string({
+      message: "Masukan garis bujur.",
+    })
+    .optional(),
+  long: z
+    .string({
+      message: "Masukkan garis lintang.",
+    })
+    .optional(),
+  headOf: z
+    .any({
+      message: "Masukkan kepala.",
+    })
+    .optional()
+    .nullable(),
+  sekretaris: z
+    .any({
+      message: "Masukkan sekretaris.",
+    })
+    .optional()
+    .nullable(),
+  email: z
+    .any({
+      message: "Masukkan email.",
+    })
+    .optional()
+    .nullable(),
+  telp: z
+    .any({
+      message: "Masukkan no telepon.",
+    })
+    .optional()
+    .nullable(),
 });
 
 interface LocationDetails {

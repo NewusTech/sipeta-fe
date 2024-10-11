@@ -77,6 +77,12 @@ export default function UpdateNamingPage({
 }) {
   const [polygonString, setPolygonString] = React.useState<string>("");
   const [polylineString, setPolylineString] = React.useState<string>("");
+  const [polygon, setPolygon] = React.useState<google.maps.Polygon | null>(
+    null
+  );
+  const [polyline, setPolyline] = React.useState<google.maps.Polyline | null>(
+    null
+  );
   const [locationDetails, setLocationDetails] = React.useState({
     kecamatan: "",
     desa: "",
@@ -429,6 +435,7 @@ export default function UpdateNamingPage({
   }, [resultData]);
 
   const onPolygonComplete = (polygon: any) => {
+    setPolygon(polygon);
     const polygonPath = polygon.getPath();
     const polygonLatLngs = polygonPath.getArray().map((latLng: any) => ({
       lat: latLng.lat(),
@@ -445,6 +452,7 @@ export default function UpdateNamingPage({
   };
 
   const onPolylineComplete = (polyline: any) => {
+    setPolyline(polyline);
     const polylinePath = polyline.getPath();
     const polylineLatLngs = polylinePath.getArray().map((latLng: any) => ({
       lat: latLng.lat(),
@@ -462,34 +470,6 @@ export default function UpdateNamingPage({
 
   console.log(polygonString);
 
-  const onPolygonEdit = (e: any) => {
-    const paths = e.getPath();
-    const updatedLatLngs = paths.getArray().map((latLng: any) => ({
-      lat: latLng.lat(),
-      lng: latLng.lng(),
-    }));
-
-    const updatedPolygonString = updatedLatLngs
-      .map((latLng: any) => `${latLng.lat},${latLng.lng}`)
-      .join(";");
-
-    setPolygonString(updatedPolygonString);
-  };
-
-  const onPolylineEdit = (e: any) => {
-    const path = e.getPath();
-    const updatedLatLngs = path.getArray().map((latLng: any) => ({
-      lat: latLng.lat(),
-      lng: latLng.lng(),
-    }));
-
-    const updatedPolylineString = updatedLatLngs
-      .map((latLng: any) => `${latLng.lat},${latLng.lng}`)
-      .join(";");
-
-    setPolylineString(updatedPolylineString);
-  };
-
   if (!isLoaded) return <p>Loading ...</p>;
 
   return (
@@ -501,26 +481,13 @@ export default function UpdateNamingPage({
           </Link>
           <h4>Kembali</h4>
         </div>
-        <div className="flex md:flex-row md:space-x-2 space-y-2 mb-2 md:mb-0 flex-col md:items-center">
+        <div className="flex md:flex-row md:space-x-2 space-y-2 md:w-[38%] md:justify-between mb-2 md:mb-0 flex-col md:items-center">
           <h1 className="text-primaryy pt-5 font-semibold text-xl">
             Ubah Data
           </h1>
         </div>
         <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
           <div className="w-full block md:hidden ">
-            {/* <div className="relative">
-              Input search with Autocomplete
-              <StandaloneSearchBox
-                onPlacesChanged={onPlacesChanged}
-                onLoad={(ref) => (searchBoxRef.current = ref)}
-              >
-                <Input
-                  type="text"
-                  placeholder="Search for a location"
-                  className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
-                />
-              </StandaloneSearchBox>
-            </div> */}
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               center={mapCenter}
@@ -530,51 +497,12 @@ export default function UpdateNamingPage({
             >
               {typeGeometry === 1 && (
                 <Marker
-                  position={markerPosition}
-                  draggable={true}
-                  onDragEnd={(e: any) => {
-                    const newPosition = {
-                      lat: e.latLng.lat(),
-                      lng: e.latLng.lng(),
-                    };
-                    setMarkerPosition(newPosition);
-                  }}
+                  position={markerPosition} // Menampilkan marker pada posisi terkini
+                  draggable={true} // Memungkinkan marker untuk didrag
                 />
               )}
 
-              {typeGeometry === 2 && polyString?.length > 0 && (
-                <Polyline
-                  path={polyString}
-                  options={{
-                    strokeColor: "#0000FF",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    editable: true,
-                    draggable: true,
-                  }}
-                  onMouseUp={onPolylineEdit}
-                  onDragEnd={onPolylineEdit}
-                />
-              )}
-
-              {typeGeometry === 3 && polyString?.length > 0 && (
-                <Polygon
-                  paths={polyString}
-                  options={{
-                    fillColor: "#FF0000",
-                    fillOpacity: 0.4,
-                    strokeColor: "#0000FF",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    editable: true,
-                    draggable: true,
-                  }}
-                  onMouseUp={onPolygonEdit}
-                  onDragEnd={onPolygonEdit}
-                />
-              )}
-
-              {typeGeometry !== 1 && !polyString?.length && (
+              {typeGeometry !== 1 && (
                 <DrawingManager
                   options={{
                     drawingControl: true,
@@ -597,14 +525,14 @@ export default function UpdateNamingPage({
                     },
                     polylineOptions: {
                       strokeColor: "#0000FF",
-                      strokeOpacity: 0.8,
+                      strokeOpacity: 0.5,
                       strokeWeight: 2,
                       clickable: true,
                       editable: true,
                       draggable: true,
                     },
                   }}
-                  onPolygonComplete={onPolygonComplete}
+                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
                   onPolylineComplete={onPolylineComplete}
                 />
               )}
@@ -681,51 +609,12 @@ export default function UpdateNamingPage({
             >
               {typeGeometry === 1 && (
                 <Marker
-                  position={markerPosition}
-                  draggable={true}
-                  onDragEnd={(e: any) => {
-                    const newPosition = {
-                      lat: e.latLng.lat(),
-                      lng: e.latLng.lng(),
-                    };
-                    setMarkerPosition(newPosition);
-                  }}
+                  position={markerPosition} // Menampilkan marker pada posisi terkini
+                  draggable={true} // Memungkinkan marker untuk didrag
                 />
               )}
 
-              {typeGeometry === 2 && polyString?.length > 0 && (
-                <Polyline
-                  path={polyString}
-                  options={{
-                    strokeColor: "#0000FF",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    editable: true,
-                    draggable: true,
-                  }}
-                  onMouseUp={onPolylineEdit}
-                  onDragEnd={onPolylineEdit}
-                />
-              )}
-
-              {typeGeometry === 3 && polyString?.length > 0 && (
-                <Polygon
-                  paths={polyString}
-                  options={{
-                    fillColor: "#FF0000",
-                    fillOpacity: 0.4,
-                    strokeColor: "#0000FF",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    editable: true,
-                    draggable: true,
-                  }}
-                  onMouseUp={onPolygonEdit}
-                  onDragEnd={onPolygonEdit}
-                />
-              )}
-
-              {typeGeometry !== 1 && !polyString?.length && (
+              {typeGeometry !== 1 && (
                 <DrawingManager
                   options={{
                     drawingControl: true,
@@ -748,14 +637,14 @@ export default function UpdateNamingPage({
                     },
                     polylineOptions: {
                       strokeColor: "#0000FF",
-                      strokeOpacity: 0.8,
+                      strokeOpacity: 0.5,
                       strokeWeight: 2,
                       clickable: true,
                       editable: true,
                       draggable: true,
                     },
                   }}
-                  onPolygonComplete={onPolygonComplete}
+                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
                   onPolylineComplete={onPolylineComplete}
                 />
               )}
