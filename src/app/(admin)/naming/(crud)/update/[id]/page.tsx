@@ -462,6 +462,34 @@ export default function UpdateNamingPage({
 
   console.log(polygonString);
 
+  const onPolygonEdit = (e: any) => {
+    const paths = e.getPath();
+    const updatedLatLngs = paths.getArray().map((latLng: any) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+
+    const updatedPolygonString = updatedLatLngs
+      .map((latLng: any) => `${latLng.lat},${latLng.lng}`)
+      .join(";");
+
+    setPolygonString(updatedPolygonString);
+  };
+
+  const onPolylineEdit = (e: any) => {
+    const path = e.getPath();
+    const updatedLatLngs = path.getArray().map((latLng: any) => ({
+      lat: latLng.lat(),
+      lng: latLng.lng(),
+    }));
+
+    const updatedPolylineString = updatedLatLngs
+      .map((latLng: any) => `${latLng.lat},${latLng.lng}`)
+      .join(";");
+
+    setPolylineString(updatedPolylineString);
+  };
+
   if (!isLoaded) return <p>Loading ...</p>;
 
   return (
@@ -494,21 +522,59 @@ export default function UpdateNamingPage({
               </StandaloneSearchBox>
             </div> */}
             <GoogleMap
-              mapContainerStyle={mapContainerStyle2}
+              mapContainerStyle={mapContainerStyle}
               center={mapCenter}
               onLoad={onLoadMap}
-              zoom={10.85} // Menangani event drag pada peta
+              zoom={10.85}
               onClick={onMapClick}
-              // Menangani event klik pada peta
             >
               {typeGeometry === 1 && (
                 <Marker
-                  position={markerPosition} // Menampilkan marker pada posisi terkini
-                  draggable={true} // Memungkinkan marker untuk didrag
+                  position={markerPosition}
+                  draggable={true}
+                  onDragEnd={(e: any) => {
+                    const newPosition = {
+                      lat: e.latLng.lat(),
+                      lng: e.latLng.lng(),
+                    };
+                    setMarkerPosition(newPosition);
+                  }}
                 />
               )}
 
-              {typeGeometry !== 1 && (
+              {typeGeometry === 2 && polyString?.length > 0 && (
+                <Polyline
+                  path={polyString}
+                  options={{
+                    strokeColor: "#0000FF",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    editable: true,
+                    draggable: true,
+                  }}
+                  onMouseUp={onPolylineEdit}
+                  onDragEnd={onPolylineEdit}
+                />
+              )}
+
+              {typeGeometry === 3 && polyString?.length > 0 && (
+                <Polygon
+                  paths={polyString}
+                  options={{
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.4,
+                    strokeColor: "#0000FF",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    editable: true,
+                    draggable: true,
+                  }}
+                  onMouseUp={onPolygonEdit}
+                  onDragEnd={onPolygonEdit}
+                />
+              )}
+
+              {typeGeometry !== 1 && !polyString?.length && (
                 <DrawingManager
                   options={{
                     drawingControl: true,
@@ -531,14 +597,14 @@ export default function UpdateNamingPage({
                     },
                     polylineOptions: {
                       strokeColor: "#0000FF",
-                      strokeOpacity: 0.5,
+                      strokeOpacity: 0.8,
                       strokeWeight: 2,
                       clickable: true,
                       editable: true,
                       draggable: true,
                     },
                   }}
-                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
+                  onPolygonComplete={onPolygonComplete}
                   onPolylineComplete={onPolylineComplete}
                 />
               )}
@@ -610,18 +676,56 @@ export default function UpdateNamingPage({
               mapContainerStyle={mapContainerStyle}
               center={mapCenter}
               onLoad={onLoadMap}
-              zoom={10.85} // Menangani event drag pada peta
+              zoom={10.85}
               onClick={onMapClick}
-              // Menangani event klik pada peta
             >
               {typeGeometry === 1 && (
                 <Marker
-                  position={markerPosition} // Menampilkan marker pada posisi terkini
-                  draggable={true} // Memungkinkan marker untuk didrag
+                  position={markerPosition}
+                  draggable={true}
+                  onDragEnd={(e: any) => {
+                    const newPosition = {
+                      lat: e.latLng.lat(),
+                      lng: e.latLng.lng(),
+                    };
+                    setMarkerPosition(newPosition);
+                  }}
                 />
               )}
 
-              {typeGeometry !== 1 && (
+              {typeGeometry === 2 && polyString?.length > 0 && (
+                <Polyline
+                  path={polyString}
+                  options={{
+                    strokeColor: "#0000FF",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    editable: true,
+                    draggable: true,
+                  }}
+                  onMouseUp={onPolylineEdit}
+                  onDragEnd={onPolylineEdit}
+                />
+              )}
+
+              {typeGeometry === 3 && polyString?.length > 0 && (
+                <Polygon
+                  paths={polyString}
+                  options={{
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.4,
+                    strokeColor: "#0000FF",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    editable: true,
+                    draggable: true,
+                  }}
+                  onMouseUp={onPolygonEdit}
+                  onDragEnd={onPolygonEdit}
+                />
+              )}
+
+              {typeGeometry !== 1 && !polyString?.length && (
                 <DrawingManager
                   options={{
                     drawingControl: true,
@@ -644,14 +748,14 @@ export default function UpdateNamingPage({
                     },
                     polylineOptions: {
                       strokeColor: "#0000FF",
-                      strokeOpacity: 0.5,
+                      strokeOpacity: 0.8,
                       strokeWeight: 2,
                       clickable: true,
                       editable: true,
                       draggable: true,
                     },
                   }}
-                  onPolygonComplete={onPolygonComplete} // Menangani event polygon selesai digambar
+                  onPolygonComplete={onPolygonComplete}
                   onPolylineComplete={onPolylineComplete}
                 />
               )}
