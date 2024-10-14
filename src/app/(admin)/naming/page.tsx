@@ -36,6 +36,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import useSWR from "swr";
 import Swal from "sweetalert2";
 import UploadFileDialog from "@/components/Dialog/UploadFIle";
+import UploadFileShpDialog from "@/components/Dialog/UploadShp";
 
 // type PaymentS = {
 //   id: string;
@@ -86,14 +87,20 @@ export default function NamingPage() {
 
   const toggleDropdown = () => {
     setDropdown(!dropdown);
+    if (!dropdown) {
+      setDropdown2(false); // Menutup dropdown2 saat dropdown pertama dibuka
+    }
   };
 
   const toggleDropdown2 = () => {
     setDropdown2(!dropdown2);
+    if (!dropdown2) {
+      setDropdown(false); // Menutup dropdown pertama saat dropdown2 dibuka
+    }
   };
 
   const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get?limit=10000000`,
+    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000`,
     fetcher
   );
 
@@ -186,9 +193,15 @@ export default function NamingPage() {
                 <li>
                   <UploadFileDialog title="Excel" endpoint="excel" />
                 </li>
-                <li></li>
-                <li></li>
-                <li></li>
+                <li>
+                  <UploadFileDialog title="CSV" endpoint="csv" />
+                </li>
+                <li>
+                  <UploadFileDialog title="JSON" endpoint="json" />
+                </li>
+                <li>
+                  <UploadFileShpDialog />
+                </li>
               </ul>
             </div>
           )}

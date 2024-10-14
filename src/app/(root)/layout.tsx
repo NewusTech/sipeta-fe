@@ -1,6 +1,10 @@
 import { Metadata } from "next";
-import Navbar from "../../components/Navbar";
+import dynamic from "next/dynamic";
 import "../globals.css";
+
+const DynamicNavbar = dynamic(() => import("../../components/Navbar"), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "Sipeta",
@@ -13,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-      <Navbar />
+      <DynamicNavbar />
       <main>{children}</main>
     </div>
   );

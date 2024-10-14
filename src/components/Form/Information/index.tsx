@@ -4,9 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { cn, generateUniqueId } from "../../../lib/utils";
+import { cn } from "../../../lib/utils";
 import { Button } from "../../ui/button";
-import { toast } from "../../../hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -186,8 +185,17 @@ export default function InformationForm({
   }));
 
   // 1. Define your form.
+  const generatedIds = new Set();
 
-  // const idToponim = generateUniqueId();
+  const generateUniqueId = () => {
+    let uniqueId;
+    do {
+      // Menghasilkan angka acak 6 digit
+      uniqueId = Math.floor(100000 + Math.random() * 900000).toString(); // Angka antara 100000 dan 999999
+    } while (generatedIds.has(uniqueId)); // Cek apakah ID sudah ada di Set
+    generatedIds.add(uniqueId); // Tambahkan ID yang dihasilkan ke Set
+    return uniqueId;
+  };
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -206,7 +214,7 @@ export default function InformationForm({
 
     if (locationDetails) {
       form.reset({
-        idToponim: "112311",
+        idToponim: generateUniqueId(),
         district: locationDetails.kecamatan,
         village: locationDetails.desa,
         mainCoordinat: locationDetails.dms,
