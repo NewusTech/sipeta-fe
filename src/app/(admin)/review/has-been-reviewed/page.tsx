@@ -51,7 +51,7 @@ const columns: ColumnDef<HasBeenReviewed>[] = [
       return (
         <div>
           <div className="p-1 w-7 bg-orange-400 hover:bg-orange-500 rounded-sm cursor-pointer">
-            <Link href={`/list-name/${row.original.id}`}>
+            <Link href={`/review/has-been-reviewed/detail/${row.original.id}`}>
               <EyeIcon className="w-5 h-5 text-white" />
             </Link>
           </div>
@@ -97,7 +97,7 @@ export default function HasBeenReviewedPage() {
   };
 
   const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get?limit=10000000&status=1`,
+    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000&status=1`,
     fetcher
   );
 

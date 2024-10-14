@@ -33,7 +33,7 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import { Input } from "../../../../../../components/ui/input";
-import geoJson from "../../../../../../constants/lamtura.json";
+import geoJson from "../../../../../../constants/data.json";
 import geoJson2 from "../../../../../../constants/lamturaa.json";
 import InformationForm from "../../../../../../components/Form/Information";
 import DetailForm from "../../../../../../components/Form/Detail";
@@ -132,66 +132,157 @@ export default function DetailHasNotBeenReviewed({
     // Menambahkan data GeoJSON ke peta
     map.data.addGeoJson(geoJson);
 
-    // Mengatur tampilan visual untuk wilayah choropleth
+    // Fungsi untuk menghitung centroid dari poligon
+    const calculateCentroid = (coordinates: number[][]) => {
+      let totalX = 0,
+        totalY = 0;
+      coordinates.forEach((coord) => {
+        totalX += coord[0];
+        totalY += coord[1];
+      });
+      const centerX = totalX / coordinates.length;
+      const centerY = totalY / coordinates.length;
+      return { lat: centerY, lng: centerX };
+    };
+
+    // Peta warna berdasarkan properti tertentu, misalnya `namobj`
+    // const colorMap = {
+    //   "Sungkai Utara": "#FF21A0", // Warna untuk Sungkai Utara
+    //   "Bukit Kemuning": "#FF0000", // Warna untuk Bukit Kemuning
+    //   "Abung Tinggi": "#00FF00",
+    //   "Abung Surakarta": "#0000FF",
+    //   "Abung Semuli": "#FFFF00",
+    //   "Abung Timur": "#FF00FF",
+    //   "Abung Kunang": "#00FFFF",
+    //   Kotabumi: "#FFA500",
+    //   "Kotabumi Selatan": "#800080",
+    //   "Kotabumi Utara": "#008000",
+    //   "Tanjung Raja": "#10FF40", // Warna untuk Tanjung Raja
+    //   "Muara Sungkai": "#FFC0CB",
+    //   "Bunga Mayang": "#C0C0C0",
+    //   "Abung Selatan": "#A52A2A",
+    //   "Hulu Sungkai": "#D2691E",
+    //   "Lampung Utara": "#FF4500",
+    //   "Sungkai Barat": "#CD5C5C",
+    //   "Sungkai Selatan": "#F08080",
+    //   "Sungkai Tengah": "#FF6347",
+    //   "Tanjung Sari": "#B22222",
+    //   "Abung Tengah": "#FFD700",
+    //   "Sungkai Jaya": "#9ACD32",
+    //   "Abung Barat": "#ADFF2F",
+    //   "Blambangan Pagar": "#32CD32",
+    //   "Abung Pekurun": "#fff",
+    //   // Tambahkan warna lain sesuai kebutuhan
+    // };
+
+    // Mengatur tampilan visual untuk setiap poligon
     map.data.setStyle((feature) => {
-      // const color = getColorForFeature(feature); // Fungsi untuk mengatur warna berdasarkan data
+      // const namobj: any = feature.getProperty("namobj");
+      const fillColor = "#7295FF"; // Default warna jika tidak ada dalam colorMap
       return {
-        fillColor: "#7295FF",
-        // fillColor: "#A7E9C6",
+        fillColor: fillColor,
         strokeColor: "#000",
-        strokeWeight: 0.1,
-        fillOpacity: 0.3,
-        clickable: false,
+        strokeWeight: 0.3,
+        fillOpacity: 0.5,
+        clickable: false, // Agar tidak bisa diklik
       };
     });
 
-    map.data.addListener("click", (event: any) => {
-      const feature = event.feature;
-      console.log("Feature clicked:", feature);
-      // Lakukan sesuatu ketika fitur di klik, misalnya highlight atau update form
+    // Membuat custom OverlayView untuk menampilkan teks di tengah poligon
+    class LabelOverlay extends google.maps.OverlayView {
+      private position: google.maps.LatLng;
+      private text: string;
+      private div: HTMLElement | null = null;
+
+      constructor(position: google.maps.LatLng, text: string) {
+        super();
+        this.position = position;
+        this.text = text;
+      }
+
+      onAdd() {
+        this.div = document.createElement("div");
+        this.div.style.position = "absolute";
+        this.div.style.color = "black";
+        this.div.style.fontSize = "12px";
+        this.div.style.fontWeight = "bold";
+        this.div.style.whiteSpace = "nowrap";
+        this.div.innerText = this.text;
+
+        const panes = this.getPanes();
+        panes?.overlayLayer.appendChild(this.div);
+      }
+
+      draw() {
+        const overlayProjection = this.getProjection();
+        const position = overlayProjection.fromLatLngToDivPixel(this.position);
+
+        if (this.div && position) {
+          this.div.style.left = position.x - 30 + "px";
+          this.div.style.top = position.y + "px";
+        }
+      }
+
+      onRemove() {
+        if (this.div) {
+          this.div.parentNode?.removeChild(this.div);
+          this.div = null;
+        }
+      }
+    }
+
+    // Loop melalui semua fitur untuk mendapatkan centroid dan menampilkan label
+    map.data.forEach((feature) => {
+      const geometry: any = feature.getGeometry();
+
+      if (geometry.getType() === "Polygon") {
+        const polygon = geometry as google.maps.Data.Polygon;
+        const path = polygon.getArray()[0]; // Ambil array pertama sebagai poligon utama
+
+        // Hitung centroid
+        const centroid = calculateCentroid(
+          path.getArray().map((coord) => [coord.lng(), coord.lat()])
+        );
+
+        // Ambil nilai dari "namobj"
+        const name: any = feature.getProperty("namobj");
+
+        // Membuat LabelOverlay di tengah poligon
+        const overlay = new LabelOverlay(
+          new google.maps.LatLng(centroid.lat, centroid.lng),
+          name
+        );
+        overlay.setMap(map);
+      }
     });
 
+    // Mengatur opsi tampilan peta
     map.setOptions({
       styles: [
-        // {
-        //   featureType: "all",
-        //   elementType: "geometry",
-        //   // stylers: [{ color: "#FFCCCC" }] // Warna merah redup di luar GeoJSON
-        // },
         {
           featureType: "administrative.province",
           elementType: "labels",
-          stylers: [{ visibility: "off" }], // Tampilkan hanya nama provinsi
+          stylers: [{ visibility: "off" }],
         },
         {
           featureType: "administrative.locality",
           elementType: "labels",
-          stylers: [{ visibility: "off" }], // Tampilkan nama kabupaten (locality)
+          stylers: [{ visibility: "off" }],
         },
         {
           featureType: "poi",
           elementType: "labels",
-          stylers: [{ visibility: "off" }], // Sembunyikan semua point of interest (kantor, masjid, dll.)
+          stylers: [{ visibility: "on" }],
         },
-        // {
-        //   featureType: "road",
-        //   elementType: "geometry",
-        //   stylers: [{ visibility: "on" }], // Sembunyikan jalan
-        // },
-        // {
-        //   featureType: "water",
-        //   elementType: "geometry",
-        //   stylers: [{ color: "#A1CAF1" }] // Warna biru muda untuk laut
-        // },
         {
           featureType: "landscape",
           elementType: "geometry",
-          stylers: [{ color: "#FFEEEE" }], // Warna lebih terang untuk daratan di luar GeoJSON
+          stylers: [{ color: "#FFEEEE" }],
         },
         {
           featureType: "road",
           elementType: "geometry",
-          stylers: [{ visibility: "off" }], // Menyembunyikan jalan agar lebih fokus ke daratan/laut
+          stylers: [{ visibility: "on" }],
         },
       ],
     });
@@ -450,7 +541,7 @@ export default function DetailHasNotBeenReviewed({
     <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
       <section className="md:pl-32 pl-10 pr-10 md:pr-0 pb-20 md:pb-0">
         <div className="flex items-center text-primaryy mt-4">
-          <Link href="/naming" className="cursor-pointer">
+          <Link href="/review/has-not-been-reviewed" className="cursor-pointer">
             <ChevronLeft className="w-7 h-7" />
           </Link>
           <h4>Kembali</h4>
