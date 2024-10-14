@@ -20,6 +20,12 @@ import { useEffect, useState } from "react";
 const Sidebar = ({ type }: { type?: string }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === path;
+    }
+    return pathname.startsWith(path);
+  };
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const toggleDropdown = (dropdownName: string) => {
@@ -59,13 +65,24 @@ const Sidebar = ({ type }: { type?: string }) => {
             </div>
           </div>
           <ul className="text-primaryy mt-14 cursor-pointer text-[15px]">
-            <li className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+            <li
+              className={`p-3 rounded-md flex items-center space-x-3 ${
+                isActive("/dashboard")
+                  ? "bg-primaryy text-white font-medium"
+                  : ""
+              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+            >
               <LayoutDashboard />
               <Link href="/dashboard">
                 <p>Dashboard</p>
               </Link>
             </li>
-            <li className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+            <li
+              className={`p-3 rounded-md flex items-center space-x-3 ${
+                isActive("/naming") ? "bg-primaryy text-white font-medium" : ""
+              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+            >
+              {" "}
               <MapIcon />
               <Link href="/naming">
                 <p>Pendataan</p>
@@ -73,7 +90,9 @@ const Sidebar = ({ type }: { type?: string }) => {
             </li>
             <li
               onClick={() => toggleDropdown("penelaahan")}
-              className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
+              className={`p-3 rounded-md flex items-center space-x-3 ${
+                isActive("/review") ? "bg-primaryy text-white font-medium" : ""
+              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
             >
               <MapPinCheck />
               <p>Penelaahan</p>
@@ -98,7 +117,9 @@ const Sidebar = ({ type }: { type?: string }) => {
             )}
             <li
               onClick={() => toggleDropdown("peran-pengguna")}
-              className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
+              className={`p-3 rounded-md flex items-center space-x-3 ${
+                isActive("/user") ? "bg-primaryy text-white font-medium" : ""
+              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
             >
               <User2Icon className="w-[29px] h-[29px]" />
               <p>Peran Pengguna</p>
@@ -118,7 +139,11 @@ const Sidebar = ({ type }: { type?: string }) => {
             )}
             <li
               onClick={() => toggleDropdown("master-data")}
-              className="p-3 rounded-md flex items-center space-x-3 hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy"
+              className={`p-3 rounded-md flex items-center space-x-3 ${
+                isActive("/master-data")
+                  ? "bg-primaryy text-white font-medium"
+                  : ""
+              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
             >
               <Database />
               <p>Master Data</p>

@@ -37,6 +37,7 @@ import useSWR from "swr";
 import Swal from "sweetalert2";
 import UploadFileDialog from "@/components/Dialog/UploadFIle";
 import UploadFileShpDialog from "@/components/Dialog/UploadShp";
+import { FilterDialog } from "@/components/Dialog/Filter";
 
 // type PaymentS = {
 //   id: string;
@@ -272,10 +273,7 @@ export default function NamingPage() {
             </div>
           )}
           <div className="flex items-center space-x-2 md:space-x-11">
-            <div className="flex rounded-full w-[80px] h-[28px] items-center px-2 justify-between border border-primaryy mt-[15px]">
-              <ListFilter className="h-4 w-4 text-primaryy" />
-              <p className="text-primaryy font-light">Filter</p>
-            </div>
+            <FilterDialog />
             <Link href="/naming/create">
               <div className="flex px-2 space-x-2 items-center h-[28px] bg-primaryy mt-4 text-white rounded-full ">
                 <MapPinPlus className="w-5 h-5" />

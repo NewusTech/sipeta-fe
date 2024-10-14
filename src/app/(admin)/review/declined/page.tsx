@@ -96,7 +96,7 @@ export default function Declined() {
     setDropdown(!dropdown);
   };
   const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get?limit=10000000&status=2`,
+    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000&status=2`,
     fetcher
   );
 

@@ -12,3 +12,14 @@ type BearActions = {
 
 // Combine state and actions
 export type BearStore = BearState & BearActions;
+
+export interface NotificationsType {
+  id: string;
+  layananformnum_id: number;
+  userinfo: number;
+  title: string;
+  description: string;
+  url: string;
+  date: string;
+  isopen: number;
+}

@@ -9,12 +9,33 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { SidebarMobile } from "../Sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import NotifikasiWebiste from "@/components/Notification";
+import { NotificationsType } from "types/types";
+import { jwtDecode } from "jwt-decode";
+import { io, Socket } from "socket.io-client";
+
+interface JwtPayload {
+  userId: string;
+}
 
 const NavDashboard = () => {
+  let socket: Socket;
+  const pathName = usePathname();
+  const [auth, setAuth] = useState<string>();
+  const [currentPath, setCurrentPath] = useState(pathName);
+  const [decoded, setDecoded] = useState<JwtPayload | null>(null);
+  const [notifications, setNotifications] = useState<NotificationsType[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [open, setOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
 
@@ -36,7 +57,71 @@ const NavDashboard = () => {
   const logout = () => {
     Cookies.remove("token");
     router.replace("/login");
+    setDecoded(null);
   };
+
+  useEffect(() => {
+    const authen = Cookies.get("token");
+
+    setAuth(authen);
+  }, []);
+
+  useEffect(() => {
+    const auth = Cookies.get("token");
+
+    let socket: Socket | null = null;
+
+    if (auth) {
+      try {
+        const decodedToken = jwtDecode<JwtPayload>(auth);
+
+        socket = io(`${process.env.NEXT_PUBLIC_API_URL_MPP_GOOGLE}`);
+
+        // Dengarkan event dari server
+        socket.on("UpdateStatus", (pesansocket: any) => {
+          if (pesansocket.iduser == decodedToken?.userId) {
+            fetchNotifications(currentPage);
+          }
+        });
+
+        setDecoded(decodedToken);
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    }
+
+    // Cleanup ketika komponen di-unmount
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [pathName]);
+
+  const fetchNotifications = async (page: number) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/notifications?page=${page}&limit=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setNotifications(data?.data);
+      setTotalPages(Math.ceil(data?.pagination?.totalCount / 10));
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    }
+  };
+
+  useEffect(() => {
+    const auth = Cookies.get("token");
+    if (auth) {
+      fetchNotifications(currentPage);
+    }
+  }, [currentPage]);
 
   return (
     <>
@@ -59,12 +144,52 @@ const NavDashboard = () => {
           </div>
         </div>
         <ul className="hidden md:flex justify-end text-white items-center space-x-6 py-8 px-10">
-          <li className="relative">
-            <BellIcon />
-            <div className="absolute rounded-full text-[8px] bg-red-500 w-4 h-4 flex items-center justify-center -mt-8 ml-3">
-              <p>3</p>
-            </div>
-          </li>
+          <Popover>
+            <PopoverTrigger>
+              <li className="relative">
+                <BellIcon />
+                {notifications?.some(
+                  (notification) => notification.isopen === 0
+                ) && (
+                  <span className="absolute rounded-full text-[8px] bg-red-500 w-4 h-4 flex items-center justify-center -mt-8 ml-3"></span>
+                )}
+              </li>
+            </PopoverTrigger>
+            <PopoverContent className="min-w-[500px] bg-neutral-50 mr-5 border border-primary-900 shadow-lg rounded-lg max-h-[550px] overflow-y-scroll">
+              <div className="w-full flex flex-col overflow-y-scroll gap-y-3 verticalScroll max-h-screen">
+                <div className="w-full flex flex-col gap-y-3">
+                  <div className="w-full border-b border-neutral-900">
+                    <h3 className="text-neutral-900 font-semibold text-[20px]">
+                      Notifikasi
+                    </h3>
+                  </div>
+                  {notifications?.map((notification, i) => (
+                    <NotifikasiWebiste key={i} notification={notification} />
+                  ))}
+                </div>
+
+                <div className="flex justify-between mt-4 px-2">
+                  <button
+                    className="px-4 py-2 bg-primary-700 text-white rounded disabled:opacity-50"
+                    onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
+                    disabled={currentPage <= 1}
+                  >
+                    Previous
+                  </button>
+                  <span className="self-center text-neutral-900">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    className="px-4 py-2 bg-primary-700 text-white rounded disabled:opacity-50"
+                    onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                    disabled={currentPage >= totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
           <li
             className="flex space-x-2 items-center cursor-pointer"
             onClick={toggleDropdown2}
