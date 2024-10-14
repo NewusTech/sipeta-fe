@@ -25,7 +25,7 @@ export default function Home() {
 
   // Fetch data dengan SWR berdasarkan halaman saat ini
   const { data } = useSWR<any>(
-    `${apiUrl}/datatoponim/get?limit=1000`,
+    `${apiUrl}/datatoponim/get-landing?limit=100000`,
     fetcherWithoutAuth
   );
 
