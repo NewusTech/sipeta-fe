@@ -112,7 +112,12 @@ export default function DistrictPage() {
         </div>
         <div className="-mt-9">
           {result && (
-            <DataTables2 columns={columns} filterBy="name" data={result} />
+            <DataTables
+              columns={columns}
+              filterBy="name"
+              data={result}
+              type="village"
+            />
           )}
         </div>
       </section>

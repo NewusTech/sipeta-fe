@@ -28,6 +28,7 @@ import Link from "next/link";
 import { useState } from "react";
 import useSWR from "swr";
 import Swal from "sweetalert2";
+import { FiltersDialog } from "@/components/Dialog/Filter/filters";
 
 type HasBeenReviewed = {
   id: string;
@@ -66,6 +67,9 @@ const columns: ColumnDef<HasBeenReviewed>[] = [
   {
     accessorKey: "Unsur.name",
     header: "Unsur",
+    cell: ({ row }) => {
+      return <p>{row.original?.Unsur?.name || "-"}</p>;
+    },
   },
   {
     accessorKey: "nama_lokal",
@@ -78,6 +82,9 @@ const columns: ColumnDef<HasBeenReviewed>[] = [
   {
     accessorKey: "Kecamatan.name",
     header: "Kecamatan",
+    cell: ({ row }) => {
+      return <p>{row.original?.Kecamatan?.name || "-"}</p>;
+    },
   },
 ];
 
@@ -91,17 +98,45 @@ export default function Declined() {
     json: false,
     shp: false,
   });
+  const [filterData, setFilterData] = useState<{
+    district: any;
+    unsur: any;
+    date: Date | null;
+  }>({
+    district: "",
+    unsur: "",
+    date: null,
+  });
 
+  // Fungsi untuk menerima data dari FilterDialog
+  const handleFilterApply = (district: any, unsur: any, date: Date | null) => {
+    setFilterData({ district, unsur, date });
+    // Lakukan fetch data atau filtering dengan filterData yang baru
+  };
   const toggleDropdown = () => {
     setDropdown(!dropdown);
   };
-  const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000&status=2`,
-    fetcher
-  );
+  const { data } = useSWR(() => {
+    // Base URL
+    let url = `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000&status=1`;
+
+    // Append 'kecamatan_id' if it's not null or empty
+    if (filterData.district && filterData.district.id) {
+      url += `&kecamatan_id=${Number(filterData.district.id)}`;
+    }
+
+    // Append 'unsur_id' if it's not null or empty
+    if (filterData.unsur && filterData.unsur.id) {
+      url += `&unsur_id=${Number(filterData.unsur.id)}`;
+    }
+
+    // Return URL to be used by useSWR
+    return url;
+  }, fetcher);
 
   const result = data?.data;
   const totalPages = data?.pagination?.totalPages || 1;
+  console.log(data);
 
   // Fungsi untuk mengubah halaman
   const handlePageChange = (newPage: number) => {
@@ -258,10 +293,7 @@ export default function Declined() {
             </div>
           )}
           <div className="flex items-center space-x-11">
-            <div className="flex rounded-full w-[80px] h-[28px] items-center px-2 justify-between border border-primaryy mt-[15px]">
-              <ListFilter className="h-4 w-4 text-primaryy" />
-              <p className="text-primaryy font-light">Filter</p>
-            </div>
+            <FiltersDialog onFilterApply={handleFilterApply} />
           </div>
           <div className="space-y-2 mt-6 md:hidden block">
             {result ? (
@@ -281,7 +313,11 @@ export default function Declined() {
           </div>
           <div className="w-full -mt-[85px] md:block hidden">
             {result && (
-              <DataTables columns={columns} data={result} filterBy="name" />
+              <DataTables
+                columns={columns}
+                data={result}
+                filterBy="nama_lokal"
+              />
             )}
           </div>
         </div>

@@ -39,6 +39,9 @@ const NavDashboard = () => {
   const [open, setOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
 
+  const [token, setToken] = useState<string | undefined>("");
+  const [role, setRole] = useState<string | undefined>("");
+
   const [openDropdown2, setOpenDropdown2] = useState(false);
   const router = useRouter();
 
@@ -123,6 +126,26 @@ const NavDashboard = () => {
     }
   }, [currentPage]);
 
+  useEffect(() => {
+    const tokenn = Cookies.get("token");
+    setToken(tokenn);
+    if (tokenn) {
+      try {
+        const decodedToken = jwtDecode<any>(tokenn);
+
+        console.log("Decoded Token:", decodedToken);
+        setRole(decodedToken.role);
+
+        // Anda bisa menggunakan data decodedToken di sini
+        // contoh: console.log(`User ID: ${decodedToken.userId}`);
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    } else {
+      console.log("No token found in cookies");
+    }
+  }, []);
+
   return (
     <>
       <nav className="z-10 md:absolute bg-primaryy w-screen px-10 md:px-0 py-4 md:py-0">
@@ -195,7 +218,7 @@ const NavDashboard = () => {
             onClick={toggleDropdown2}
           >
             <UserCircle2Icon className="w-10 h-10" />
-            <p>User</p>
+            <p>{role}</p>
             <ChevronDown
               className={`w-4 h-4 transition-all duration-300 ${openDropdown2 ? "rotate-180" : "rotate-0"}`}
             />

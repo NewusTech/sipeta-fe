@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { ChevronDown, LayoutDashboardIcon, LogOut, X } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   GoogleMap,
   Marker,
@@ -18,6 +18,7 @@ import { usePathname, useRouter } from "next/navigation";
 import path from "path";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
   // const [openDropdown, setOpenDropdown] = useState(false);
@@ -25,10 +26,10 @@ const Navbar = () => {
   const [openDropdownName, setOpenDropdownName] = React.useState(false);
   const [openDropdownName2, setOpenDropdownName2] = React.useState(false);
   const pathname = usePathname();
+  const [token, setToken] = React.useState<string | undefined>("");
+  const [role, setRole] = React.useState<string | undefined>("");
 
   const router = useRouter();
-
-  const token = Cookies.get("token");
 
   const isActive = (path: string) => pathname === path;
 
@@ -49,6 +50,26 @@ const Navbar = () => {
     router.replace("/login");
   };
 
+  useEffect(() => {
+    const tokenn = Cookies.get("token");
+    setToken(tokenn);
+    if (tokenn) {
+      try {
+        const decodedToken = jwtDecode<any>(tokenn);
+
+        console.log("Decoded Token:", decodedToken);
+        setRole(decodedToken.role);
+
+        // Anda bisa menggunakan data decodedToken di sini
+        // contoh: console.log(`User ID: ${decodedToken.userId}`);
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    } else {
+      console.log("No token found in cookies");
+    }
+  }, []);
+
   return (
     <div>
       <div className="bg-primaryy">
@@ -62,9 +83,9 @@ const Navbar = () => {
               height={65}
             />
             <div>
-              <h1 className="uppercase text-white font-bold text-lg">sipeta</h1>
+              <h1 className="uppercase text-white font-bold text-lg">TAPEM</h1>
               <p className="uppercase font-light text-white text-xs">
-                sistem informasi pengelolaan data kewilayahan lampung utara
+                tata pemerintahan lampung utara
               </p>
             </div>
           </div>
@@ -74,7 +95,7 @@ const Navbar = () => {
                 onClick={toggleDropdownName2}
                 className="text-white rounded-full cursor-pointer bg-primaryy flex space-x-4 items-center"
               >
-                <p>Aris</p>
+                <p>{role}</p>
                 <ChevronDown
                   className={`text-white w-5 h-5 transition-all duration-300 ${openDropdownName2 ? "rotate-180" : "rotate-0"}`}
                 />

@@ -85,6 +85,20 @@ export default function NamingPage() {
     json: false,
     shp: false,
   });
+  const [filterData, setFilterData] = useState<{
+    status: string;
+    date: Date | null;
+  }>({
+    status: "",
+    date: null,
+  });
+
+  // Fungsi untuk menerima data dari FilterDialog
+  const handleFilterApply = (status: string, date: Date | null) => {
+    setFilterData({ status, date });
+    console.log("Filter Applied:", { status, date });
+    // Lakukan fetch data atau filtering dengan filterData yang baru
+  };
 
   const toggleDropdown = () => {
     setDropdown(!dropdown);
@@ -101,7 +115,7 @@ export default function NamingPage() {
   };
 
   const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000`,
+    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000&status=${filterData.status}`,
     fetcher
   );
 
@@ -273,7 +287,7 @@ export default function NamingPage() {
             </div>
           )}
           <div className="flex items-center space-x-2 md:space-x-11">
-            <FilterDialog />
+            <FilterDialog onFilterApply={handleFilterApply} />
             <Link href="/naming/create">
               <div className="flex px-2 space-x-2 items-center h-[28px] bg-primaryy mt-4 text-white rounded-full ">
                 <MapPinPlus className="w-5 h-5" />
