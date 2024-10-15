@@ -17,6 +17,7 @@ import { Button } from "../../../../components/ui/button";
 import Link from "next/link";
 import ModalDelete from "../../../../components/Dialog/delete";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { DataTables } from "@/components/Datatables";
 
 type Village = {
   id: number;
@@ -111,7 +112,12 @@ export default function VillagePage() {
         </div>
         <div className="-mt-9">
           {result && (
-            <DataTables2 columns={columns} filterBy="name" data={result} />
+            <DataTables
+              columns={columns}
+              filterBy="name"
+              data={result}
+              type="village"
+            />
           )}
         </div>
       </section>

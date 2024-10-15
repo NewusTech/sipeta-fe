@@ -59,12 +59,15 @@ const Sidebar = ({ type }: { type?: string }) => {
             />
             <div>
               <h1 className="text-primaryy uppercase text-2xl font-bold">
-                sipeta
+                tapem
               </h1>
+              <h6 className="text-primaryy uppercase text-sm font-medium">
+                lampung utara
+              </h6>
               <p className="font-light text-sm text-primaryy">Dashboard</p>
             </div>
           </div>
-          <ul className="text-primaryy mt-14 cursor-pointer text-[15px]">
+          <ul className="text-primaryy space-y-2 mt-14 cursor-pointer text-[15px]">
             <li
               className={`p-3 rounded-md flex items-center space-x-3 ${
                 isActive("/dashboard")
@@ -91,7 +94,11 @@ const Sidebar = ({ type }: { type?: string }) => {
             <li
               onClick={() => toggleDropdown("penelaahan")}
               className={`p-3 rounded-md flex items-center space-x-3 ${
-                isActive("/review") ? "bg-primaryy text-white font-medium" : ""
+                isActive("/review")
+                  ? "bg-primaryy text-white font-medium"
+                  : openDropdown === "penelaahan"
+                    ? "bg-primaryy bg-opacity-20"
+                    : ""
               }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
             >
               <MapPinCheck />
@@ -102,15 +109,27 @@ const Sidebar = ({ type }: { type?: string }) => {
             </li>
             {openDropdown === "penelaahan" && (
               <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
-                <li className="hover:translate-x-2 duration-300 transition-all">
+                <li
+                  className={`${
+                    isActive("/review/has-been-reviewed") ? "font-bold" : ""
+                  } hover:translate-x-2 duration-300 transition-all`}
+                >
                   <Link href="/review/has-been-reviewed">Sudah Ditelaah</Link>
                 </li>
-                <li className="hover:translate-x-2 duration-300 transition-all">
+                <li
+                  className={`${
+                    isActive("/review/has-not-been-reviewed") ? "font-bold" : ""
+                  } hover:translate-x-2 duration-300 transition-all`}
+                >
                   <Link href="/review/has-not-been-reviewed">
                     Belum Ditelaah
                   </Link>
                 </li>
-                <li className="hover:translate-x-2 duration-300 transition-all">
+                <li
+                  className={`${
+                    isActive("/review/declined") ? "font-bold" : ""
+                  } hover:translate-x-2 duration-300 transition-all`}
+                >
                   <Link href="/review/declined">Ditolak</Link>
                 </li>
               </ul>
@@ -118,21 +137,33 @@ const Sidebar = ({ type }: { type?: string }) => {
             <li
               onClick={() => toggleDropdown("peran-pengguna")}
               className={`p-3 rounded-md flex items-center space-x-3 ${
-                isActive("/user") ? "bg-primaryy text-white font-medium" : ""
+                isActive("/user")
+                  ? "bg-primaryy text-white font-medium"
+                  : openDropdown === "peran-pengguna"
+                    ? "bg-primaryy bg-opacity-20"
+                    : ""
               }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
             >
-              <User2Icon className="w-[29px] h-[29px]" />
-              <p>Peran Pengguna</p>
+              <User2Icon className="w-[25px] h-[25px]" />
+              <p className="pr-2">Pengguna</p>
               <ChevronDown
                 className={`w-4 h-4 transition-all duration-300 ${openDropdown === "peran-pengguna" ? "rotate-180" : "rotate-0"}`}
               />
             </li>
             {openDropdown === "peran-pengguna" && (
               <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
-                <li className="hover:translate-x-2 duration-300 transition-all">
+                <li
+                  className={`${
+                    isActive("/user/contribution") ? "font-bold" : ""
+                  } hover:translate-x-2 duration-300 transition-all`}
+                >
                   <Link href="/user/contributor">Kontributor</Link>
                 </li>
-                <li className="hover:translate-x-2 duration-300 transition-all">
+                <li
+                  className={`${
+                    isActive("/user/admin") ? "font-bold" : ""
+                  } hover:translate-x-2 duration-300 transition-all`}
+                >
                   <Link href="/user/admin">Admin</Link>
                 </li>
               </ul>
@@ -142,7 +173,9 @@ const Sidebar = ({ type }: { type?: string }) => {
               className={`p-3 rounded-md flex items-center space-x-3 ${
                 isActive("/master-data")
                   ? "bg-primaryy text-white font-medium"
-                  : ""
+                  : openDropdown === "master-data"
+                    ? "bg-primaryy bg-opacity-20"
+                    : ""
               }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
             >
               <Database />
@@ -153,10 +186,18 @@ const Sidebar = ({ type }: { type?: string }) => {
             </li>
             {openDropdown === "master-data" && (
               <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
-                <li className="hover:translate-x-2 duration-300 transition-all">
+                <li
+                  className={`${
+                    isActive("/master-data/district") ? "font-bold" : ""
+                  } hover:translate-x-2 duration-300 transition-all`}
+                >
                   <Link href="/master-data/district">Kecamatan</Link>
                 </li>
-                <li className="hover:translate-x-2 duration-300 transition-all">
+                <li
+                  className={`${
+                    isActive("/master-data/village") ? "font-bold" : ""
+                  } hover:translate-x-2 duration-300 transition-all`}
+                >
                   <Link href="/master-data/village">Desa</Link>
                 </li>
                 <li className="hover:translate-x-2 duration-300 transition-all">

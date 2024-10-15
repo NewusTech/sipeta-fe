@@ -30,15 +30,41 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
+import SelectSearch from "@/components/Input/Select";
+import useSWR from "swr";
+import { fetcherWithoutAuth } from "constants/fetcher";
 
 interface FilterDialogProps {
-  onFilterApply: (status: string, date: any) => void;
+  onFilterApply: (unsur: string, district: string, date: any) => void;
 }
 
-export function FilterDialog({ onFilterApply }: FilterDialogProps) {
+export function FiltersDialog({ onFilterApply }: FilterDialogProps) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [date, setDate] = useState<any>();
-  const [status, setStatus] = useState<string>("");
+  const [valueUnsur, setValueUnsur] = useState<any>({ id: 0, label: "" });
+  const [valueDistrict, setValueDistrict] = useState<any>({ id: 0, label: "" });
+
+  const { data: unsur } = useSWR<any>(
+    `${apiUrl}/unsur/get`,
+    fetcherWithoutAuth
+  );
+  const { data: district } = useSWR<any>(
+    `${apiUrl}/kecamatan/get?limit=50`,
+    fetcherWithoutAuth
+  );
+  const unsurData = unsur?.data;
+  const districtData = district?.data;
+  const newUnsur = unsurData?.map((item: { id: number; name: string }) => ({
+    value: item.id, // id masuk ke value
+    label: item.name, // name masuk ke label
+  }));
+  const newDistrict = districtData?.map(
+    (item: { id: number; name: string }) => ({
+      value: item.id, // id masuk ke value
+      label: item.name, // name masuk ke label
+    })
+  );
 
   const handleOpenAddModal = () => {
     setAddModalOpen(true);
@@ -50,7 +76,7 @@ export function FilterDialog({ onFilterApply }: FilterDialogProps) {
 
   const applyFilters = () => {
     // Mengirim status dan date ke parent ketika filter diterapkan
-    onFilterApply(status, date);
+    onFilterApply(valueDistrict, valueUnsur, date);
     handleAddModalClose();
   };
 
@@ -70,46 +96,23 @@ export function FilterDialog({ onFilterApply }: FilterDialogProps) {
           <DialogTitle>Filter Data</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4 py-4">
-          <div className="space-y-2">
-            <Label>Tanggal</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal rounded-full",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+          <div className="space-y-4 flex flex-col">
+            <Label htmlFor="name">Unsur</Label>
+            <SelectSearch
+              data={newUnsur}
+              placeholder="Unsur"
+              valueId={valueUnsur}
+              setValueId={setValueUnsur}
+            />
           </div>
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <Select onValueChange={setStatus}>
-              <SelectTrigger className="w-full rounded-full">
-                <SelectValue placeholder="Pilih status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Status</SelectLabel>
-                  <SelectItem value="0">Menunggu</SelectItem>
-                  <SelectItem value="1">Diverifikasi</SelectItem>
-                  <SelectItem value="2">Ditolak</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="space-y-4 flex flex-col">
+            <Label htmlFor="name">Kecamatan</Label>
+            <SelectSearch
+              data={newDistrict}
+              valueId={valueDistrict}
+              setValueId={setValueDistrict}
+              placeholder="Kecamatan"
+            />
           </div>
         </div>
         <DialogFooter>
