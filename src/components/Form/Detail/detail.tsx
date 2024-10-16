@@ -111,7 +111,7 @@ export default function DetailFormDetail({ data }: { data: any }) {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
-    `${apiUrl}/datatoponim/get`,
+    `${apiUrl}/datatoponim/get-dashboard?limit=100000`,
     fetcherWithoutAuth
   );
 

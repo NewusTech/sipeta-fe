@@ -293,11 +293,11 @@ export default function Home() {
   }
 
   return (
-    <div className="flex justify-center items-center w-screen h-screen bg-cover">
-      <div className="w-full ">
+    <div className="flex justify-center items-center  bg-cover">
+      <div className="w-full">
         <div className="relative">
           {/* Input search with Autocomplete */}
-          <StandaloneSearchBox
+          {/* <StandaloneSearchBox
             onPlacesChanged={onPlacesChanged}
             onLoad={(ref) => (searchBoxRef.current = ref)}
           >
@@ -306,7 +306,7 @@ export default function Home() {
               placeholder="Search for a location"
               className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-1/2 shadow"
             />
-          </StandaloneSearchBox>
+          </StandaloneSearchBox> */}
         </div>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}

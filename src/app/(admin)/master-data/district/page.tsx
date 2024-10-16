@@ -99,7 +99,7 @@ export default function DistrictPage() {
   const result = data?.data;
 
   return (
-    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+    <ProtectedRoute roles={["Super Admin"]}>
       <section className="pl-64 pr-10 pt-32">
         <h1 className="text-xl font-semibold text-primaryy mb-3">Kecamatan</h1>
         <div className="flex items-center justify-end">

@@ -45,6 +45,12 @@ const Navbar = () => {
     setOpenDropdownName2(!openDropdownName2);
   };
 
+  useEffect(() => {
+    setOpenDropdown(false);
+    setOpenDropdownName(false);
+    setOpenDropdownName2(false);
+  }, [pathname]);
+
   const logout = () => {
     Cookies.remove("token");
     router.replace("/login");
@@ -83,7 +89,7 @@ const Navbar = () => {
               height={65}
             />
             <div>
-              <h1 className="uppercase text-white font-bold text-lg">TAPEM</h1>
+              <h1 className="uppercase text-white font-bold text-lg">SITMAP</h1>
               <p className="uppercase font-light text-white text-xs">
                 tata pemerintahan lampung utara
               </p>

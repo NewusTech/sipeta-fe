@@ -108,7 +108,7 @@ export default function DetailFormUpdate({ data, id }: { data: any; id: any }) {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
-    `${apiUrl}/datatoponim/get`,
+    `${apiUrl}/datatoponim/get-dashboard?limit=100000`,
     fetcherWithoutAuth
   );
 

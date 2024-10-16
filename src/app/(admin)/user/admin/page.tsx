@@ -101,7 +101,7 @@ export default function UserAdminPage() {
   };
 
   return (
-    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+    <ProtectedRoute roles={["Super Admin"]}>
       <section className="md:pl-64 pl-10 pr-10 pt-5 md:pt-28">
         <Breadcrumb className="md:block hidden">
           <BreadcrumbList>

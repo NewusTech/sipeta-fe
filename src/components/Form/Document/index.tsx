@@ -109,7 +109,7 @@ export default function DocumentTab() {
   const [valueClassify, setValueClassify] = useState<any>({ id: 0, label: "" });
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
-    `${apiUrl}/datatoponim/get`,
+    `${apiUrl}/datatoponim/get-dashboard?limit=100000`,
     fetcherWithoutAuth
   );
   const [isLoading, setIsLoading] = useState([false, false, false, false]);
@@ -319,6 +319,7 @@ export default function DocumentTab() {
       <div className="space-y-4 flex flex-col mb-5">
         <Label htmlFor="id-toponim">Id Toponim</Label>
         <SelectSearch
+          type="language"
           data={newClassify}
           valueId={valueClassify}
           setValueId={setValueClassify}

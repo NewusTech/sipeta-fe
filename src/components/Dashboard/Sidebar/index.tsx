@@ -1,6 +1,7 @@
 "use client";
 
 import UploadFileJsonDialog from "@/components/Dialog/UploadJson";
+import { jwtDecode } from "jwt-decode";
 import {
   ChevronDown,
   Database,
@@ -16,8 +17,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 const Sidebar = ({ type }: { type?: string }) => {
+  const [token, setToken] = useState<string | undefined>("");
+  const [role, setRole] = useState<string | undefined>("");
+
   const router = useRouter();
   const pathname = usePathname();
   const isActive = (path: string) => {
@@ -43,6 +48,26 @@ const Sidebar = ({ type }: { type?: string }) => {
     }
   }, [pathname]);
 
+  useEffect(() => {
+    const tokenn = Cookies.get("token");
+    setToken(tokenn);
+    if (tokenn) {
+      try {
+        const decodedToken = jwtDecode<any>(tokenn);
+
+        console.log("Decoded Token:", decodedToken);
+        setRole(decodedToken.role);
+
+        // Anda bisa menggunakan data decodedToken di sini
+        // contoh: console.log(`User ID: ${decodedToken.userId}`);
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    } else {
+      console.log("No token found in cookies");
+    }
+  }, []);
+
   return (
     <aside
       className={`hidden md:block md:-mt-6 ${type === "large" ? "w-[228px]" : "w-[100px]"} h-screen bg-[#F6F6F6] fixed p-6 z-50`}
@@ -59,7 +84,7 @@ const Sidebar = ({ type }: { type?: string }) => {
             />
             <div>
               <h1 className="text-primaryy uppercase text-2xl font-bold">
-                tapem
+                sitmap
               </h1>
               <h6 className="text-primaryy uppercase text-sm font-medium">
                 lampung utara
@@ -80,130 +105,195 @@ const Sidebar = ({ type }: { type?: string }) => {
                 <p>Dashboard</p>
               </Link>
             </li>
-            <li
-              className={`p-3 rounded-md flex items-center space-x-3 ${
-                isActive("/naming") ? "bg-primaryy text-white font-medium" : ""
-              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
-            >
-              {" "}
-              <MapIcon />
-              <Link href="/naming">
-                <p>Pendataan</p>
-              </Link>
-            </li>
-            <li
-              onClick={() => toggleDropdown("penelaahan")}
-              className={`p-3 rounded-md flex items-center space-x-3 ${
-                isActive("/review")
-                  ? "bg-primaryy text-white font-medium"
-                  : openDropdown === "penelaahan"
-                    ? "bg-primaryy bg-opacity-20"
+            {role !== "Verifikator" && (
+              <li
+                className={`p-3 rounded-md flex items-center space-x-3 ${
+                  isActive("/naming")
+                    ? "bg-primaryy text-white font-medium"
                     : ""
-              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
-            >
-              <MapPinCheck />
-              <p>Penelaahan</p>
-              <ChevronDown
-                className={`w-4 h-4 transition-all duration-300 ${openDropdown === "penelaahan" ? "rotate-180" : "rotate-0"}`}
-              />
-            </li>
-            {openDropdown === "penelaahan" && (
-              <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
-                <li
-                  className={`${
-                    isActive("/review/has-been-reviewed") ? "font-bold" : ""
-                  } hover:translate-x-2 duration-300 transition-all`}
-                >
-                  <Link href="/review/has-been-reviewed">Sudah Ditelaah</Link>
-                </li>
-                <li
-                  className={`${
-                    isActive("/review/has-not-been-reviewed") ? "font-bold" : ""
-                  } hover:translate-x-2 duration-300 transition-all`}
-                >
-                  <Link href="/review/has-not-been-reviewed">
-                    Belum Ditelaah
-                  </Link>
-                </li>
-                <li
-                  className={`${
-                    isActive("/review/declined") ? "font-bold" : ""
-                  } hover:translate-x-2 duration-300 transition-all`}
-                >
-                  <Link href="/review/declined">Ditolak</Link>
-                </li>
-              </ul>
+                }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+              >
+                {" "}
+                <MapIcon />
+                <Link href="/naming">
+                  <p>Pendataan</p>
+                </Link>
+              </li>
             )}
-            <li
-              onClick={() => toggleDropdown("peran-pengguna")}
-              className={`p-3 rounded-md flex items-center space-x-3 ${
-                isActive("/user")
-                  ? "bg-primaryy text-white font-medium"
-                  : openDropdown === "peran-pengguna"
-                    ? "bg-primaryy bg-opacity-20"
-                    : ""
-              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
-            >
-              <User2Icon className="w-[25px] h-[25px]" />
-              <p className="pr-2">Pengguna</p>
-              <ChevronDown
-                className={`w-4 h-4 transition-all duration-300 ${openDropdown === "peran-pengguna" ? "rotate-180" : "rotate-0"}`}
-              />
-            </li>
-            {openDropdown === "peran-pengguna" && (
-              <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+
+            {role === "Verifikator" && (
+              <>
                 <li
-                  className={`${
-                    isActive("/user/contribution") ? "font-bold" : ""
-                  } hover:translate-x-2 duration-300 transition-all`}
+                  onClick={() => toggleDropdown("penelaahan")}
+                  className={`p-3 rounded-md flex items-center space-x-3 ${
+                    isActive("/review")
+                      ? "bg-primaryy text-white font-medium"
+                      : openDropdown === "penelaahan"
+                        ? "bg-primaryy bg-opacity-20"
+                        : ""
+                  }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
                 >
-                  <Link href="/user/contributor">Kontributor</Link>
+                  <MapPinCheck />
+                  <p>Penelaahan</p>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-all duration-300 ${openDropdown === "penelaahan" ? "rotate-180" : "rotate-0"}`}
+                  />
                 </li>
-                <li
-                  className={`${
-                    isActive("/user/admin") ? "font-bold" : ""
-                  } hover:translate-x-2 duration-300 transition-all`}
-                >
-                  <Link href="/user/admin">Admin</Link>
-                </li>
-              </ul>
+                {openDropdown === "penelaahan" && (
+                  <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                    <li
+                      className={`${
+                        isActive("/review/has-been-reviewed") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/review/has-been-reviewed">
+                        Sudah Ditelaah
+                      </Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/review/has-not-been-reviewed")
+                          ? "font-bold"
+                          : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/review/has-not-been-reviewed">
+                        Belum Ditelaah
+                      </Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/review/declined") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/review/declined">Ditolak</Link>
+                    </li>
+                  </ul>
+                )}
+              </>
             )}
-            <li
-              onClick={() => toggleDropdown("master-data")}
-              className={`p-3 rounded-md flex items-center space-x-3 ${
-                isActive("/master-data")
-                  ? "bg-primaryy text-white font-medium"
-                  : openDropdown === "master-data"
-                    ? "bg-primaryy bg-opacity-20"
-                    : ""
-              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
-            >
-              <Database />
-              <p>Master Data</p>
-              <ChevronDown
-                className={`w-4 h-4 transition-all duration-300 ${openDropdown === "master-data" ? "rotate-180" : "rotate-0"}`}
-              />
-            </li>
-            {openDropdown === "master-data" && (
-              <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+
+            {role === "Super Admin" && (
+              <>
                 <li
-                  className={`${
-                    isActive("/master-data/district") ? "font-bold" : ""
-                  } hover:translate-x-2 duration-300 transition-all`}
+                  onClick={() => toggleDropdown("penelaahan")}
+                  className={`p-3 rounded-md flex items-center space-x-3 ${
+                    isActive("/review")
+                      ? "bg-primaryy text-white font-medium"
+                      : openDropdown === "penelaahan"
+                        ? "bg-primaryy bg-opacity-20"
+                        : ""
+                  }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
                 >
-                  <Link href="/master-data/district">Kecamatan</Link>
+                  <MapPinCheck />
+                  <p>Penelaahan</p>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-all duration-300 ${openDropdown === "penelaahan" ? "rotate-180" : "rotate-0"}`}
+                  />
                 </li>
+                {openDropdown === "penelaahan" && (
+                  <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                    <li
+                      className={`${
+                        isActive("/review/has-been-reviewed") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/review/has-been-reviewed">
+                        Sudah Ditelaah
+                      </Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/review/has-not-been-reviewed")
+                          ? "font-bold"
+                          : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/review/has-not-been-reviewed">
+                        Belum Ditelaah
+                      </Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/review/declined") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/review/declined">Ditolak</Link>
+                    </li>
+                  </ul>
+                )}
                 <li
-                  className={`${
-                    isActive("/master-data/village") ? "font-bold" : ""
-                  } hover:translate-x-2 duration-300 transition-all`}
+                  onClick={() => toggleDropdown("peran-pengguna")}
+                  className={`p-3 rounded-md flex items-center space-x-3 ${
+                    isActive("/user")
+                      ? "bg-primaryy text-white font-medium"
+                      : openDropdown === "peran-pengguna"
+                        ? "bg-primaryy bg-opacity-20"
+                        : ""
+                  }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
                 >
-                  <Link href="/master-data/village">Desa</Link>
+                  <User2Icon className="w-[25px] h-[25px]" />
+                  <p className="pr-2">Pengguna</p>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-all duration-300 ${openDropdown === "peran-pengguna" ? "rotate-180" : "rotate-0"}`}
+                  />
                 </li>
-                <li className="hover:translate-x-2 duration-300 transition-all">
-                  <UploadFileJsonDialog />
+                {openDropdown === "peran-pengguna" && (
+                  <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                    <li
+                      className={`${
+                        isActive("/user/contribution") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/user/contributor">Kontributor</Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/user/admin") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/user/admin">Admin</Link>
+                    </li>
+                  </ul>
+                )}
+                <li
+                  onClick={() => toggleDropdown("master-data")}
+                  className={`p-3 rounded-md flex items-center space-x-3 ${
+                    isActive("/master-data")
+                      ? "bg-primaryy text-white font-medium"
+                      : openDropdown === "master-data"
+                        ? "bg-primaryy bg-opacity-20"
+                        : ""
+                  }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+                >
+                  <Database />
+                  <p>Master Data</p>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-all duration-300 ${openDropdown === "master-data" ? "rotate-180" : "rotate-0"}`}
+                  />
                 </li>
-              </ul>
+                {openDropdown === "master-data" && (
+                  <ul className="space-y-3 bg-primaryy bg-opacity-10 p-3 rounded-lg mt-2">
+                    <li
+                      className={`${
+                        isActive("/master-data/district") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/master-data/district">Kecamatan</Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/master-data/village") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/master-data/village">Desa</Link>
+                    </li>
+                    <li className="hover:translate-x-2 duration-300 transition-all">
+                      <UploadFileJsonDialog />
+                    </li>
+                  </ul>
+                )}
+              </>
             )}
           </ul>
         </>
