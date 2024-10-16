@@ -111,7 +111,7 @@ export default function DetailForm() {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
-    `${apiUrl}/datatoponim/get`,
+    `${apiUrl}/datatoponim/get-dashboard?limit=100000`,
     fetcherWithoutAuth
   );
 
@@ -233,7 +233,7 @@ export default function DetailForm() {
                         <CommandList>
                           <CommandEmpty>No language found.</CommandEmpty>
                           <CommandGroup>
-                            {newClassify?.map((language: any) => (
+                            {newClassify?.map((language: any, index: any) => (
                               <CommandItem
                                 value={language?.label}
                                 key={language?.value}
@@ -250,6 +250,11 @@ export default function DetailForm() {
                                   )}
                                 />
                                 {language.label}
+                                {language && index === 0 && (
+                                  <p className="text-green-500 ml-3 italic text-xs">
+                                    Terbaru
+                                  </p>
+                                )}
                               </CommandItem>
                             ))}
                           </CommandGroup>

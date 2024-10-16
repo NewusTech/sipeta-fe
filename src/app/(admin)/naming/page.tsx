@@ -120,6 +120,7 @@ export default function NamingPage() {
   );
 
   const result = data?.data;
+  console.log(result);
   const totalPages = data?.pagination?.totalPages || 1;
 
   // Fungsi untuk mengubah halaman
@@ -169,7 +170,7 @@ export default function NamingPage() {
   };
 
   return (
-    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+    <ProtectedRoute roles={["Super Admin", "Surveyor", "User"]}>
       <section className="space-y-4 pl-10 md:pl-64 pr-10 pt-10 md:pt-28">
         <h1 className="text-primaryy font-bold text-2xl">Pendataan</h1>
         <div>

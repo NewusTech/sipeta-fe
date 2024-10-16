@@ -9,6 +9,7 @@ import { Button } from "../../ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -338,6 +339,9 @@ export default function InformationForm({
                       disabled
                     />
                   </FormControl>
+                  <FormDescription className="text-2xs text-red-600 italic">
+                    * Harap diingat id toponimnya
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

@@ -315,7 +315,7 @@ const DashboardPage = () => {
   }
 
   return (
-    <ProtectedRoute roles={["Super Admin", "Verifikator", "Kontributor"]}>
+    <ProtectedRoute roles={["Super Admin", "Verifikator", "User", "Surveyor"]}>
       <section className="space-y-4 pl-10 md:pl-64 pr-10 pt-5 md:pt-32">
         <h1 className="text-primaryy font-semibold text-lg">Dashboard</h1>
         <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
@@ -356,10 +356,10 @@ const DashboardPage = () => {
           />
         </div>
 
-        <div className="w-[99%]">
+        <div className="">
           <div className="relative">
             {/* Input search with Autocomplete */}
-            <StandaloneSearchBox
+            {/* <StandaloneSearchBox
               onPlacesChanged={onPlacesChanged}
               onLoad={(ref) => (searchBoxRef.current = ref)}
             >
@@ -368,7 +368,7 @@ const DashboardPage = () => {
                 placeholder="Search for a location"
                 className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-1/2 shadow"
               />
-            </StandaloneSearchBox>
+            </StandaloneSearchBox> */}
           </div>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}

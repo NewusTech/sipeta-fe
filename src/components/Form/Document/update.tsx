@@ -118,7 +118,7 @@ export default function DocumentTabUpdate({
   const [valueClassify, setValueClassify] = useState<any>({ id: 0, label: "" });
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
-    `${apiUrl}/datatoponim/get`,
+    `${apiUrl}/datatoponim/get-dashboard?limit=100000`,
     fetcherWithoutAuth
   );
   const [isLoading, setIsLoading] = useState([false, false, false, false]); // State isLoading per button

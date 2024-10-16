@@ -185,7 +185,7 @@ export default function HasBeenReviewedPage() {
   };
 
   return (
-    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+    <ProtectedRoute roles={["Super Admin", "Verifikator"]}>
       <section className="md:pl-64 pl-10 pr-10 md:pt-28 pt-6">
         <Breadcrumb className="hidden md:block">
           <BreadcrumbList>
