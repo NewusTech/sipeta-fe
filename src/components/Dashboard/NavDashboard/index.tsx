@@ -70,6 +70,12 @@ const NavDashboard = () => {
   }, []);
 
   useEffect(() => {
+    setOpen(false);
+    setOpenDropdown2(false);
+    setOpenDropdown(false);
+  }, [pathName]);
+
+  useEffect(() => {
     const auth = Cookies.get("token");
 
     let socket: Socket | null = null;
@@ -253,7 +259,53 @@ const NavDashboard = () => {
           )}
         </div>
         <div className="flex items-center space-x-3">
-          <BellIcon className="w-6 h-6" />
+          {/* <BellIcon className="w-6 h-6" /> */}
+          <Popover>
+            <PopoverTrigger>
+              <div className="relative">
+                <BellIcon />
+                {notifications?.some(
+                  (notification) => notification.isopen === 0
+                ) && (
+                  <span className="absolute rounded-full text-[8px] bg-red-500 w-4 h-4 flex items-center justify-center -mt-8 ml-3"></span>
+                )}
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="min-w-[375px] bg-neutral-50 mr-5 border border-primary-900 shadow-lg rounded-lg max-h-[550px] overflow-y-scroll">
+              <div className="w-full flex flex-col overflow-y-scroll gap-y-3 verticalScroll max-h-screen">
+                <div className="w-full flex flex-col gap-y-3">
+                  <div className="w-full border-b border-neutral-900">
+                    <h3 className="text-neutral-900 font-semibold text-[20px]">
+                      Notifikasi
+                    </h3>
+                  </div>
+                  {notifications?.map((notification, i) => (
+                    <NotifikasiWebiste key={i} notification={notification} />
+                  ))}
+                </div>
+
+                <div className="flex justify-between mt-4 px-2">
+                  <button
+                    className="px-4 py-2 bg-primary-700 text-white rounded disabled:opacity-50"
+                    onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
+                    disabled={currentPage <= 1}
+                  >
+                    Previous
+                  </button>
+                  <span className="self-center text-neutral-900">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    className="px-4 py-2 bg-primary-700 text-white rounded disabled:opacity-50"
+                    onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                    disabled={currentPage >= totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
           <div className="flex items-center space-x-2" onClick={toggleDropdown}>
             <UserCircle2Icon className="w-6 h-6" />
             <p className="text-sm">User</p>
@@ -283,7 +335,7 @@ const NavDashboard = () => {
         </div>
       )}
       <div
-        className={`md:hidden relative block z-50 transition-all duration-300 ${open ? "translate-x-0" : "-translate-x-full"}`}
+        className={`md:hidden relative z-50 transition-all duration-300 ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
         <SidebarMobile type="large" />
       </div>

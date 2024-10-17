@@ -10,9 +10,12 @@ import Link from "next/link";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import { Checkbox } from "../../../components/ui/checkbox";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 const registerSchema = z.object({
-  fullName: z.string().min(1, "Nama lengkap harus diisi"),
+  name: z.string().min(1, "Nama lengkap harus diisi"),
+  nik: z.string({ message: "Username harus diisi" }),
   phoneNumber: z
     .string()
     .min(10, "Nomor telepon harus terdiri dari 10 angka")
@@ -23,6 +26,8 @@ const registerSchema = z.object({
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -35,8 +40,59 @@ const RegisterPage = () => {
     setShowPassword((prevState) => !prevState);
   };
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: any) => {
+    setIsLoading(true);
+
+    const formData = {
+      nik: data.nik,
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      phoneNumber: data.phoneNumber,
+      role_id: 4,
+    };
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `${result.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+        router.push("/login");
+      }
+
+      if (!res.ok) {
+        Swal.fire({
+          icon: "error",
+          title: `${result.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      }
+    } catch (e) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal register",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -57,13 +113,26 @@ const RegisterPage = () => {
           <div className="space-y-1">
             <Label className="text-primaryy">Nama Lengkap</Label>
             <Input
-              {...register("fullName")}
+              {...register("name")}
               className="rounded-full bg-transparent"
               placeholder="Nama Lengkap"
             />
             {errors.fullName && (
               <p className="text-red-500 text-xs">
                 {String(errors.fullName.message)}
+              </p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label className="text-primaryy">Username</Label>
+            <Input
+              {...register("nik")}
+              className="rounded-full bg-transparent"
+              placeholder="Username"
+            />
+            {errors.username?.message && (
+              <p className="text-red-500 text-xs">
+                {String(errors.username.message)}
               </p>
             )}
           </div>
@@ -133,8 +202,9 @@ const RegisterPage = () => {
             <Button
               type="submit"
               className="rounded-full bg-transparent text-white bg-primaryy px-8"
+              disabled={isLoading}
             >
-              Daftar
+              {isLoading ? "Loading ..." : "Daftar"}
             </Button>
           </div>
         </form>
