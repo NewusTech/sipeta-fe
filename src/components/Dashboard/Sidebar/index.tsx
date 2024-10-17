@@ -291,6 +291,13 @@ const Sidebar = ({ type }: { type?: string }) => {
                     <li className="hover:translate-x-2 duration-300 transition-all">
                       <UploadFileJsonDialog />
                     </li>
+                    <li
+                      className={`${
+                        isActive("/master-data/manual-book") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/master-data/manual-book">Manual Book</Link>
+                    </li>
                   </ul>
                 )}
               </>
@@ -604,6 +611,13 @@ const SidebarMobile = ({ type }: { type?: string }) => {
                     </li>
                     <li className="hover:translate-x-2 duration-300 transition-all">
                       <UploadFileJsonDialog />
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/master-data/manual-book") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/master-data/manual-book">Manual Book</Link>
                     </li>
                   </ul>
                 )}
