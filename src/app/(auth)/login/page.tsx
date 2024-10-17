@@ -116,7 +116,7 @@ const LoginPage = () => {
           />
         </div>
         <div className="flex flex-col items-center">
-          <h5 className="uppercase text-primaryy font-semibold">sipeta</h5>
+          <h5 className="uppercase text-primaryy font-semibold">sitmap</h5>
           <p className="uppercase text-primaryy w-full md:w-8/12 text-center text-xs md:text-sm">
             sistem informasi pengelolaan data kewilayahan lampung utara
           </p>
@@ -166,7 +166,10 @@ const LoginPage = () => {
             )}
           </div>
           <div className="flex justify-between">
-            <Link href="/" className="text-primaryy underline text-sm w-40">
+            <Link
+              href="/forgot-password"
+              className="text-primaryy underline text-sm w-40"
+            >
               Lupa kata sandi?
             </Link>
             <p className="text-sm text-right md:text-left text-greyy">
