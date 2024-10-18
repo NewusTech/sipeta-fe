@@ -41,7 +41,7 @@ const adminValidation = z.object({
   }),
 });
 
-export default function CreateAdminDialog() {
+export function CreateAdminDialog() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -74,6 +74,145 @@ export default function CreateAdminDialog() {
         >
           Tambah
         </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-primaryy">Tambah</AlertDialogTitle>
+        </AlertDialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Masukkan username"
+                      className="rounded-full"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nama</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Masukkan nama"
+                      className="rounded-full"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Masukkan password"
+                      className="rounded-full"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Role</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="rounded-full">
+                        <SelectValue placeholder="Pilih role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="3">Verifikator</SelectItem>
+                      <SelectItem value="2">Surveyor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Tombol Aksi */}
+            <AlertDialogFooter>
+              <AlertDialogAction
+                type="submit"
+                className="bg-primaryy rounded-full mt-2 md:mt-0"
+              >
+                Simpan
+              </AlertDialogAction>
+              <AlertDialogCancel
+                onClick={handleAddModalClose}
+                className="bg-transparent text-primaryy border border-primaryy hover:bg-primaryy hover:text-white rounded-full"
+              >
+                Batal
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </form>
+        </Form>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function UpdateAdminDialog({
+  data,
+  type,
+}: {
+  data: any;
+  type?: string;
+}) {
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleOpenAddModal = () => {
+    setAddModalOpen(true);
+  };
+
+  const handleAddModalClose = () => {
+    setAddModalOpen(false);
+  };
+
+  const form = useForm<z.infer<typeof adminValidation>>({
+    resolver: zodResolver(adminValidation),
+  });
+
+  // 2. Define a submit handler.
+  function onSubmit(values: z.infer<typeof adminValidation>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+  }
+
+  return (
+    <AlertDialog open={addModalOpen}>
+      <AlertDialogTrigger asChild>
+        <div></div>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

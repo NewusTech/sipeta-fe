@@ -299,7 +299,7 @@ export default function HasNotBeenReviewedPage() {
           </div>
           <div className="space-y-2 mt-6 md:hidden block">
             {result ? (
-              result?.map((v: any) => <CardTable key={v.id} data={v} />)
+              result?.map((v: any) => <CardTable route={`/review/has-not-been-reviewed/detail/${v.id}`} key={v.id} data={v} />)
             ) : (
               <div className="flex justify-center items-center">
                 <p className="text-slate-400">Tidak ada data</p>

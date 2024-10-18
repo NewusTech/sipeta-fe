@@ -84,7 +84,7 @@ export default function ListNamePage() {
     fetcherWithoutAuth
   );
   const { data: unsur } = useSWR<any>(
-    `${apiUrl}/unsur/get`,
+    `${apiUrl}/unsur/get/${valueClassify?.id}`,
     fetcherWithoutAuth
   );
   const { data: district } = useSWR<any>(

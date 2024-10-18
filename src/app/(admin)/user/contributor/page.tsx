@@ -196,9 +196,6 @@ const CardTable = ({ data }: { data: Contributor }) => {
       </div>
       <div className="mt-4 flex justify-end space-x-2 text-primaryy">
         <div>
-          <KeyRound className="w-6 h-6" />
-        </div>
-        <div>
           <PenBox className="w-6 h-6" />
         </div>
         <div>

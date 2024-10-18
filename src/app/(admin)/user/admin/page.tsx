@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTables2 } from "@/components/Datatables/table2";
-import CreateAdminDialog from "@/components/Dialog/CreateAdmin";
+import { CreateAdminDialog } from "@/components/Dialog/CreateAdmin";
 import { Pagination } from "@/components/Pagination";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import {
@@ -199,17 +199,14 @@ const CardTable = ({ data }: { data: Contributor }) => {
           <li>{data?.Role}</li>
         </ul>
       </div>
-      <div className="mt-4 flex justify-end space-x-2 text-primaryy">
-        <div>
-          <KeyRound className="w-6 h-6" />
-        </div>
+      {/* <div className="mt-4 flex justify-end space-x-2 text-primaryy">
         <div>
           <PenBox className="w-6 h-6" />
         </div>
         <div>
           <Trash2 className="w-6 h-6" />
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };
