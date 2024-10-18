@@ -16,7 +16,7 @@ const ModalDelete = ({
   endpoint,
   type,
 }: {
-  endpoint: string;
+  endpoint?: string;
   type?: string;
 }) => {
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -77,6 +77,10 @@ const ModalDelete = ({
             className="p-1 w-7 flex justify-center items-center bg-error hover:bg-red-500 rounded-sm cursor-pointer"
           >
             <Trash2 className="w-4 h-4 text-white" />
+          </div>
+        ) : type === "ic-mobile" ? (
+          <div onClick={handleOpenAddModal} className="cursor-pointer">
+            <Trash2 className="w-6 h-6 " />
           </div>
         ) : (
           <div

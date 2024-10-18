@@ -298,7 +298,15 @@ export default function NamingPage() {
           </div>
           <div className="space-y-2 mt-6 md:hidden block">
             {result ? (
-              result?.map((v: any) => <CardTable key={v.id} data={v} />)
+              result?.map((v: any) => (
+                <CardTable
+                  route={`/naming/detail/${v.id}`}
+                  route2={`/naming/update/${v.id}`}
+                  route3={`datatoponim/delete/${v.id}`}
+                  key={v.id}
+                  data={v}
+                />
+              ))
             ) : (
               <div className="flex justify-center items-center">
                 <p className="text-slate-400">Tidak ada data</p>

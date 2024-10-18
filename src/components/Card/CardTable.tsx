@@ -98,7 +98,17 @@ export const columnsData: ColumnDef<Payment>[] = [
   },
 ];
 
-export const CardTable = ({ data }: { data: Payment }) => {
+export const CardTable = ({
+  data,
+  route,
+  route2,
+  route3,
+}: {
+  data: Payment;
+  route: string;
+  route2?: string;
+  route3?: string;
+}) => {
   return (
     <section className="w-full border border-primaryy rounded-lg p-4">
       <div className="space-y-2">
@@ -110,7 +120,25 @@ export const CardTable = ({ data }: { data: Payment }) => {
         <ul className="flex">
           <li className="mr-2 font-medium text-primaryy w-28">Status</li>
           <li className="mr-1">:</li>
-          <li>{data?.status}</li>
+          <li
+            className={`${
+              data?.status === 0
+                ? "bg-primaryy text-white"
+                : data?.status === 1
+                  ? "bg-success text-white"
+                  : data?.status === 2
+                    ? "bg-error text-white"
+                    : "bg-gray-100 text-gray-800"
+            } rounded-full py-0.5 px-2 text-xs flex items-center justify-center`}
+          >
+            {data?.status === 0
+              ? "Menunggu"
+              : data?.status === 1
+                ? "Selesai"
+                : data?.status === 2
+                  ? "Ditolak"
+                  : "Status tidak diketahui"}
+          </li>
         </ul>
         <ul className="flex">
           <li className="mr-2 font-medium text-primaryy w-28">Id Toponim</li>
@@ -139,18 +167,15 @@ export const CardTable = ({ data }: { data: Payment }) => {
         </ul>
       </div>
       <div className="mt-4 flex justify-end space-x-2 text-primaryy">
-        <div>
+        <Link href={route}>
           <EyeIcon className="w-6 h-6" />
-        </div>
-        <div>
-          <PenBox className="w-6 h-6" />
-        </div>
-        <div>
-          <Trash2 className="w-6 h-6" />
-        </div>
-        <div>
-          <CheckSquare2 className="w-6 h-6" />
-        </div>
+        </Link>
+        {route2 && (
+          <Link href={route2}>
+            <PenBox className="w-6 h-6" />
+          </Link>
+        )}
+        {route3 && <ModalDelete type="ic-mobile" endpoint={route3} />}
       </div>
     </section>
   );
