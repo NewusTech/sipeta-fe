@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -31,14 +31,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Pen } from "lucide-react";
+import Cookies from "js-cookie";
+import Swal from "sweetalert2";
+import useSWR from "swr";
+import { fetcher } from "constants/fetcher";
 
 const adminValidation = z.object({
-  username: z.string().min(4, "username lama minimal 4 karakter"),
+  username: z
+    .string()
+    .min(16, "username harus 16 karakter")
+    .max(16, "username harus 16 karakter"),
   name: z.string(),
-  password: z.string().min(6, "Konfirmasi kata sandi minimal 6 karakter"),
-  role: z.string({
-    required_error: "Pilih role",
-  }),
+});
+
+const adminUpdateValidation = z.object({
+  username: z
+    .string()
+    .min(16, "username harus 16 karakter")
+    .max(16, "username harus 16 karakter"),
+  name: z.string(),
 });
 
 export function CreateAdminDialog() {
@@ -58,10 +70,55 @@ export function CreateAdminDialog() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof adminValidation>) {
+  async function onSubmit(values: z.infer<typeof adminValidation>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    setIsLoading(true);
+    const formData = {
+      nik: values.username,
+      name: values.name,
+      role_id: 2,
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/userinfo/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log(data);
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+        handleAddModalClose();
+        window.location.reload();
+      }
+    } catch (e: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal submit!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -115,56 +172,15 @@ export function CreateAdminDialog() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Masukkan password"
-                      className="rounded-full"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Role</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="rounded-full">
-                        <SelectValue placeholder="Pilih role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="3">Verifikator</SelectItem>
-                      <SelectItem value="2">Surveyor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             {/* Tombol Aksi */}
             <AlertDialogFooter>
               <AlertDialogAction
                 type="submit"
+                disabled={isLoading}
                 className="bg-primaryy rounded-full mt-2 md:mt-0"
               >
-                Simpan
+                {isLoading ? "Loading ..." : "Simpan"}
               </AlertDialogAction>
               <AlertDialogCancel
                 onClick={handleAddModalClose}
@@ -181,14 +197,21 @@ export function CreateAdminDialog() {
 }
 
 export function UpdateAdminDialog({
-  data,
+  slug,
   type,
 }: {
-  data: any;
+  slug?: string;
   type?: string;
 }) {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { data } = useSWR<any>(
+    `${process.env.NEXT_PUBLIC_API_URL}/userinfo/get/${slug}`,
+    fetcher
+  );
+
+  const result = data?.data;
 
   const handleOpenAddModal = () => {
     setAddModalOpen(true);
@@ -198,21 +221,81 @@ export function UpdateAdminDialog({
     setAddModalOpen(false);
   };
 
-  const form = useForm<z.infer<typeof adminValidation>>({
-    resolver: zodResolver(adminValidation),
+  const form = useForm<z.infer<typeof adminUpdateValidation>>({
+    resolver: zodResolver(adminUpdateValidation),
   });
 
+  useEffect(() => {
+    if (result) {
+      form.reset({
+        username: result.nik,
+        name: result.name,
+      });
+    }
+  }, [result]);
+
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof adminValidation>) {
+  async function onSubmit(values: z.infer<typeof adminUpdateValidation>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    setIsLoading(true);
+
+    let pw;
+
+    const formData = {
+      nik: values.username,
+      name: values.name,
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/userinfo/update/${slug}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+        handleAddModalClose();
+        window.location.reload();
+      }
+    } catch (e: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal submit!",
+        timer: 2000,
+        showConfirmButton: false,
+        position: "center",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <AlertDialog open={addModalOpen}>
       <AlertDialogTrigger asChild>
-        <div></div>
+        <div
+          onClick={handleOpenAddModal}
+          className="py-1 px-2 flex justify-center items-center w-7 bg-orange-400 hover:bg-orange-500 rounded-sm cursor-pointer"
+        >
+          <Pen className="w-5 h-5 text-white" />
+        </div>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -254,56 +337,15 @@ export function UpdateAdminDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Masukkan password"
-                      className="rounded-full"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Role</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="rounded-full">
-                        <SelectValue placeholder="Pilih role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="3">Verifikator</SelectItem>
-                      <SelectItem value="2">Surveyor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             {/* Tombol Aksi */}
             <AlertDialogFooter>
               <AlertDialogAction
                 type="submit"
                 className="bg-primaryy rounded-full mt-2 md:mt-0"
+                disabled={isLoading}
               >
-                Simpan
+                {isLoading ? "Loading ..." : "Simpan"}
               </AlertDialogAction>
               <AlertDialogCancel
                 onClick={handleAddModalClose}
