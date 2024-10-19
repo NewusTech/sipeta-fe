@@ -1,7 +1,10 @@
 "use client";
 
 import { DataTables2 } from "@/components/Datatables/table2";
-import { CreateAdminDialog } from "@/components/Dialog/CreateAdmin";
+import {
+  CreateAdminDialog,
+  UpdateAdminDialog,
+} from "@/components/Dialog/CreateAdmin";
 import { Pagination } from "@/components/Pagination";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import {
@@ -25,6 +28,7 @@ type Contributor = {
   username: string;
   email: string;
   Role: number;
+  slug?: string;
 };
 
 const columns: ColumnDef<Contributor>[] = [
@@ -50,21 +54,13 @@ const columns: ColumnDef<Contributor>[] = [
     accessorKey: "Role",
     header: "Role",
   },
-  // {
-  //   id: "action",
-  //   header: "Aksi",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div>
-  //         <div className="p-1 w-7 bg-orange-400 hover:bg-orange-500 rounded-sm cursor-pointer">
-  //           <Link href={`/list-name/${row.original.id}`}>
-  //             <EyeIcon className="w-5 h-5 text-white" />
-  //           </Link>
-  //         </div>
-  //       </div>
-  //     );
-  //   },
-  // },
+  {
+    id: "action",
+    header: "Aksi",
+    cell: ({ row }) => {
+      return <UpdateAdminDialog slug={row.original.slug} />;
+    },
+  },
 ];
 
 export default function UserAdminPage() {
@@ -94,6 +90,8 @@ export default function UserAdminPage() {
 
   const result = data?.data;
   const totalPages = data?.pagination?.totalPages || 1;
+
+  console.log(result);
 
   // Fungsi untuk mengubah halaman
   const handlePageChange = (newPage: number) => {
@@ -156,12 +154,6 @@ export default function UserAdminPage() {
           </div>
         </div>
         <div className="hidden md:flex mt-3 items-center space-x-2">
-          <div className="flex items-center space-x-11">
-            <div className="flex rounded-full w-[80px] h-[28px] items-center px-2 justify-between border border-primaryy mt-[15px]">
-              <ListFilter className="h-4 w-4 text-primaryy" />
-              <p className="text-primaryy font-light">Filter</p>
-            </div>
-          </div>
           <CreateAdminDialog />
         </div>
         <div className="w-full mt-6 md:block hidden">
