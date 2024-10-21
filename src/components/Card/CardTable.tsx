@@ -92,10 +92,6 @@ export const columnsData: ColumnDef<Payment>[] = [
     accessorKey: "Desa.name",
     header: "Desa",
   },
-  {
-    accessorKey: "keterangan",
-    header: "Keterangan",
-  },
 ];
 
 export const CardTable = ({

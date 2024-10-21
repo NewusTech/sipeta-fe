@@ -8,9 +8,6 @@ import {
   LayoutDashboard,
   MapIcon,
   MapPinCheck,
-  MapPinPlus,
-  User,
-  User2,
   User2Icon,
 } from "lucide-react";
 import Image from "next/image";
@@ -74,7 +71,7 @@ const Sidebar = ({ type }: { type?: string }) => {
     >
       {type === "large" ? (
         <>
-          <div className="flex space-x-4">
+          <Link href="/dashboard" className="flex space-x-4">
             <Image
               src="/assets/icons/logo.svg"
               className="w-[40px] h-[60px]"
@@ -91,7 +88,7 @@ const Sidebar = ({ type }: { type?: string }) => {
               </h6>
               <p className="font-light text-sm text-primaryy">Dashboard</p>
             </div>
-          </div>
+          </Link>
           <ul className="text-primaryy space-y-2 mt-14 cursor-pointer text-[15px]">
             <li
               className={`p-3 rounded-md flex items-center space-x-3 ${
@@ -306,7 +303,7 @@ const Sidebar = ({ type }: { type?: string }) => {
         </>
       ) : (
         <>
-          <div className="flex space-x-4">
+          <Link href="/dashboard" className="flex space-x-4">
             <Image
               src="/assets/icons/logo.svg"
               className="w-[40px] h-[60px]"
@@ -314,29 +311,20 @@ const Sidebar = ({ type }: { type?: string }) => {
               height={60}
               alt="logo"
             />
-          </div>
-          <ul className="text-primaryy mt-14 font-light cursor-pointer text-[15px]">
-            <li className="p-3 rounded-md hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
-              <LayoutDashboard />
+          </Link>
+          <ul className="text-primaryy space-y-2 mt-14 font-light cursor-pointer text-[15px]">
+            <li
+              className={`p-3 rounded-md ${isActive("/dashboard") ? "bg-primaryy text-white" : "bg-transparent"} hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+            >
+              <Link href="/dashboard">
+                <LayoutDashboard />
+              </Link>
             </li>
-            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+            <li
+              className={`p-3 ${isActive("/naming/create") ? "bg-primaryy text-white" : "bg-transparent"} rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+            >
               <Link href="/naming">
                 <MapIcon />
-              </Link>
-            </li>
-            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
-              <Link href="/naming">
-                <MapPinCheck />
-              </Link>
-            </li>
-            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
-              <Link href="/naming">
-                <User2 />
-              </Link>
-            </li>
-            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
-              <Link href="/naming">
-                <Database />
               </Link>
             </li>
           </ul>
@@ -398,7 +386,7 @@ const SidebarMobile = ({ type }: { type?: string }) => {
     >
       {type === "large" ? (
         <>
-          <div className="flex space-x-4">
+          <Link href="/dashboard" className="flex space-x-4">
             <Image
               src="/assets/icons/logo.svg"
               className="w-[40px] h-[60px]"
@@ -412,7 +400,7 @@ const SidebarMobile = ({ type }: { type?: string }) => {
               </h1>
               <p className="font-light text-sm text-primaryy">Dashboard</p>
             </div>
-          </div>
+          </Link>
           <ul className="text-primaryy space-y-2 mt-14 cursor-pointer text-[15px]">
             <li
               className={`p-3 rounded-md flex items-center space-x-3 ${
@@ -627,7 +615,7 @@ const SidebarMobile = ({ type }: { type?: string }) => {
         </>
       ) : (
         <>
-          <div className="flex space-x-4">
+          <Link href="/dashboard" className="flex space-x-4">
             <Image
               src="/assets/icons/logo.svg"
               className="w-[40px] h-[60px]"
@@ -635,12 +623,18 @@ const SidebarMobile = ({ type }: { type?: string }) => {
               height={60}
               alt="logo"
             />
-          </div>
-          <ul className="text-primaryy mt-14 font-light cursor-pointer text-[15px]">
-            <li className="p-3 rounded-md hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
-              <LayoutDashboard />
+          </Link>
+          <ul className="text-primaryy space-y-2 mt-14 font-light cursor-pointer text-[15px]">
+            <li
+              className={`p-3 rounded-md ${isActive("/dashboard") ? "bg-primaryy text-white" : "bg-transparent"} hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+            >
+              <Link href="/dashboard">
+                <LayoutDashboard />
+              </Link>
             </li>
-            <li className="p-3 rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy">
+            <li
+              className={`p-3 ${isActive("/naming/create") ? "bg-primaryy text-white" : "bg-transparent"} rounded-md flex items-center justify-between hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+            >
               <Link href="/naming">
                 <MapIcon />
               </Link>
