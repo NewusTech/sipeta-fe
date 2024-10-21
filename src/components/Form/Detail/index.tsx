@@ -109,6 +109,8 @@ export default function DetailForm() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [open, setOpen] = useState(false);
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
     `${apiUrl}/datatoponim/get-dashboard?limit=100000`,
@@ -206,7 +208,7 @@ export default function DetailForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Id Toponim</FormLabel>
-                  <Popover>
+                  <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -231,7 +233,7 @@ export default function DetailForm() {
                       <Command>
                         <CommandInput placeholder="Cari tipe geometri..." />
                         <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandEmpty>No data found.</CommandEmpty>
                           <CommandGroup>
                             {newClassify?.map((language: any, index: any) => (
                               <CommandItem
@@ -239,6 +241,7 @@ export default function DetailForm() {
                                 key={language?.value}
                                 onSelect={() => {
                                   form.setValue("idToponim", language?.value);
+                                  setOpen(false);
                                 }}
                               >
                                 <Check

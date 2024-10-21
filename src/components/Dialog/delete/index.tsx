@@ -55,6 +55,15 @@ const ModalDelete = ({
         handleAddModalClose();
         window.location.reload();
       }
+      if (!response.ok) {
+        Swal.fire({
+          icon: "error",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+      }
     } catch (e: any) {
       Swal.fire({
         icon: "error",

@@ -10,6 +10,12 @@ type BearActions = {
   updateBears: (newBears: number) => void;
 };
 
+export type OpenState = {
+  popover1: boolean;
+  popover2: boolean;
+  popover3: boolean;
+};
+
 // Combine state and actions
 export type BearStore = BearState & BearActions;
 
