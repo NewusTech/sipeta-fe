@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pen } from "lucide-react";
+import { Pen, PenBox } from "lucide-react";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 import useSWR from "swr";
@@ -290,12 +290,18 @@ export function UpdateAdminDialog({
   return (
     <AlertDialog open={addModalOpen}>
       <AlertDialogTrigger asChild>
-        <div
-          onClick={handleOpenAddModal}
-          className="py-1 px-2 flex justify-center items-center w-7 bg-orange-400 hover:bg-orange-500 rounded-sm cursor-pointer"
-        >
-          <Pen className="w-5 h-5 text-white" />
-        </div>
+        {type === "mobile" ? (
+          <div className="cursor-pointer" onClick={handleOpenAddModal}>
+            <PenBox className="w-6 h-6" />
+          </div>
+        ) : (
+          <div
+            onClick={handleOpenAddModal}
+            className="py-1 px-2 flex justify-center items-center w-7 bg-orange-400 hover:bg-orange-500 rounded-sm cursor-pointer"
+          >
+            <Pen className="w-5 h-5 text-white" />
+          </div>
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

@@ -308,7 +308,7 @@ const NavDashboard = () => {
           </Popover>
           <div className="flex items-center space-x-2" onClick={toggleDropdown}>
             <UserCircle2Icon className="w-6 h-6" />
-            <p className="text-sm">User</p>
+            <p className="text-sm">{role}</p>
             <ChevronDown
               className={`w-4 h-4 transition-all duration-300 ${openDropdown ? "rotate-180" : "rotate-0"}`}
             />

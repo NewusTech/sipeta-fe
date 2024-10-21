@@ -5,6 +5,7 @@ import {
   CreateAdminDialog,
   UpdateAdminDialog,
 } from "@/components/Dialog/CreateAdmin";
+import ModalDelete from "@/components/Dialog/delete";
 import { Pagination } from "@/components/Pagination";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import {
@@ -18,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ColumnDef } from "@tanstack/react-table";
 import { fetcher } from "constants/fetcher";
-import { KeyRound, ListFilter, PenBox, SearchIcon, Trash2 } from "lucide-react";
+import { ListFilter, SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -58,7 +59,15 @@ const columns: ColumnDef<Contributor>[] = [
     id: "action",
     header: "Aksi",
     cell: ({ row }) => {
-      return <UpdateAdminDialog slug={row.original.slug} />;
+      return (
+        <div className="flex space-x-2">
+          <UpdateAdminDialog slug={row.original.slug} />
+          <ModalDelete
+            type="icon"
+            endpoint={`/userinfo/delete/${row.original.slug}`}
+          />
+        </div>
+      );
     },
   },
 ];
@@ -191,14 +200,13 @@ const CardTable = ({ data }: { data: Contributor }) => {
           <li>{data?.Role}</li>
         </ul>
       </div>
-      {/* <div className="mt-4 flex justify-end space-x-2 text-primaryy">
-        <div>
-          <PenBox className="w-6 h-6" />
-        </div>
-        <div>
-          <Trash2 className="w-6 h-6" />
-        </div>
-      </div> */}
+      <div className="mt-4 flex justify-end space-x-2 text-primaryy">
+        <UpdateAdminDialog type="mobile" slug={data.slug} />
+        <ModalDelete
+          type="ic-mobile"
+          endpoint={`/userinfo/delete/${data.slug}`}
+        />
+      </div>
     </section>
   );
 };

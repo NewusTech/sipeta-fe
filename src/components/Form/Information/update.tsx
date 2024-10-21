@@ -31,6 +31,7 @@ import useSWR from "swr";
 import { fetcherWithoutAuth } from "constants/fetcher";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
+import { OpenState } from "types/types";
 
 const languages = [
   { label: "Titik/Point", value: "1" },
@@ -154,7 +155,15 @@ export default function InformationFormUpdate({
   const [valueUnsur, setValueUnsur] = useState<any>({ id: 0, label: "" });
   const [dataResult, setDataResult] = useState<any>([]); // State untuk menyimpan hasil
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState<OpenState>({
+    popover1: false, // State untuk popover pertama
+    popover2: false, // Jika ada popover kedua, misalnya
+    popover3: false, // Jika ada popover ketiga, misalnya
+  });
 
+  const toggleOpen = (key: keyof OpenState) => {
+    setOpen((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { data: classify } = useSWR<any>(
     `${apiUrl}/klasifikasi/get`,
@@ -335,7 +344,10 @@ export default function InformationFormUpdate({
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Tipe Geometri</FormLabel>
-                  <Popover>
+                  <Popover
+                    open={open.popover1}
+                    onOpenChange={() => toggleOpen("popover1")}
+                  >
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -368,6 +380,7 @@ export default function InformationFormUpdate({
                                 onSelect={() => {
                                   form.setValue("typeGemoetry", language.value);
                                   onTypeGeometryChange(language.value);
+                                  toggleOpen("popover1");
                                 }}
                               >
                                 <Check
@@ -396,7 +409,10 @@ export default function InformationFormUpdate({
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Klasifikasi Toponim</FormLabel>
-                  <Popover>
+                  <Popover
+                    open={open.popover2}
+                    onOpenChange={() => toggleOpen("popover2")}
+                  >
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -434,6 +450,7 @@ export default function InformationFormUpdate({
                                     "classcificationToponim",
                                     language.value
                                   );
+                                  toggleOpen("popover2");
                                 }}
                               >
                                 <Check
@@ -462,7 +479,10 @@ export default function InformationFormUpdate({
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Unsur</FormLabel>
-                  <Popover>
+                  <Popover
+                    open={open.popover3}
+                    onOpenChange={() => toggleOpen("popover3")}
+                  >
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -495,6 +515,7 @@ export default function InformationFormUpdate({
                                 key={language.value}
                                 onSelect={() => {
                                   form.setValue("unsur", language.value);
+                                  toggleOpen("popover3");
                                 }}
                               >
                                 <Check
