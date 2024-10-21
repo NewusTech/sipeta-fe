@@ -9,8 +9,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Sipeta",
-  description: "Sipeta",
+  title: "Sitmap",
+  description: "Sitmap",
   // icons: {
   //   icon: {
   //     url: "/logo.svg",

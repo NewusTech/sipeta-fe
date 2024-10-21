@@ -224,8 +224,11 @@ export default function InformationForm({
       newPolyString = `${locationDetails.lat}, ${locationDetails.lng}`;
     }
 
+    const currentValues = form.getValues();
+
     if (locationDetails) {
       form.reset({
+        ...currentValues,
         idToponim: generateUniqueId(),
         district: locationDetails.kecamatan,
         village: locationDetails.desa,

@@ -409,13 +409,12 @@ export default function UpdateNamingPage({
 
   if (resultData) {
     const {
-      id,
       id_toponim,
       tipe_geometri,
       klasifikasi_id,
       unsur_id,
-      Kecamatan: { name: kecamatanName },
-      Desa: { name: desaName },
+      Kecamatan,
+      Desa,
       nama_lokal,
       nama_spesifik,
       nama_peta,
@@ -426,29 +425,33 @@ export default function UpdateNamingPage({
       sekretaris,
       email,
       telp,
-      Detailtoponim: {
-        akurasi,
-        arti_nama,
-        asal_bahasa,
-        catatan,
-        datatoponim_id,
-        ejaan,
-        lcode,
-        nama_gazeter,
-        nama_lain,
-        nama_rekomendasi,
-        nama_sebelumnya,
-        narasumber,
-        nilai_ketinggian,
-        nlp,
-        sejarah_nama,
-        sumber_data,
-        ucapan,
-        zona_utm,
-      },
+      Detailtoponim,
       sketsa,
       docpendukung,
     } = resultData;
+
+    const kecamatanName = Kecamatan?.name || "N/A"; // Optional chaining
+    const desaName = Desa?.name || "N/A"; // Optional chaining
+    const {
+      akurasi,
+      arti_nama,
+      asal_bahasa,
+      catatan,
+      id,
+      ejaan,
+      lcode,
+      nama_gazeter,
+      nama_lain,
+      nama_rekomendasi,
+      nama_sebelumnya,
+      narasumber,
+      nilai_ketinggian,
+      nlp,
+      sejarah_nama,
+      sumber_data,
+      ucapan,
+      zona_utm,
+    } = Detailtoponim || {}; // Optional chaining untuk Detailtoponim
 
     resultInformation = {
       id,
@@ -481,7 +484,6 @@ export default function UpdateNamingPage({
       arti_nama,
       asal_bahasa,
       catatan,
-      datatoponim_id,
       ejaan,
       lcode,
       nama_gazeter,

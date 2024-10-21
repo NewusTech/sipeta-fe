@@ -316,14 +316,14 @@ export default function DocumentTab() {
 
   return (
     <div className="mt-4">
-      <div className="space-y-4 flex flex-col mb-5">
+      <div className="space-y-3 flex flex-col mb-5">
         <Label htmlFor="id-toponim">Id Toponim</Label>
         <SelectSearch
           type="language"
           data={newClassify}
           valueId={valueClassify}
           setValueId={setValueClassify}
-          placeholder="Id Toponim"
+          placeholder="id toponim"
         />
       </div>
       <h1 className="font-medium">Foto Toponim</h1>

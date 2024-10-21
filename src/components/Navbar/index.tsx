@@ -80,7 +80,10 @@ const Navbar = () => {
     <div>
       <div className="bg-primaryy">
         <nav className="container mx-auto flex justify-between items-center py-5">
-          <div className="flex w-full md:w-5/12 items-center space-x-2">
+          <Link
+            href="/"
+            className="flex w-full md:w-5/12 items-center space-x-2"
+          >
             <Image
               src="/assets/icons/logo.svg"
               alt="Logo"
@@ -94,9 +97,9 @@ const Navbar = () => {
                 tata pemerintahan lampung utara
               </p>
             </div>
-          </div>
+          </Link>
           {token ? (
-            <div className="relative">
+            <div className="relative md:block hidden">
               <div
                 onClick={toggleDropdownName2}
                 className="text-white rounded-full cursor-pointer bg-primaryy flex space-x-4 items-center"
