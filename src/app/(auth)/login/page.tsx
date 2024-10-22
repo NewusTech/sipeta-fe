@@ -191,9 +191,18 @@ const LoginPage = () => {
         </form>
         <p className="text-center text-xs text-primaryy">
           Dengan mendaftar, Anda menyetujui{" "}
-          <span className="font-semibold">Syarat & Ketentuan</span> kami dan
-          Anda <br /> telah membaca{" "}
-          <span className="font-semibold">Kebijakan Privasi</span> kami.
+          <Link href="/term-and-condition" target="_blank">
+            <span className="font-semibold cursor-pointer underline">
+              Syarat & Ketentuan
+            </span>
+          </Link>{" "}
+          kami dan Anda <br /> telah membaca{" "}
+          <Link href="/term-and-condition" target="_blank">
+            <span className="font-semibold cursor-pointer underline">
+              Kebijakan Privasi
+            </span>{" "}
+            kami.
+          </Link>
         </p>
       </div>
     </section>
