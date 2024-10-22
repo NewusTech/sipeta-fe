@@ -65,7 +65,7 @@ const columns: ColumnDef<District>[] = [
   },
 ];
 
-export default function DistrictPage() {
+export default function ManualBookPage() {
   const { data } = useSWR<any>(
     `${process.env.NEXT_PUBLIC_API_URL}/manualbook/get`,
     fetcherWithoutAuth

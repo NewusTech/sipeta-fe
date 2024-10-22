@@ -246,6 +246,13 @@ const Sidebar = ({ type }: { type?: string }) => {
                     </li>
                     <li
                       className={`${
+                        isActive("/user/surveyor") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/user/surveyor">Surveyor</Link>
+                    </li>
+                    <li
+                      className={`${
                         isActive("/user/admin") ? "font-bold" : ""
                       } hover:translate-x-2 duration-300 transition-all`}
                     >
@@ -294,6 +301,17 @@ const Sidebar = ({ type }: { type?: string }) => {
                       } hover:translate-x-2 duration-300 transition-all`}
                     >
                       <Link href="/master-data/manual-book">Manual Book</Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/master-data/term-and-condition")
+                          ? "font-bold"
+                          : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/master-data/term-and-condition">
+                        Term & Condition
+                      </Link>
                     </li>
                   </ul>
                 )}
@@ -555,6 +573,13 @@ const SidebarMobile = ({ type }: { type?: string }) => {
                       } hover:translate-x-2 duration-300 transition-all`}
                     >
                       <Link href="/user/contributor">Kontributor</Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/user/surveyor") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/user/surveyor">Surveyor</Link>
                     </li>
                     <li
                       className={`${
