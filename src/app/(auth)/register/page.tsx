@@ -193,9 +193,18 @@ const RegisterPage = () => {
             <Checkbox />
             <p className="text-xs text-primaryy -my-1">
               Dengan mendaftar, Anda menyetujui{" "}
-              <span className="font-semibold">Syarat & Ketentuan</span> kami dan
-              Anda telah membaca
-              <span className="font-semibold"> Kebijakan Privasi</span> kami.
+              <Link href="/term-and-condition" target="_blank">
+                <span className="font-semibold cursor-pointer underline">
+                  Syarat & Ketentuan
+                </span>
+              </Link>{" "}
+              kami dan Anda telah membaca{" "}
+              <Link href="/term-and-condition" target="_blank">
+                <span className="font-semibold cursor-pointer underline">
+                  Kebijakan Privasi
+                </span>
+              </Link>{" "}
+              kami.
             </p>
           </div>
           <div className="flex justify-center">
