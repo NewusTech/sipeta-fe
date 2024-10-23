@@ -165,7 +165,7 @@ const NavDashboard = () => {
           />
           <div>
             <h1 className="uppercase text-white font-bold text-sm md:text-lg">
-              sipeta
+              sitmap
             </h1>
             <p className="capitalize font-light text-white text-xs">
               dashboard
