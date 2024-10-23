@@ -7,7 +7,7 @@ const DynamicNavbar = dynamic(() => import("../../components/Navbar"), {
 });
 
 export const metadata: Metadata = {
-  title: "Sipeta",
+  title: "Sitmap",
 };
 
 export default function RootLayout({
