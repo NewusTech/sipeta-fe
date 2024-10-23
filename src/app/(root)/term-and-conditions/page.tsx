@@ -4,7 +4,7 @@ import { RichTextDisplay } from "@/components/RichTextDisplay";
 import { fetcherWithoutAuth } from "constants/fetcher";
 import useSWR from "swr";
 
-export default function TermAndConditionPage() {
+export default function TermAndConditionsPage() {
   const { data } = useSWR<any>(
     `${process.env.NEXT_PUBLIC_API_URL}/termcond`,
     fetcherWithoutAuth
@@ -13,7 +13,7 @@ export default function TermAndConditionPage() {
 
   return (
     <section className="container mx-auto my-5">
-      <RichTextDisplay content={result?.desc} />
+      {result && <RichTextDisplay content={result?.desc} />}
     </section>
   );
 }
