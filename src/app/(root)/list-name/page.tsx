@@ -17,6 +17,7 @@ import useSWR, { mutate } from "swr";
 import { fetcherWithoutAuth } from "../../../constants/fetcher";
 import { ChangeEvent, useState } from "react";
 import Link from "next/link";
+import Cookies from "js-cookie";
 
 type Payment = {
   id: string;
@@ -145,17 +146,19 @@ export default function ListNamePage() {
 
     // Trigger SWR mutate to fetch data manually with dynamic parameters
     const result = await fetch(
-      `${apiUrl}/datatoponim/get?${params.toString()}`,
+      `${apiUrl}/datatoponim/get-landing?${params.toString()}`,
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJfYWt1bl9pZCI6MSwibmlrIjoic3VwZXJhZG1pbiIsInJvbGUiOiJTdXBlciBBZG1pbiIsInBlcm1pc3Npb24iOltdLCJpYXQiOjE3MjY1NTc4MjUsImV4cCI6MTcyNzQyMTgyNX0.Q6855HH-xqi2GZAZ-opnV2XaeRH2l2PfHb9K4qtIaCI`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       }
     );
     const jsonData = await result.json();
 
-    setDataResult(jsonData.data || []);
+    console.log(jsonData);
+
+    setDataResult(jsonData.data);
   };
 
   console.log(dataResult);
