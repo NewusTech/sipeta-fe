@@ -172,34 +172,22 @@ export default function ContributorPage() {
 const CardTable = ({ data }: { data: Contributor }) => {
   return (
     <section className="w-full border border-primaryy rounded-lg p-4">
-      <div className="space-y-2">
-        <ul className="flex">
-          <li className="mr-2 font-medium text-primaryy w-32">Nama Lengkap</li>
-          <li className="mr-1">:</li>
-          <li>{data?.name}</li>
-        </ul>
-        <ul className="flex">
-          <li className="mr-2 font-medium text-primaryy w-32">No Telepon</li>
-          <li className="mr-1">:</li>
-          <li>{data?.telepon}</li>
-        </ul>
-        <ul className="flex">
-          <li className="mr-2 font-medium text-primaryy w-32">Email</li>
-          <li className="mr-1">:</li>
-          <li>{data?.email}</li>
-        </ul>
-        <ul className="flex">
-          <li className="mr-2 font-medium text-primaryy w-32">Role</li>
-          <li className="mr-1">:</li>
-          <li>{data?.Role}</li>
-        </ul>
-      </div>
-      <div className="mt-4 flex justify-end space-x-2 text-primaryy">
-        <div>
-          <PenBox className="w-6 h-6" />
+      <div className="w-full space-y-1">
+        <div className="grid grid-cols-2">
+          <p className="font-medium text-primaryy">Nama Lengkap</p>
+          <p className="truncate">: {data?.name}</p>
         </div>
-        <div>
-          <Trash2 className="w-6 h-6" />
+        <div className="grid grid-cols-2">
+          <p className="font-medium text-primaryy">No Telepon</p>
+          <p className="truncate">: {data?.telepon}</p>
+        </div>
+        <div className="grid grid-cols-2">
+          <p className="font-medium text-primaryy">Email</p>
+          <p className="truncate">: {data?.email}</p>
+        </div>
+        <div className="grid grid-cols-2">
+          <p className="font-medium text-primaryy">Role</p>
+          <p className="truncate">: {data?.Role}</p>
         </div>
       </div>
     </section>

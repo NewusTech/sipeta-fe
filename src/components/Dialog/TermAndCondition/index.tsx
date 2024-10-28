@@ -1,11 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogFooter,
@@ -20,8 +16,8 @@ import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import useSWR from "swr";
 import { fetcherWithoutAuth } from "constants/fetcher";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export function TnCDialog() {
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -107,20 +103,13 @@ export function TnCDialog() {
           Term & Condition
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="max-w-4xl">
+      <AlertDialogContent className="md:max-w-4xl max-h-[800px] overflow-auto">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-primaryy">Tambah</AlertDialogTitle>
         </AlertDialogHeader>
         <div className="space-y-2 mb-5">
           <Label>Term & Condition</Label>
-          <CKEditor
-            editor={ClassicEditor}
-            data={value}
-            onChange={(event, editor) => {
-              const data = editor.getData();
-              setValue(data);
-            }}
-          />
+          <ReactQuill theme="snow" value={value} onChange={setValue} />
         </div>
 
         {/* Tombol Aksi */}

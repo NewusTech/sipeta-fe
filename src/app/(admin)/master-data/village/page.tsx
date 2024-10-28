@@ -100,7 +100,7 @@ export default function VillagePage() {
 
   return (
     <ProtectedRoute roles={["Super Admin"]}>
-      <section className="pl-64 pr-10 pt-32">
+      <section className="md:pl-64 pl-10 pr-10 md:pt-32 pt-10">
         <h1 className="text-xl font-semibold text-primaryy mb-3">Desa</h1>
         <div className="flex items-center justify-end">
           <Link href="/master-data/village/create">

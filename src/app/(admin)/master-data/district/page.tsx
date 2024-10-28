@@ -18,6 +18,7 @@ import { Button } from "../../../../components/ui/button";
 import Link from "next/link";
 import ModalDelete from "../../../../components/Dialog/delete";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import JsonDistrictDialog from "@/components/Dialog/JsonDistrict";
 
 type District = {
   id: number;
@@ -77,6 +78,11 @@ const columns: ColumnDef<District>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <JsonDistrictDialog
+              route="/master-data/district/api/create"
+              id={row.original.id}
+              name={row.original.name}
+            />
             <Link href={`/master-data/district/${row.original.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 Edit
@@ -100,7 +106,7 @@ export default function DistrictPage() {
 
   return (
     <ProtectedRoute roles={["Super Admin"]}>
-      <section className="pl-64 pr-10 pt-32">
+      <section className="md:pl-64 pl-10 pr-10 md:pt-32 pt-10">
         <h1 className="text-xl font-semibold text-primaryy mb-3">Kecamatan</h1>
         <div className="flex items-center justify-end">
           <Link href="/master-data/district/create">

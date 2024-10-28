@@ -632,6 +632,17 @@ const SidebarMobile = ({ type }: { type?: string }) => {
                     >
                       <Link href="/master-data/manual-book">Manual Book</Link>
                     </li>
+                    <li
+                      className={`${
+                        isActive("/master-data/term-and-condition")
+                          ? "font-bold"
+                          : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/master-data/term-and-condition">
+                        Term & Condition
+                      </Link>
+                    </li>
                   </ul>
                 )}
               </>

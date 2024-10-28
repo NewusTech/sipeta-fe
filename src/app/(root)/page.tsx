@@ -2,7 +2,7 @@
 
 import { Button } from "../../components/ui/button";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   GoogleMap,
   Marker,
@@ -13,15 +13,38 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 import useSWR from "swr";
-import { Input } from "../../components/ui/input";
-import geoJson from "../../constants/data.json";
-import geoJson2 from "../../constants/lamturaa.json";
 import { fetcherWithoutAuth } from "../../constants/fetcher";
 import LocationInfoWindow from "../../components/ui/locationdialog";
 
 export default function Home() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
+  const [geoJsonData, setGeoJsonData] = useState<any[]>([]);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [isMapReady, setIsMapReady] = useState(false);
+
+  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(
+    null
+  );
+
+  useEffect(() => {
+    const fetchGeoJsonData = async () => {
+      try {
+        const response = await fetch("/master-data/district/api/get-all");
+        if (!response.ok) {
+          throw new Error("Failed to fetch GeoJSON data");
+        }
+        const { data } = await response.json();
+        setGeoJsonData(data);
+      } catch (error) {
+        console.error("Error fetching GeoJSON:", error);
+      }
+    };
+
+    fetchGeoJsonData();
+  }, []);
+
+  console.log(geoJsonData);
 
   // Fetch data dengan SWR berdasarkan halaman saat ini
   const { data } = useSWR<any>(
@@ -33,7 +56,7 @@ export default function Home() {
 
   const parseLatLong = (latlong: string) => {
     const [lat, lng] = latlong.split(",").map(Number);
-    console.log(lat, lng);
+    // console.log(lat, lng);
     // Ensure the coordinates are in the correct format
     return { lat, lng };
   };
@@ -63,9 +86,49 @@ export default function Home() {
 
   const onLoadMap = React.useCallback((map: google.maps.Map) => {
     // Menambahkan data GeoJSON ke peta
-    map.data.addGeoJson(geoJson);
+    setMap(map);
+
+    setIsMapReady(true);
+    // map.data.addGeoJson(one);
 
     // Fungsi untuk menghitung centroid dari poligon
+  }, []);
+
+  useEffect(() => {
+    if (!isMapReady || !map || geoJsonData.length === 0) {
+      return;
+    }
+
+    const infowindow = new google.maps.InfoWindow();
+    setInfoWindow(infowindow);
+
+    geoJsonData.forEach((geoData) => {
+      try {
+        if (
+          geoData.filegeojson &&
+          geoData.filegeojson.type === "FeatureCollection"
+        ) {
+          console.log("Adding GeoJSON Data:", geoData.filegeojson);
+          map.data.addGeoJson(geoData.filegeojson);
+        } else {
+          console.error("Invalid GeoJSON format:", geoData.filegeojson);
+        }
+      } catch (error) {
+        console.error("Error adding GeoJSON:", error);
+      }
+    });
+
+    map.data.setStyle((feature) => {
+      // const namobj: any = feature.getProperty("namobj");
+      const fillColor = "#7295FF"; // Default warna jika tidak ada dalam colorMap
+      return {
+        fillColor: fillColor,
+        strokeColor: "#000",
+        strokeWeight: 0.3,
+        fillOpacity: 0.5,
+      };
+    });
+
     const calculateCentroid = (coordinates: number[][]) => {
       let totalX = 0,
         totalY = 0;
@@ -77,49 +140,6 @@ export default function Home() {
       const centerY = totalY / coordinates.length;
       return { lat: centerY, lng: centerX };
     };
-
-    // Peta warna berdasarkan properti tertentu, misalnya `namobj`
-    // const colorMap = {
-    //   "Sungkai Utara": "#FF21A0", // Warna untuk Sungkai Utara
-    //   "Bukit Kemuning": "#FF0000", // Warna untuk Bukit Kemuning
-    //   "Abung Tinggi": "#00FF00",
-    //   "Abung Surakarta": "#0000FF",
-    //   "Abung Semuli": "#FFFF00",
-    //   "Abung Timur": "#FF00FF",
-    //   "Abung Kunang": "#00FFFF",
-    //   Kotabumi: "#FFA500",
-    //   "Kotabumi Selatan": "#800080",
-    //   "Kotabumi Utara": "#008000",
-    //   "Tanjung Raja": "#10FF40", // Warna untuk Tanjung Raja
-    //   "Muara Sungkai": "#FFC0CB",
-    //   "Bunga Mayang": "#C0C0C0",
-    //   "Abung Selatan": "#A52A2A",
-    //   "Hulu Sungkai": "#D2691E",
-    //   "Lampung Utara": "#FF4500",
-    //   "Sungkai Barat": "#CD5C5C",
-    //   "Sungkai Selatan": "#F08080",
-    //   "Sungkai Tengah": "#FF6347",
-    //   "Tanjung Sari": "#B22222",
-    //   "Abung Tengah": "#FFD700",
-    //   "Sungkai Jaya": "#9ACD32",
-    //   "Abung Barat": "#ADFF2F",
-    //   "Blambangan Pagar": "#32CD32",
-    //   "Abung Pekurun": "#fff",
-    //   // Tambahkan warna lain sesuai kebutuhan
-    // };
-
-    // Mengatur tampilan visual untuk setiap poligon
-    map.data.setStyle((feature) => {
-      // const namobj: any = feature.getProperty("namobj");
-      const fillColor = "#7295FF"; // Default warna jika tidak ada dalam colorMap
-      return {
-        fillColor: fillColor,
-        strokeColor: "#000",
-        strokeWeight: 0.3,
-        fillOpacity: 0.5,
-        clickable: false, // Agar tidak bisa diklik
-      };
-    });
 
     // Membuat custom OverlayView untuk menampilkan teks di tengah poligon
     class LabelOverlay extends google.maps.OverlayView {
@@ -219,7 +239,29 @@ export default function Home() {
         },
       ],
     });
-  }, []);
+
+    map.data.addListener("mouseover", (event: any) => {
+      const feature = event.feature;
+      const name = feature.getProperty("namobj");
+      const population = feature.getProperty("jumlahpenduduk");
+
+      // Format popup content
+      const content = `Area: ${name}<br>Jumlah Penduduk: ${population}`;
+
+      if (content) {
+        const position = event.latLng;
+
+        infowindow.setContent(content);
+        infowindow.setPosition(position);
+        infowindow.open(map);
+      }
+    });
+
+    // Add mouseout listener to close the InfoWindow
+    map.data.addListener("mouseout", () => {
+      infowindow.close();
+    });
+  }, [map, isMapReady, geoJsonData]);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
