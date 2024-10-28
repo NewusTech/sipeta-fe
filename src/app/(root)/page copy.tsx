@@ -1,69 +1,29 @@
 "use client";
 
+import { Button } from "../../components/ui/button";
+
 import React, { useState } from "react";
-import { GoogleMap, Marker, Polyline, Polygon, useLoadScript, InfoWindow, DistanceMatrixService } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  Marker,
+  Polyline,
+  Polygon,
+  StandaloneSearchBox,
+  useLoadScript,
+  InfoWindow,
+} from "@react-google-maps/api";
 import useSWR from "swr";
-import geoJson1 from "../../constants/feature_1.json";
-import geoJson2 from "../../constants/feature_2.json";
-import geoJson3 from "../../constants/feature_3.json";
-import geoJson4 from "../../constants/feature_4.json";
-import geoJson5 from "../../constants/feature_5.json";
-import geoJson6 from "../../constants/feature_6.json";
-import geoJson7 from "../../constants/feature_7.json";
-import geoJson8 from "../../constants/feature_8.json";
-import geoJson9 from "../../constants/feature_9.json";
-import geoJson10 from "../../constants/feature_10.json";
-import geoJson11 from "../../constants/feature_11.json";
-import geoJson12 from "../../constants/feature_12.json";
-import geoJson13 from "../../constants/feature_13.json";
-import geoJson14 from "../../constants/feature_14.json";
-import geoJson15 from "../../constants/feature_15.json";
-import geoJson16 from "../../constants/feature_16.json";
-import geoJson17 from "../../constants/feature_17.json";
-import geoJson18 from "../../constants/feature_18.json";
-import geoJson19 from "../../constants/feature_19.json";
-import geoJson20 from "../../constants/feature_20.json";
-import geoJson21 from "../../constants/feature_21.json";
-import geoJson22 from "../../constants/feature_22.json";
-import geoJson23 from "../../constants/feature_23.json";
+import { Input } from "../../components/ui/input";
+import geoJson from "../../constants/bukitkemuning.json";
+import geoJson2 from "../../constants/lamturaa.json";
 import { fetcherWithoutAuth } from "../../constants/fetcher";
 import LocationInfoWindow from "../../components/ui/locationdialog";
 
 export default function Home() {
-
-  const geoJsonFiles = [
-    geoJson1,
-    geoJson2,
-    geoJson3,
-    geoJson4,
-    geoJson5,
-    geoJson6,
-    geoJson7,
-    geoJson8,
-    geoJson9,
-    geoJson10,
-    geoJson11,
-    geoJson12,
-    geoJson13,
-    geoJson14,
-    geoJson15,
-    geoJson16,
-    geoJson17,
-    geoJson18,
-    geoJson19,
-    geoJson20,
-    geoJson21,
-    geoJson22,
-    geoJson23,
-  ];
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
-  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null);
 
-    // State to store selected points for distance calculation
-    const [selectedPoints, setSelectedPoints] = useState<google.maps.LatLng[]>([]);
-    const [distance, setDistance] = useState<string | null>(null);
-
+  // Fetch data dengan SWR berdasarkan halaman saat ini
   const { data } = useSWR<any>(
     `${apiUrl}/datatoponim/get-landing?limit=100000`,
     fetcherWithoutAuth
@@ -71,6 +31,17 @@ export default function Home() {
 
   const result = data?.data;
 
+  const parseLatLong = (latlong: string) => {
+    const [lat, lng] = latlong.split(",").map(Number);
+    console.log(lat, lng);
+    // Ensure the coordinates are in the correct format
+    return { lat, lng };
+  };
+
+  const [markerPosition, setMarkerPosition] = React.useState({
+    lat: -4.8357, // Default latitude (Lampung Utara)
+    lng: 104.9441, // Default longitude (Lampung Utara)
+  });
   const [mapCenter, setMapCenter] = React.useState({
     lat: -4.8357, // Default center latitude (Lampung Utara)
     lng: 104.9441, // Default center longitude (Lampung Utara)
@@ -91,12 +62,8 @@ export default function Home() {
   };
 
   const onLoadMap = React.useCallback((map: google.maps.Map) => {
-    const infowindow = new google.maps.InfoWindow();
-    setInfoWindow(infowindow);
     // Menambahkan data GeoJSON ke peta
-    geoJsonFiles.forEach((geoData) => {
-      map.data.addGeoJson(geoData);
-    });
+    map.data.addGeoJson(geoJson);
 
     // Fungsi untuk menghitung centroid dari poligon
     const calculateCentroid = (coordinates: number[][]) => {
@@ -252,28 +219,6 @@ export default function Home() {
         },
       ],
     });
-
-    // map.data.addListener("mouseover", (event: any) => {
-    //   const feature = event.feature;
-    //   const name = feature.getProperty("namobj");
-    //   const population = feature.getProperty("jumlahpenduduk");
-
-    //   // Format popup content
-    //   const content = `Area: ${name}<br>Jumlah Penduduk: ${population}`;
-
-    //   if (content) {
-    //     const position = event.latLng;
-
-    //     infowindow.setContent(content);
-    //     infowindow.setPosition(position);
-    //     infowindow.open(map);
-    //   }
-    // });
-
-    // // Add mouseout listener to close the InfoWindow
-    // map.data.addListener("mouseout", () => {
-    //   infowindow.close();
-    // });
   }, []);
 
   const { isLoaded } = useLoadScript({
@@ -284,58 +229,92 @@ export default function Home() {
 
   const searchBoxRef = React.useRef<google.maps.places.SearchBox | null>(null);
 
+  const onPlacesChanged = () => {
+    const places = searchBoxRef.current?.getPlaces();
+    if (places && places.length > 0) {
+      const place = places[0];
+      const newLat = place.geometry?.location?.lat();
+      const newLng = place.geometry?.location?.lng();
+
+      if (newLat && newLng) {
+        setMarkerPosition({ lat: newLat, lng: newLng });
+      }
+    }
+  };
+
+  // const handleMapInteraction = (latLng: google.maps.LatLng | null) => {
+  //   if (!latLng) return;
+
+  //   const newLat = latLng.lat();
+  //   const newLng = latLng.lng();
+
+  //   if (newLat && newLng) {
+  //     // Cek apakah titik berada dalam polygon geoJson
+  //     const clickedPoint = new google.maps.LatLng(newLat, newLng);
+  //     let isInPolygon = false;
+
+  //     geoJson2.features.forEach((feature: any) => {
+  //       const polygonCoords = feature.geometry.coordinates[0][0].map(
+  //         (coord: number[]) => ({ lat: coord[1], lng: coord[0] })
+  //       );
+  //       const polygon = new google.maps.Polygon({
+  //         paths: polygonCoords,
+  //       });
+
+  //       if (google.maps.geometry.poly.containsLocation(clickedPoint, polygon)) {
+  //         isInPolygon = true;
+  //       }
+  //     });
+
+  //     if (isInPolygon) {
+  //       // Update marker position only if inside the polygon
+  //       setMarkerPosition({ lat: newLat, lng: newLng });
+  //     } else {
+  //       alert("Titik Berada di Luar Wilayah Kabupaten Lampung Timur");
+  //     }
+  //   }
+  // };
+
+  // const onMapClick = (event: google.maps.MapMouseEvent) => {
+  //   handleMapInteraction(event?.latLng);
+  // };
+
   const LAMPUNG_UTARA = {
-    lat: -4.8357,
+    lat: -4.8357, // Default center latitude (Lampung Utara)
     lng: 104.9441,
+  };
+
+  const onMapDragEnd = () => {
+    setMapCenter(LAMPUNG_UTARA); // Center back to Lampung Timur after drag
   };
 
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
 
-  const handleMapClick = (event: google.maps.MapMouseEvent) => {
-    if (event.latLng) {
-      setSelectedPoints((prevPoints: any) => {
-        const updatedPoints = [...prevPoints, event.latLng];
-        if (updatedPoints.length === 2) {
-          calculateDistance(updatedPoints[0], updatedPoints[1]);
-        }
-        return updatedPoints.slice(-2); // Only keep the last two points
-      });
-    }
-  };
-
-  const calculateDistance = (pointA: google.maps.LatLng, pointB: google.maps.LatLng) => {
-    const service = new google.maps.DistanceMatrixService();
-    service.getDistanceMatrix(
-      {
-        origins: [pointA],
-        destinations: [pointB],
-        travelMode: google.maps.TravelMode.DRIVING,
-      },
-      (response, status) => {
-        if (status === "OK" && response?.rows[0].elements[0].status === "OK") {
-          const distanceText = response?.rows[0].elements[0].distance.text;
-          setDistance(distanceText);
-        }
-      }
-    );
-  };
-
   return (
     <div className="flex justify-center items-center  bg-cover">
       <div className="w-full">
-      {distance && (
-          <div className="m-auto rounded">
-            <button>Jarak antara titik yang dipilih: {distance}</button>
-          </div>
-        )}
+        <div className="relative">
+          {/* Input search with Autocomplete */}
+          {/* <StandaloneSearchBox
+            onPlacesChanged={onPlacesChanged}
+            onLoad={(ref) => (searchBoxRef.current = ref)}
+          >
+            <Input
+              type="text"
+              placeholder="Search for a location"
+              className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-1/2 shadow"
+            />
+          </StandaloneSearchBox> */}
+        </div>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={mapCenter}
           onLoad={onLoadMap}
-           onClick={handleMapClick}
           zoom={10.85}
+          // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+          // onClick={onMapClick}
         >
           {result?.map((location: any, index: number) => {
             const { latlong, tipe_geometri } = location;
@@ -392,10 +371,6 @@ export default function Home() {
               onCloseClick={() => setSelectedLocation(null)}
             />
           )}
-
-{selectedPoints.map((point, index) => (
-            <Marker key={index} position={point} />
-          ))}
         </GoogleMap>
       </div>
     </div>
