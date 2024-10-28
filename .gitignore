@@ -38,3 +38,7 @@ next-env.d.ts
 
 .idea
 .swc
+
+/src/assets/district
+/src/assets/village
+/src/assets/dataa

@@ -1,20 +1,17 @@
 "use client";
 
-import { Button } from "../../components/ui/button";
-
 import React, { useEffect, useState } from "react";
 import {
   GoogleMap,
   Marker,
   Polyline,
   Polygon,
-  StandaloneSearchBox,
   useLoadScript,
-  InfoWindow,
 } from "@react-google-maps/api";
 import useSWR from "swr";
 import { fetcherWithoutAuth } from "../../constants/fetcher";
 import LocationInfoWindow from "../../components/ui/locationdialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 
 export default function Home() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -269,20 +266,20 @@ export default function Home() {
     language: "id",
   });
 
-  const searchBoxRef = React.useRef<google.maps.places.SearchBox | null>(null);
+  // const searchBoxRef = React.useRef<google.maps.places.SearchBox | null>(null);
 
-  const onPlacesChanged = () => {
-    const places = searchBoxRef.current?.getPlaces();
-    if (places && places.length > 0) {
-      const place = places[0];
-      const newLat = place.geometry?.location?.lat();
-      const newLng = place.geometry?.location?.lng();
+  // const onPlacesChanged = () => {
+  //   const places = searchBoxRef.current?.getPlaces();
+  //   if (places && places.length > 0) {
+  //     const place = places[0];
+  //     const newLat = place.geometry?.location?.lat();
+  //     const newLng = place.geometry?.location?.lng();
 
-      if (newLat && newLng) {
-        setMarkerPosition({ lat: newLat, lng: newLng });
-      }
-    }
-  };
+  //     if (newLat && newLng) {
+  //       setMarkerPosition({ lat: newLat, lng: newLng });
+  //     }
+  //   }
+  // };
 
   // const handleMapInteraction = (latLng: google.maps.LatLng | null) => {
   //   if (!latLng) return;
@@ -335,85 +332,164 @@ export default function Home() {
   }
 
   return (
-    <div className="flex justify-center items-center  bg-cover">
-      <div className="w-full">
-        <div className="relative">
-          {/* Input search with Autocomplete */}
-          {/* <StandaloneSearchBox
-            onPlacesChanged={onPlacesChanged}
-            onLoad={(ref) => (searchBoxRef.current = ref)}
-          >
-            <Input
-              type="text"
-              placeholder="Search for a location"
-              className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-1/2 shadow"
-            />
-          </StandaloneSearchBox> */}
-        </div>
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          center={mapCenter}
-          onLoad={onLoadMap}
-          zoom={10.85}
-          // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
-          // onClick={onMapClick}
-        >
-          {result?.map((location: any, index: number) => {
-            const { latlong, tipe_geometri } = location;
+    <div className="flex justify-center items-center bg-cover">
+      <div className="w-full p-2">
+        <Tabs defaultValue="account" className="w-full">
+          <TabsList className="flex space-x-2 p-2 bg-slate-50 rounded-full w-2/12">
+            <TabsTrigger
+              value="district"
+              className="w-full data-[state=active]:bg-primaryy px-5 py-1 rounded-full data-[state=active]:text-white"
+            >
+              Kecamatan
+            </TabsTrigger>
+            <TabsTrigger
+              value="village"
+              className="w-full data-[state=active]:bg-primaryy px-5 py-1 rounded-full data-[state=active]:text-white"
+            >
+              Desa
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="district" className="w-full">
+            <div className="w-full py-2">
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={mapCenter}
+                onLoad={onLoadMap}
+                zoom={10.85}
+                // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+                // onClick={onMapClick}
+              >
+                {result?.map((location: any, index: number) => {
+                  const { latlong, tipe_geometri } = location;
 
-            const coordinates = latlong?.split(";").map((coord: string) => {
-              const [lat, lng] = coord?.split(",").map(Number);
-              return { lat, lng };
-            });
+                  const coordinates = latlong
+                    ?.split(";")
+                    .map((coord: string) => {
+                      const [lat, lng] = coord?.split(",").map(Number);
+                      return { lat, lng };
+                    });
 
-            if (tipe_geometri === 1) {
-              const { lat, lng } = coordinates[0];
-              console.log(lat, lng);
-              return (
-                <Marker
-                  key={index}
-                  position={{ lat, lng }}
-                  onClick={() => setSelectedLocation(location)}
-                />
-              );
-            } else if (tipe_geometri === 3) {
-              return (
-                <Polyline
-                  key={index}
-                  path={coordinates}
-                  options={{
-                    strokeColor: getRandomColor(),
-                    strokeOpacity: 1,
-                    strokeWeight: 2,
-                  }}
-                  onClick={() => setSelectedLocation(location)}
-                />
-              );
-            } else if (tipe_geometri === 2) {
-              return (
-                <Polygon
-                  key={index}
-                  paths={coordinates}
-                  options={{
-                    fillColor: getRandomColor(),
-                    fillOpacity: 0.4,
-                    strokeOpacity: 0.5,
-                    strokeWeight: 0.5,
-                  }}
-                  onClick={() => setSelectedLocation(location)}
-                />
-              );
-            }
-            return null;
-          })}
+                  if (tipe_geometri === 1) {
+                    const { lat, lng } = coordinates[0];
+                    console.log(lat, lng);
+                    return (
+                      <Marker
+                        key={index}
+                        position={{ lat, lng }}
+                        onClick={() => setSelectedLocation(location)}
+                      />
+                    );
+                  } else if (tipe_geometri === 3) {
+                    return (
+                      <Polyline
+                        key={index}
+                        path={coordinates}
+                        options={{
+                          strokeColor: getRandomColor(),
+                          strokeOpacity: 1,
+                          strokeWeight: 2,
+                        }}
+                        onClick={() => setSelectedLocation(location)}
+                      />
+                    );
+                  } else if (tipe_geometri === 2) {
+                    return (
+                      <Polygon
+                        key={index}
+                        paths={coordinates}
+                        options={{
+                          fillColor: getRandomColor(),
+                          fillOpacity: 0.4,
+                          strokeOpacity: 0.5,
+                          strokeWeight: 0.5,
+                        }}
+                        onClick={() => setSelectedLocation(location)}
+                      />
+                    );
+                  }
+                  return null;
+                })}
 
-          {selectedLocation && (
-            <LocationInfoWindow
-              location={selectedLocation}
-              onCloseClick={() => setSelectedLocation(null)}
-            />
-          )}
-        </GoogleMap>
+                {selectedLocation && (
+                  <LocationInfoWindow
+                    location={selectedLocation}
+                    onCloseClick={() => setSelectedLocation(null)}
+                  />
+                )}
+              </GoogleMap>
+            </div>
+          </TabsContent>
+          <TabsContent value="village">
+            <div className="w-full py-2">
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={mapCenter}
+                onLoad={onLoadMap}
+                zoom={10.85}
+                // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+                // onClick={onMapClick}
+              >
+                {result?.map((location: any, index: number) => {
+                  const { latlong, tipe_geometri } = location;
+
+                  const coordinates = latlong
+                    ?.split(";")
+                    .map((coord: string) => {
+                      const [lat, lng] = coord?.split(",").map(Number);
+                      return { lat, lng };
+                    });
+
+                  if (tipe_geometri === 1) {
+                    const { lat, lng } = coordinates[0];
+                    console.log(lat, lng);
+                    return (
+                      <Marker
+                        key={index}
+                        position={{ lat, lng }}
+                        onClick={() => setSelectedLocation(location)}
+                      />
+                    );
+                  } else if (tipe_geometri === 3) {
+                    return (
+                      <Polyline
+                        key={index}
+                        path={coordinates}
+                        options={{
+                          strokeColor: getRandomColor(),
+                          strokeOpacity: 1,
+                          strokeWeight: 2,
+                        }}
+                        onClick={() => setSelectedLocation(location)}
+                      />
+                    );
+                  } else if (tipe_geometri === 2) {
+                    return (
+                      <Polygon
+                        key={index}
+                        paths={coordinates}
+                        options={{
+                          fillColor: getRandomColor(),
+                          fillOpacity: 0.4,
+                          strokeOpacity: 0.5,
+                          strokeWeight: 0.5,
+                        }}
+                        onClick={() => setSelectedLocation(location)}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+
+                {selectedLocation && (
+                  <LocationInfoWindow
+                    location={selectedLocation}
+                    onCloseClick={() => setSelectedLocation(null)}
+                  />
+                )}
+              </GoogleMap>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
