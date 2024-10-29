@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import {
   GoogleMap,
@@ -8,13 +6,12 @@ import {
   Polygon,
   useLoadScript,
 } from "@react-google-maps/api";
-import useSWR from "swr";
-import { fetcherWithoutAuth } from "../../constants/fetcher";
 import LocationInfoWindow from "../../components/ui/locationdialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import TabMap from "@/components/TabMap/tab";
+import useSWR from "swr";
+import { fetcherWithoutAuth } from "constants/fetcher";
 
-export default function Home() {
+export default function TabMap() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [geoJsonData, setGeoJsonData] = useState<any[]>([]);
@@ -331,12 +328,158 @@ export default function Home() {
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
-
   return (
-    <div className="flex justify-center items-center bg-cover">
-      <div className="w-full p-2">
-        <TabMap />
-      </div>
-    </div>
+    <Tabs defaultValue="district" className="w-full">
+      <TabsList className="flex space-x-2 p-2 bg-slate-50 rounded-full w-2/12">
+        <TabsTrigger
+          value="district"
+          className="w-full data-[state=active]:bg-primaryy px-5 py-1 rounded-full data-[state=active]:text-white"
+        >
+          Kecamatan
+        </TabsTrigger>
+        <TabsTrigger
+          value="village"
+          className="w-full data-[state=active]:bg-primaryy px-5 py-1 rounded-full data-[state=active]:text-white"
+        >
+          Desa
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="district" className="w-full">
+        <div className="w-full py-2">
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            center={mapCenter}
+            onLoad={onLoadMap}
+            zoom={10.85}
+            // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+            // onClick={onMapClick}
+          >
+            {result?.map((location: any, index: number) => {
+              const { latlong, tipe_geometri } = location;
+
+              const coordinates = latlong?.split(";").map((coord: string) => {
+                const [lat, lng] = coord?.split(",").map(Number);
+                return { lat, lng };
+              });
+
+              if (tipe_geometri === 1) {
+                const { lat, lng } = coordinates[0];
+                console.log(lat, lng);
+                return (
+                  <Marker
+                    key={index}
+                    position={{ lat, lng }}
+                    onClick={() => setSelectedLocation(location)}
+                  />
+                );
+              } else if (tipe_geometri === 3) {
+                return (
+                  <Polyline
+                    key={index}
+                    path={coordinates}
+                    options={{
+                      strokeColor: "green",
+                      strokeOpacity: 1,
+                      strokeWeight: 2,
+                    }}
+                    onClick={() => setSelectedLocation(location)}
+                  />
+                );
+              } else if (tipe_geometri === 2) {
+                return (
+                  <Polygon
+                    key={index}
+                    paths={coordinates}
+                    options={{
+                      fillColor: "lightgreen",
+                      fillOpacity: 0.4,
+                      strokeOpacity: 0.5,
+                      strokeWeight: 0.5,
+                    }}
+                    onClick={() => setSelectedLocation(location)}
+                  />
+                );
+              }
+              return null;
+            })}
+
+            {selectedLocation && (
+              <LocationInfoWindow
+                location={selectedLocation}
+                onCloseClick={() => setSelectedLocation(null)}
+              />
+            )}
+          </GoogleMap>
+        </div>
+      </TabsContent>
+      <TabsContent value="village">
+        <div className="w-full py-2">
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            center={mapCenter}
+            onLoad={onLoadMap}
+            zoom={10.85}
+            // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+            // onClick={onMapClick}
+          >
+            {result?.map((location: any, index: number) => {
+              const { latlong, tipe_geometri } = location;
+
+              const coordinates = latlong?.split(";").map((coord: string) => {
+                const [lat, lng] = coord?.split(",").map(Number);
+                return { lat, lng };
+              });
+
+              if (tipe_geometri === 1) {
+                const { lat, lng } = coordinates[0];
+                console.log(lat, lng);
+                return (
+                  <Marker
+                    key={index}
+                    position={{ lat, lng }}
+                    onClick={() => setSelectedLocation(location)}
+                  />
+                );
+              } else if (tipe_geometri === 3) {
+                return (
+                  <Polyline
+                    key={index}
+                    path={coordinates}
+                    options={{
+                      strokeColor: "green",
+                      strokeOpacity: 1,
+                      strokeWeight: 2,
+                    }}
+                    onClick={() => setSelectedLocation(location)}
+                  />
+                );
+              } else if (tipe_geometri === 2) {
+                return (
+                  <Polygon
+                    key={index}
+                    paths={coordinates}
+                    options={{
+                      fillColor: "lightgreen",
+                      fillOpacity: 0.4,
+                      strokeOpacity: 0.5,
+                      strokeWeight: 0.5,
+                    }}
+                    onClick={() => setSelectedLocation(location)}
+                  />
+                );
+              }
+              return null;
+            })}
+
+            {selectedLocation && (
+              <LocationInfoWindow
+                location={selectedLocation}
+                onCloseClick={() => setSelectedLocation(null)}
+              />
+            )}
+          </GoogleMap>
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }
