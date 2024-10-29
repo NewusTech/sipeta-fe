@@ -118,7 +118,7 @@ const LoginPage = () => {
         <div className="flex flex-col items-center">
           <h5 className="uppercase text-primaryy font-semibold">sitmap</h5>
           <p className="uppercase text-primaryy w-full md:w-8/12 text-center text-xs md:text-sm">
-            sistem informasi tata map lampung utara
+            Sistem Informasi Pengelolaan Data Kewilayahan Lampung Utara
           </p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

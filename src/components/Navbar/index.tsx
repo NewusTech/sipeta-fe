@@ -94,7 +94,7 @@ const Navbar = () => {
             <div>
               <h1 className="uppercase text-white font-bold text-lg">SITMAP</h1>
               <p className="uppercase font-light text-white text-xs">
-                sistem informasi tata map lampung utara
+                Sistem Informasi Pengelolaan Data Kewilayahan Lampung Utara
               </p>
             </div>
           </Link>
