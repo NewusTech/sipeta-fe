@@ -32,7 +32,7 @@ const FileValidation = z.object({
   file: z.any(),
 });
 
-export default function UploadFileJsonDialog() {
+export default function UploadFileJsonDialog({ route }: { route: string }) {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,19 +60,12 @@ export default function UploadFileJsonDialog() {
     }
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/mapslampura/update`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-          },
-          body: formData,
-        }
-      );
+      const response = await fetch(route, {
+        method: "POST",
+        body: formData,
+      });
 
       const data = await response.json();
-      console.log(data);
       if (response.ok) {
         Swal.fire({
           icon: "success",

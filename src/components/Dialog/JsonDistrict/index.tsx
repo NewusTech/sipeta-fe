@@ -115,7 +115,7 @@ export default function JsonDistrictDialog({
       <AlertDialogContent className="p-0 border-0 overflow-auto">
         <AlertDialogHeader className="bg-primaryy px-9 py-6">
           <AlertDialogTitle className="font-normal text-neutral-50 text-2xl">
-            Impor Data Geo Grafis Kecamatan {name}
+            Impor Data Geo Grafis {name}
           </AlertDialogTitle>
         </AlertDialogHeader>
         <div className="p-6">
