@@ -293,7 +293,7 @@ const Sidebar = ({ type }: { type?: string }) => {
                       <Link href="/master-data/village">Desa</Link>
                     </li>
                     <li className="hover:translate-x-2 duration-300 transition-all">
-                      <UploadFileJsonDialog />
+                      <UploadFileJsonDialog route="/master-data/maps/api/create" />
                     </li>
                     <li
                       className={`${
@@ -623,7 +623,7 @@ const SidebarMobile = ({ type }: { type?: string }) => {
                       <Link href="/master-data/village">Desa</Link>
                     </li>
                     <li className="hover:translate-x-2 duration-300 transition-all">
-                      <UploadFileJsonDialog />
+                      <UploadFileJsonDialog route="/master-data/maps/api/create" />
                     </li>
                     <li
                       className={`${

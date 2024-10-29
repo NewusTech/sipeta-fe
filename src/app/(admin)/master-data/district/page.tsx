@@ -81,7 +81,7 @@ const columns: ColumnDef<District>[] = [
             <JsonDistrictDialog
               route="/master-data/district/api/create"
               id={row.original.id}
-              name={row.original.name}
+              name={`Kecamatan ${row.original.name}`}
             />
             <Link href={`/master-data/district/${row.original.id}`}>
               <DropdownMenuItem className="cursor-pointer">

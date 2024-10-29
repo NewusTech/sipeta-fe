@@ -18,6 +18,7 @@ import Link from "next/link";
 import ModalDelete from "../../../../components/Dialog/delete";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { DataTables } from "@/components/Datatables";
+import JsonDistrictDialog from "@/components/Dialog/JsonDistrict";
 
 type Village = {
   id: number;
@@ -77,6 +78,11 @@ const columns: ColumnDef<Village>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <JsonDistrictDialog
+              route="/master-data/village/api/create"
+              id={row.original.id}
+              name={`Desa ${row.original.name}`}
+            />
             <Link href={`/master-data/village/${row.original.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 Edit
