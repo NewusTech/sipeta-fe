@@ -5,11 +5,14 @@ import {
   Polyline,
   Polygon,
   useLoadScript,
+  DrawingManager,
+  InfoWindow
 } from "@react-google-maps/api";
 import LocationInfoWindow from "../../components/ui/locationdialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import useSWR from "swr";
 import { fetcherWithoutAuth } from "constants/fetcher";
+import TabMap2 from "./tab2";
 
 export default function TabMap() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -70,15 +73,6 @@ export default function TabMap() {
     height: "100vh",
   };
 
-  const getRandomColor = () => {
-    const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  };
-
   const onLoadMap = React.useCallback((map: google.maps.Map) => {
     // Menambahkan data GeoJSON ke peta
     setMap(map);
@@ -121,6 +115,7 @@ export default function TabMap() {
         strokeColor: "#000",
         strokeWeight: 0.3,
         fillOpacity: 0.5,
+        clickable: true
       };
     });
 
@@ -260,7 +255,7 @@ export default function TabMap() {
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ["places", "geometry"],
+    libraries: ["places", "geometry", "drawing"],
     language: "id",
   });
 
@@ -330,7 +325,7 @@ export default function TabMap() {
   }
   return (
     <Tabs defaultValue="district" className="w-full">
-      <TabsList className="flex space-x-2 p-2 bg-slate-50 rounded-full w-2/12">
+      <TabsList className="flex space-x-2 p-2 bg-slate-50 rounded-full w-4/12">
         <TabsTrigger
           value="district"
           className="w-full data-[state=active]:bg-primaryy px-5 py-1 rounded-full data-[state=active]:text-white"
@@ -343,6 +338,12 @@ export default function TabMap() {
         >
           Desa
         </TabsTrigger>
+        <TabsTrigger
+          value="tools"
+          className="w-full data-[state=active]:bg-primaryy px-5 py-1 rounded-full data-[state=active]:text-white"
+        >
+          Luas & Jarak
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="district" className="w-full">
         <div className="w-full py-2">
@@ -351,8 +352,8 @@ export default function TabMap() {
             center={mapCenter}
             onLoad={onLoadMap}
             zoom={10.85}
-            // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
-            // onClick={onMapClick}
+          // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+          // onClick={onMapClick}
           >
             {result?.map((location: any, index: number) => {
               const { latlong, tipe_geometri } = location;
@@ -419,8 +420,8 @@ export default function TabMap() {
             center={mapCenter}
             onLoad={onLoadMap}
             zoom={10.85}
-            // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
-            // onClick={onMapClick}
+          // onDragEnd={onMapDragEnd} // Menangani event drag pada peta
+          // onClick={onMapClick}
           >
             {result?.map((location: any, index: number) => {
               const { latlong, tipe_geometri } = location;
@@ -479,6 +480,9 @@ export default function TabMap() {
             )}
           </GoogleMap>
         </div>
+      </TabsContent>
+      <TabsContent value="tools">
+            <TabMap2/>
       </TabsContent>
     </Tabs>
   );
