@@ -172,7 +172,7 @@ const NavDashboard = () => {
             </p>
           </div>
         </div>
-        <ul className="hidden md:flex justify-end text-white items-center space-x-6 py-8 px-10">
+        <ul className="hidden md:flex justify-end text-white items-center space-x-6 py-3 px-10">
           <Popover>
             <PopoverTrigger>
               <li className="relative">

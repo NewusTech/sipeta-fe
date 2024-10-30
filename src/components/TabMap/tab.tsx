@@ -1,17 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  GoogleMap,
-  Marker,
-  Polyline,
-  Polygon,
-  useLoadScript,
-  DrawingManager,
-  InfoWindow,
-} from "@react-google-maps/api";
-import LocationInfoWindow from "../../components/ui/locationdialog";
+import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import useSWR from "swr";
-import { fetcherWithoutAuth } from "constants/fetcher";
 import TabMap2 from "./tab2";
 import TabMapDistrict from "./district";
 import TabMapVillage from "./village";
@@ -20,7 +8,7 @@ import TabMapRegency from "./regency";
 export default function TabMap() {
   return (
     <Tabs defaultValue="regency" className="w-full">
-      <TabsList className="flex space-x-2 p-2 h-12 md:h-13 bg-slate-50 rounded-full w-full md:w-4/12 overflow-scroll md:overflow-hidden">
+      <TabsList className="flex space-x-2 p-2 h-12 md:h-13 bg-slate-50 rounded-full w-full md:w-6/12 overflow-scroll md:overflow-hidden">
         <TabsTrigger
           value="regency"
           className="w-full data-[state=active]:bg-primaryy px-5 py-1 rounded-full data-[state=active]:text-white"
