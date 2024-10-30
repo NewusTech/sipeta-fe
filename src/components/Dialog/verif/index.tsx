@@ -40,6 +40,7 @@ const ModalVerif = ({ id }: { id: number }) => {
       );
 
       const data = await response.json();
+
       if (response.ok) {
         Swal.fire({
           icon: "success",
@@ -51,10 +52,22 @@ const ModalVerif = ({ id }: { id: number }) => {
         handleAddModalClose();
         window.location.reload();
       }
+
+      if (!response.ok) {
+        Swal.fire({
+          icon: "error",
+          title: `${data.message}`,
+          timer: 2000,
+          showConfirmButton: false,
+          position: "center",
+        });
+        handleAddModalClose();
+        window.location.reload();
+      }
     } catch (e: any) {
       Swal.fire({
         icon: "error",
-        title: "Gagal delete!",
+        title: "Gagal submit!",
         timer: 2000,
         showConfirmButton: false,
         position: "center",

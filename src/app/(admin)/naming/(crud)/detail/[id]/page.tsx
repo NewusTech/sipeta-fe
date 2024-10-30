@@ -49,29 +49,6 @@ import DocumentTabDetail from "@/components/Form/Document/detail";
 import ModalVerif from "@/components/Dialog/verif";
 import ModalDecline from "@/components/Dialog/decline";
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
-
 export default function DetailNamingPage({
   params,
 }: {
@@ -560,19 +537,6 @@ export default function DetailNamingPage({
         </div>
         <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
           <div className="w-full block md:hidden ">
-            <div className="relative">
-              {/* Input search with Autocomplete */}
-              <StandaloneSearchBox
-                onPlacesChanged={onPlacesChanged}
-                onLoad={(ref) => (searchBoxRef.current = ref)}
-              >
-                <Input
-                  type="text"
-                  placeholder="Search for a location"
-                  className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
-                />
-              </StandaloneSearchBox>
-            </div>
             <GoogleMap
               mapContainerStyle={mapContainerStyle2}
               center={mapCenter}
