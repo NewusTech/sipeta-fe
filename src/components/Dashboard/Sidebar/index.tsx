@@ -67,7 +67,7 @@ const Sidebar = ({ type }: { type?: string }) => {
 
   return (
     <aside
-      className={`hidden md:block md:-mt-6 ${type === "large" ? "w-[228px]" : "w-[100px]"} h-screen bg-[#F6F6F6] fixed p-6 z-50`}
+      className={`hidden md:block md:-mt-6 ${type === "large" ? "w-[228px]" : "w-[100px]"} h-screen bg-[#F6F6F6] fixed p-6 z-50 overflow-auto`}
     >
       {type === "large" ? (
         <>
@@ -400,7 +400,7 @@ const SidebarMobile = ({ type }: { type?: string }) => {
 
   return (
     <aside
-      className={`md:hidden flex-1 h-screen ${type === "large" ? "w-[228px]" : "w-[100px]"} bg-[#F6F6F6] fixed p-6 z-50`}
+      className={`overflow-auto md:hidden flex-1 h-screen ${type === "large" ? "w-[228px]" : "w-[100px]"} bg-[#F6F6F6] fixed p-6 z-50`}
     >
       {type === "large" ? (
         <>

@@ -79,7 +79,7 @@ const Navbar = () => {
   return (
     <div>
       <div className="bg-primaryy">
-        <nav className="container mx-auto flex justify-between items-center py-5">
+        <nav className="container mx-auto flex justify-between items-center py-2">
           <Link
             href="/"
             className="flex w-full md:w-5/12 items-center space-x-2"
