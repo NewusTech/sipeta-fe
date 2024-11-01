@@ -3,21 +3,6 @@
 import * as React from "react";
 import { Check, ChevronDown, ChevronLeft, X } from "lucide-react";
 
-import { cn } from "../../../../../../lib/utils";
-import { Button } from "../../../../../../components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../../../../../../components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../../../../../components/ui/popover";
 import {
   Tabs,
   TabsContent,
@@ -48,29 +33,6 @@ import DetailFormDetail from "@/components/Form/Detail/detail";
 import DocumentTabDetail from "@/components/Form/Document/detail";
 import ModalVerif from "@/components/Dialog/verif";
 import ModalDecline from "@/components/Dialog/decline";
-
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
 
 export default function DetailNamingPage({
   params,
@@ -295,21 +257,6 @@ export default function DetailNamingPage({
     language: "id",
   });
 
-  const searchBoxRef = React.useRef<google.maps.places.SearchBox | null>(null);
-
-  const onPlacesChanged = () => {
-    const places = searchBoxRef.current?.getPlaces();
-    if (places && places.length > 0) {
-      const place = places[0];
-      const newLat = place.geometry?.location?.lat();
-      const newLng = place.geometry?.location?.lng();
-
-      if (newLat && newLng) {
-        setMarkerPosition({ lat: newLat, lng: newLng });
-      }
-    }
-  };
-
   const handleReverseGeocoding = (lat: number, lng: number) => {
     const geocoder = new google.maps.Geocoder();
     const latLng = new google.maps.LatLng(lat, lng);
@@ -493,11 +440,6 @@ export default function DetailNamingPage({
   //   })
   // );
 
-  const LAMPUNG_UTARA = {
-    lat: -4.8357, // Default center latitude (Lampung Utara)
-    lng: 104.9441,
-  };
-
   // const onMapDragEnd = () => {
   //   setMapCenter(LAMPUNG_UTARA); // Center back to Lampung Timur after drag
   // };
@@ -560,19 +502,6 @@ export default function DetailNamingPage({
         </div>
         <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
           <div className="w-full block md:hidden ">
-            <div className="relative">
-              {/* Input search with Autocomplete */}
-              <StandaloneSearchBox
-                onPlacesChanged={onPlacesChanged}
-                onLoad={(ref) => (searchBoxRef.current = ref)}
-              >
-                <Input
-                  type="text"
-                  placeholder="Search for a location"
-                  className="absolute z-10 left-48 mt-[10px] border-none rounded-full w-[40%] shadow"
-                />
-              </StandaloneSearchBox>
-            </div>
             <GoogleMap
               mapContainerStyle={mapContainerStyle2}
               center={mapCenter}

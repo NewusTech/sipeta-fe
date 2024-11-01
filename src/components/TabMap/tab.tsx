@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import TabMap2 from "./tab2";
 import TabMapDistrict from "./district";
 import TabMapVillage from "./village";
-import TabMapRegency from "./regency";
+import TabMapRegency from "./regency";  
 
 export default function TabMap() {
   return (

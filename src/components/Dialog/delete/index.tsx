@@ -11,6 +11,7 @@ import {
 } from "../../ui/alert-dialog";
 import { Loader, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 const ModalDelete = ({
   endpoint,
@@ -24,6 +25,8 @@ const ModalDelete = ({
   const handleOpenAddModal = () => {
     setAddModalOpen(true);
   };
+
+  const router = useRouter();
 
   const handleAddModalClose = () => {
     setAddModalOpen(false);
@@ -52,8 +55,7 @@ const ModalDelete = ({
           showConfirmButton: false,
           position: "center",
         });
-        handleAddModalClose();
-        window.location.reload();
+        router.push("/naming");
       }
       if (!response.ok) {
         Swal.fire({
