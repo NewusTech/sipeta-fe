@@ -3,21 +3,6 @@
 import * as React from "react";
 import { Check, ChevronDown, ChevronLeft, X } from "lucide-react";
 
-import { cn } from "../../../../../../lib/utils";
-import { Button } from "../../../../../../components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../../../../../../components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../../../../../components/ui/popover";
 import {
   Tabs,
   TabsContent,
@@ -272,21 +257,6 @@ export default function DetailNamingPage({
     language: "id",
   });
 
-  const searchBoxRef = React.useRef<google.maps.places.SearchBox | null>(null);
-
-  const onPlacesChanged = () => {
-    const places = searchBoxRef.current?.getPlaces();
-    if (places && places.length > 0) {
-      const place = places[0];
-      const newLat = place.geometry?.location?.lat();
-      const newLng = place.geometry?.location?.lng();
-
-      if (newLat && newLng) {
-        setMarkerPosition({ lat: newLat, lng: newLng });
-      }
-    }
-  };
-
   const handleReverseGeocoding = (lat: number, lng: number) => {
     const geocoder = new google.maps.Geocoder();
     const latLng = new google.maps.LatLng(lat, lng);
@@ -469,11 +439,6 @@ export default function DetailNamingPage({
   //     label: item.name, // name masuk ke label
   //   })
   // );
-
-  const LAMPUNG_UTARA = {
-    lat: -4.8357, // Default center latitude (Lampung Utara)
-    lng: 104.9441,
-  };
 
   // const onMapDragEnd = () => {
   //   setMapCenter(LAMPUNG_UTARA); // Center back to Lampung Timur after drag

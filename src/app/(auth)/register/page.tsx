@@ -26,6 +26,7 @@ const registerSchema = z.object({
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -190,7 +191,9 @@ const RegisterPage = () => {
             )}
           </div>
           <div className="flex space-x-2 items-center">
-            <Checkbox />
+            <Checkbox
+              onCheckedChange={(checked: any) => setIsChecked(checked)} // Set isChecked berdasarkan perubahan checkbox
+            />
             <p className="text-xs text-primaryy -my-1">
               Dengan mendaftar, Anda menyetujui{" "}
               <Link href="/term-and-conditions" target="_blank">
@@ -211,7 +214,7 @@ const RegisterPage = () => {
             <Button
               type="submit"
               className="rounded-full bg-transparent text-white bg-primaryy px-8"
-              disabled={isLoading}
+              disabled={!isChecked || isLoading}
             >
               {isLoading ? "Loading ..." : "Daftar"}
             </Button>

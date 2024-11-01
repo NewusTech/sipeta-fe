@@ -11,6 +11,7 @@ import {
 } from "../../ui/alert-dialog";
 import { Check, Loader } from "lucide-react";
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 const ModalVerif = ({ id }: { id: number }) => {
@@ -19,6 +20,7 @@ const ModalVerif = ({ id }: { id: number }) => {
   const handleOpenAddModal = () => {
     setAddModalOpen(true);
   };
+  const router = useRouter();
 
   const handleAddModalClose = () => {
     setAddModalOpen(false);
@@ -49,8 +51,7 @@ const ModalVerif = ({ id }: { id: number }) => {
           showConfirmButton: false,
           position: "center",
         });
-        handleAddModalClose();
-        window.location.reload();
+        router.push("/naming");
       }
 
       if (!response.ok) {
@@ -61,8 +62,6 @@ const ModalVerif = ({ id }: { id: number }) => {
           showConfirmButton: false,
           position: "center",
         });
-        handleAddModalClose();
-        window.location.reload();
       }
     } catch (e: any) {
       Swal.fire({

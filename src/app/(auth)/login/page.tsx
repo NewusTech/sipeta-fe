@@ -45,8 +45,6 @@ const LoginPage = () => {
       password: data.password,
     };
 
-    console.log(formData);
-
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
         method: "POST",

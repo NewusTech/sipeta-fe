@@ -253,6 +253,8 @@ export default function TabMapRegency() {
             return { lat, lng };
           });
 
+          console.log(coordinates);
+
           if (tipe_geometri === 1) {
             const { lat, lng } = coordinates[0];
             console.log(lat, lng);
