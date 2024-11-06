@@ -110,7 +110,7 @@ const Navbar = () => {
                 />
               </div>
               {openDropdownName2 && (
-                <div className="bg-white space-y-2 rounded-lg absolute shadow z-50 w-[175px] h-[84px] mt-5 p-4">
+                <div className="bg-white space-y-2 rounded-lg absolute shadow z-50 w-[175px] h-[84px] mt-5 p-4 right-0">
                   <div className="flex space-x-4 items-center transition-all duration-300 hover:translate-x-2">
                     <LayoutDashboardIcon className="text-primaryy w-5 h-5" />
                     <Link href="/dashboard" className="text-primaryy">

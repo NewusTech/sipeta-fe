@@ -231,7 +231,7 @@ const NavDashboard = () => {
           </li>
         </ul>
         {openDropdown2 && (
-          <div className="absolute shadow w-1/12 p-4 rounded-lg bg-[#fff] -mt-6 right-4 z-40">
+          <div className="absolute shadow w-[30vh] p-4 rounded-lg bg-[#fff] -mt-3 right-4 z-40">
             <ul className="space-y-3 text-slate-300">
               <li>
                 <Link href="/profile" className="flex space-x-3 items-center">

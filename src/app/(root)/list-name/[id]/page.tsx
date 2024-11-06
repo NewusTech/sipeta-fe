@@ -308,15 +308,14 @@ const DetailPage = ({
               // Menangani event klik pada peta
             >
               {(() => {
-                switch (typeGeometry) {
-                  case 1:
+                switch (typeGeometry.toString()) {
+                  case "1":
                     return (
                       <Marker
                         position={markerPosition} // Menampilkan marker pada posisi terkini
                       />
                     );
-                  case 2:
-                    console.log(polyString);
+                  case "2":
                     return (
                       <Polygon
                         paths={polyString}
@@ -328,7 +327,7 @@ const DetailPage = ({
                         }}
                       />
                     );
-                  case 3:
+                  case "3":
                     return (
                       <Polyline
                         path={polyString}

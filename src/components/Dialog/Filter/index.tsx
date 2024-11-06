@@ -65,7 +65,7 @@ export function FilterDialog({ onFilterApply }: FilterDialogProps) {
           <p className="text-primaryy font-light">Filter</p>
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[525px]" onClick={handleAddModalClose}>
         <DialogHeader>
           <DialogTitle>Filter Data</DialogTitle>
         </DialogHeader>
