@@ -183,7 +183,7 @@ export default function ProfilePage() {
   return (
     <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor", "User"]}>
       <section className="md:pl-64 pr-10 pl-10 pt-10 md:pt-32">
-        <div className="flex md:flex-row shadow rounded-lg md:shadow-none p-5 md:p-0 flex-col md:space-x-4">
+        <div className="grid md:grid-cols-2 grid-cols-1 shadow rounded-lg md:shadow-none p-5 md:p-0  md:space-x-4">
           <div className="w-full md:bg-white md:shadow rounded-xl p-0 md:px-10 md:py-3 space-y-1 md:space-y-10">
             <h1 className="text-primaryy font-semibold text-xl hidden md:block">
               Foto
@@ -206,7 +206,7 @@ export default function ProfilePage() {
                 )}
                 <label
                   htmlFor="image"
-                  className="md:w-full hidden md:block px-96 hover:bg-primaryy hover:text-white py-2 cursor-pointer rounded-full border border-primaryy text-center text-primaryy"
+                  className="md:w-full hidden md:block px-32 hover:bg-primaryy hover:text-white py-2 cursor-pointer rounded-full border border-primaryy text-center text-primaryy"
                 >
                   Pilih
                 </label>
