@@ -86,7 +86,7 @@ export default function JsonDistrictDialog({
           position: "center",
         });
         handleAddModalClose();
-        window.location.reload();
+        router.push("/master-data/district");
       }
     } catch (error: any) {
       console.log(error);
