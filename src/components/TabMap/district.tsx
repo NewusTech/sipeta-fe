@@ -23,23 +23,6 @@ export default function TabMapDistrict() {
     null
   );
 
-  useEffect(() => {
-    const fetchGeoJsonData = async () => {
-      try {
-        const response = await fetch("/master-data/district/api/get-all");
-        if (!response.ok) {
-          throw new Error("Failed to fetch GeoJSON data");
-        }
-        const { data } = await response.json();
-        setGeoJsonData(data);
-      } catch (error) {
-        console.error("Error fetching GeoJSON:", error);
-      }
-    };
-
-    fetchGeoJsonData();
-  }, []);
-
   // Fetch data dengan SWR berdasarkan halaman saat ini
   const { data } = useSWR<any>(
     `${apiUrl}/datatoponim/get-landing?limit=100000`,
@@ -236,6 +219,24 @@ export default function TabMapDistrict() {
       infowindow.close();
     });
   }, [map, isMapReady, geoJsonData]);
+
+  useEffect(() => {
+    const fetchGeoJsonData = async () => {
+      try {
+        const response = await fetch("/master-data/district/api/get-all");
+        if (!response.ok) {
+          throw new Error("Failed to fetch GeoJSON data");
+        }
+        const { data } = await response.json();
+        setGeoJsonData(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching GeoJSON:", error);
+      }
+    };
+
+    fetchGeoJsonData();
+  }, []);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",

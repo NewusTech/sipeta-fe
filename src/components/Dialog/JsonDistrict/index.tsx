@@ -26,6 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 const FileValidation = z.object({
   file: z.any(),
@@ -57,7 +58,7 @@ export default function JsonDistrictDialog({
 
   const fileRef = form.register("file");
 
-  console.log(route);
+  const router = useRouter();
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof FileValidation>) {
@@ -76,7 +77,6 @@ export default function JsonDistrictDialog({
       });
 
       const data = await response.json();
-      console.log(data);
       if (response.ok) {
         Swal.fire({
           icon: "success",
@@ -86,7 +86,7 @@ export default function JsonDistrictDialog({
           position: "center",
         });
         handleAddModalClose();
-        window.location.reload();
+        router.push("/master-data/district");
       }
     } catch (error: any) {
       console.log(error);

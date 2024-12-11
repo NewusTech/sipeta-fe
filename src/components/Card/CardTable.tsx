@@ -5,6 +5,8 @@ import { formatDate } from "lib/utils";
 import { CheckSquare2, EyeIcon, PenBox, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import ModalDelete from "../Dialog/delete";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 export type Payment = {
   createdAt: string;
@@ -28,6 +30,10 @@ export const columnsData: ColumnDef<Payment>[] = [
   {
     header: "Aksi",
     cell: ({ row }) => {
+      const token: any = Cookies.get("token");
+      const user = jwtDecode<any>(token);
+      const role = user.role;
+
       return (
         <div className="flex space-x-2">
           <div className="p-1 w-7 bg-blue-400 hover:bg-blue-500 rounded-sm cursor-pointer">
@@ -40,10 +46,12 @@ export const columnsData: ColumnDef<Payment>[] = [
               <Pencil className="w-4 h-4 text-white" />
             </Link>
           </div>
-          <ModalDelete
-            type="icon"
-            endpoint={`datatoponim/delete/${row.original.id}`}
-          />
+          {role !== "Verifikator" && (
+            <ModalDelete
+              type="icon"
+              endpoint={`datatoponim/delete/${row.original.id}`}
+            />
+          )}
         </div>
       );
     },
@@ -60,14 +68,29 @@ export const columnsData: ColumnDef<Payment>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status;
-      const bgColor =
-        status === 0 ? "bg-primaryy" : status === 1 ? "bg-success" : "bg-error";
+      const getStatusBgColor = (status: number) => {
+        if (status === 0) return "bg-primaryy";
+        if (status === 1) return "bg-success";
+        if (status === 2) return "bg-error";
+        if (status === 3) return "bg-yellow-500";
+        return "bg-green-600";
+      };
+      const getStatusString = (status: number) => {
+        if (status === 0) return "Menunggu";
+        if (status === 1) return "Verif";
+        if (status === 2) return "Ditolak";
+        if (status === 3) return "Perbaikan";
+        return "Direvisi";
+      };
+
+      const bgColor = getStatusBgColor(status);
+      const statusString = getStatusString(status);
 
       return (
         <p
           className={`text-white text-center ${bgColor} text-[10px] py-[2px] px-2 rounded-full`}
         >
-          {status === 0 ? "Menunggu" : status === 1 ? "Verif" : "Ditolak"}
+          {statusString}
         </p>
       );
     },

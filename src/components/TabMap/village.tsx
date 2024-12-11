@@ -31,6 +31,7 @@ export default function TabMapVillage() {
           throw new Error("Failed to fetch GeoJSON data");
         }
         const { data } = await response.json();
+        console.log(data);
         setGeoJsonData(data);
       } catch (error) {
         console.error("Error fetching GeoJSON:", error);

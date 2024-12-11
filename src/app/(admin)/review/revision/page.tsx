@@ -1,5 +1,9 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
+
+import { CardTable } from "@/components/Card/CardTable";
+import { DataTables } from "@/components/Datatables";
+import { Pagination } from "@/components/Pagination";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,77 +11,88 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "../../../components/ui/breadcrumb";
-import { DataTables } from "../../../components/Datatables";
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ColumnDef } from "@tanstack/react-table";
+import { fetcher } from "constants/fetcher";
 import {
-  CheckSquare2,
   Download,
   EyeIcon,
-  FolderDown,
-  FolderUp,
-  Import,
   ListFilter,
   Loader,
-  MapPinPlus,
-  PenBox,
   Printer,
   SearchIcon,
-  Trash2,
 } from "lucide-react";
-import { Button } from "../../../components/ui/button";
 import Link from "next/link";
-import { fetcher } from "constants/fetcher";
-import { formatDate } from "lib/utils";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Pagination } from "@/components/Pagination";
-import { CardTable, columnsData } from "@/components/Card/CardTable";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import useSWR from "swr";
 import Swal from "sweetalert2";
-import UploadFileDialog from "@/components/Dialog/UploadFIle";
-import UploadFileShpDialog from "@/components/Dialog/UploadShp";
-import { FilterDialog } from "@/components/Dialog/Filter";
+import { FiltersDialog } from "@/components/Dialog/Filter/filters";
 
-// type PaymentS = {
-//   id: string;
-//   amount: number;
-//   status: "pending" | "processing" | "success" | "failed";
-//   email: string;
-// };
+type HasBeenReviewed = {
+  id: string;
+  id_toponim: string;
+  nama_lokal: string;
+  nama_spesifik: string;
+  status: number;
+  Unsur: {
+    name: string;
+  };
+  Kecamatan: {
+    name: string;
+  };
+};
 
-// export const payments: PaymentS[] = [
-//   {
-//     id: "728ed52f",
-//     amount: 100,
-//     status: "pending",
-//     email: "m@example.com",
-//   },
-//   {
-//     id: "489e1d42",
-//     amount: 125,
-//     status: "processing",
-//     email: "example@gmail.com",
-//   },
-//   {
-//     id: "728ed52f",
-//     amount: 100,
-//     status: "pending",
-//     email: "m@example.com",
-//   },
-//   {
-//     id: "489e1d42",
-//     amount: 125,
-//     status: "processing",
-//     email: "example@gmail.com",
-//   },
-//   // ...
-// ];
+const columns: ColumnDef<HasBeenReviewed>[] = [
+  {
+    id: "action",
+    header: "Aksi",
+    cell: ({ row }) => {
+      return (
+        <div>
+          <div className="p-1 w-7 bg-orange-400 hover:bg-orange-500 rounded-sm cursor-pointer">
+            <Link
+              href={`/review/has-not-been-reviewed/detail/${row.original.id}`}
+            >
+              <EyeIcon className="w-5 h-5 text-white" />
+            </Link>
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "id_toponim",
+    header: "Id Toponim",
+  },
+  {
+    accessorKey: "Unsur.name",
+    header: "Unsur",
+    cell: ({ row }) => {
+      return <p>{row.original?.Unsur?.name || "-"}</p>;
+    },
+  },
+  {
+    accessorKey: "nama_lokal",
+    header: "Nama Lokal",
+  },
+  {
+    accessorKey: "nama_spesifik",
+    header: "Nama Spesifik",
+  },
+  {
+    accessorKey: "Kecamatan.name",
+    header: "Kecamatan",
+    cell: ({ row }) => {
+      return <p>{row.original?.Kecamatan?.name || "-"}</p>;
+    },
+  },
+];
 
-export default function NamingPage() {
+export default function HasNotBeenReviewedPage() {
   const [page, setPage] = useState(1);
   const [dropdown, setDropdown] = useState(false);
-  const [dropdown2, setDropdown2] = useState(false);
   const [loadingState, setLoadingState] = useState({
     pdf: false,
     excel: false,
@@ -86,41 +101,43 @@ export default function NamingPage() {
     shp: false,
   });
   const [filterData, setFilterData] = useState<{
-    status: string;
+    district: any;
+    unsur: any;
     date: Date | null;
   }>({
-    status: "",
+    district: "",
+    unsur: "",
     date: null,
   });
 
   // Fungsi untuk menerima data dari FilterDialog
-  const handleFilterApply = (status: string, date: Date | null) => {
-    setFilterData({ status, date });
-    console.log("Filter Applied:", { status, date });
+  const handleFilterApply = (district: any, unsur: any, date: Date | null) => {
+    setFilterData({ district, unsur, date });
     // Lakukan fetch data atau filtering dengan filterData yang baru
   };
-
   const toggleDropdown = () => {
     setDropdown(!dropdown);
-    if (!dropdown) {
-      setDropdown2(false); // Menutup dropdown2 saat dropdown pertama dibuka
-    }
   };
 
-  const toggleDropdown2 = () => {
-    setDropdown2(!dropdown2);
-    if (!dropdown2) {
-      setDropdown(false); // Menutup dropdown pertama saat dropdown2 dibuka
-    }
-  };
+  const { data } = useSWR(() => {
+    // Base URL
+    let url = `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000&status=4`;
 
-  const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/get-dashboard?limit=10000000&status=${filterData.status}`,
-    fetcher
-  );
+    // Append 'kecamatan_id' if it's not null or empty
+    if (filterData.district && filterData.district.id) {
+      url += `&kecamatan_id=${Number(filterData.district.id)}`;
+    }
+
+    // Append 'unsur_id' if it's not null or empty
+    if (filterData.unsur && filterData.unsur.id) {
+      url += `&unsur_id=${Number(filterData.unsur.id)}`;
+    }
+
+    // Return URL to be used by useSWR
+    return url;
+  }, fetcher);
 
   const result = data?.data;
-  console.log(result);
   const totalPages = data?.pagination?.totalPages || 1;
 
   // Fungsi untuk mengubah halaman
@@ -132,7 +149,7 @@ export default function NamingPage() {
     setLoadingState((prevState) => ({ ...prevState, [route]: true }));
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/${route}?status=1`,
+        `${process.env.NEXT_PUBLIC_API_URL}/datatoponim/${route}?status=4`,
         {
           method: "GET",
         }
@@ -170,10 +187,27 @@ export default function NamingPage() {
   };
 
   return (
-    <ProtectedRoute roles={["Super Admin", "Surveyor", "User", "Verifikator"]}>
-      <section className="space-y-4 pl-10 md:pl-64 pr-10 pt-10 md:pt-28">
-        <h1 className="text-primaryy font-bold text-2xl">Pendataan</h1>
-        <div>
+    <ProtectedRoute roles={["Super Admin", "Verifikator"]}>
+      <section className="md:pl-64 pl-10 pr-10 md:pt-28 pt-6">
+        <Breadcrumb className="hidden md:block">
+          <BreadcrumbList>
+            <BreadcrumbItem className="text-primaryy">
+              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-primaryy" />
+            <BreadcrumbItem className="text-primaryy">
+              <BreadcrumbLink href="#">Penelaahan</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-primaryy" />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-primaryy font-semibold">
+                Sudah Direvisi
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-xl text-primaryy font-semibold">Sudah Direvisi</h1>
+        <div className="pt-5">
           <div className="flex space-x-2 justify-start md:justify-end">
             <div className="flex md:hidden border-primaryy items-center space-x-2 pr-5 w-full rounded-full bg-transparent border">
               <Input
@@ -187,42 +221,15 @@ export default function NamingPage() {
                 onClick={toggleDropdown}
                 className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2"
               >
-                <FolderUp className="h-4 w-4 text-primaryy group-hover:text-white" />
+                <Download className="h-4 w-4 text-primaryy group-hover:text-white" />
                 <p className="text-primaryy group-hover:text-white hidden md:block">
-                  Ekspor
-                </p>
-              </Button>
-              <Button
-                onClick={toggleDropdown2}
-                className="bg-transparent border group border-primaryy hover:bg-primaryy hover:text-white rounded-full flex justify-between space-x-2"
-              >
-                <FolderDown className="h-4 w-4 text-primaryy group-hover:text-white" />
-                <p className="text-primaryy group-hover:text-white hidden md:block">
-                  Impor
+                  Download
                 </p>
               </Button>
             </div>
           </div>
-          {dropdown2 && (
-            <div className="absolute right-0 mr-10 mt-2 bg-white z-10 shadow w-32">
-              <ul className="p-3 space-y-2">
-                <li>
-                  <UploadFileDialog title="Excel" endpoint="excel" />
-                </li>
-                <li>
-                  <UploadFileDialog title="CSV" endpoint="csv" />
-                </li>
-                <li>
-                  <UploadFileDialog title="JSON" endpoint="json" />
-                </li>
-                <li>
-                  <UploadFileShpDialog />
-                </li>
-              </ul>
-            </div>
-          )}
           {dropdown && (
-            <div className="absolute right-20 mr-10 mt-2 bg-white z-10 shadow w-32">
+            <div className="absolute right-0 mr-10 mt-2 bg-white z-10 shadow w-32">
               <ul className="p-3 space-y-2">
                 <li
                   onClick={() => handleDownload("pdf", "pdf")}
@@ -287,22 +294,14 @@ export default function NamingPage() {
               </ul>
             </div>
           )}
-          <div className="flex items-center space-x-2 md:space-x-11">
-            <FilterDialog onFilterApply={handleFilterApply} />
-            <Link href="/naming/create">
-              <div className="flex px-2 space-x-2 items-center h-[28px] bg-primaryy mt-4 text-white rounded-full ">
-                <MapPinPlus className="w-5 h-5" />
-                <p className="text-sm">Tambah Data</p>
-              </div>
-            </Link>
+          <div className="flex items-center space-x-11">
+            <FiltersDialog onFilterApply={handleFilterApply} />
           </div>
           <div className="space-y-2 mt-6 md:hidden block">
             {result ? (
               result?.map((v: any) => (
                 <CardTable
-                  route={`/naming/detail/${v.id}`}
-                  route2={`/naming/update/${v.id}`}
-                  route3={`datatoponim/delete/${v.id}`}
+                  route={`/review/has-not-been-reviewed/detail/${v.id}`}
                   key={v.id}
                   data={v}
                 />
@@ -320,10 +319,10 @@ export default function NamingPage() {
               onPageChange={handlePageChange}
             />
           </div>
-          <div className="w-full -mt-[85px] hidden md:block">
+          <div className="w-full -mt-[85px] md:block hidden">
             {result && (
               <DataTables
-                columns={columnsData}
+                columns={columns}
                 data={result}
                 filterBy="nama_lokal"
               />
