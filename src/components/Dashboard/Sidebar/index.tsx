@@ -102,21 +102,16 @@ const Sidebar = ({ type }: { type?: string }) => {
                 <p>Dashboard</p>
               </Link>
             </li>
-            {role !== "Verifikator" && (
-              <li
-                className={`p-3 rounded-md flex items-center space-x-3 ${
-                  isActive("/naming")
-                    ? "bg-primaryy text-white font-medium"
-                    : ""
-                }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
-              >
-                {" "}
-                <MapIcon />
-                <Link href="/naming">
-                  <p>Pendataan</p>
-                </Link>
-              </li>
-            )}
+            <li
+              className={`p-3 rounded-md flex items-center space-x-3 ${
+                isActive("/naming") ? "bg-primaryy text-white font-medium" : ""
+              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+            >
+              <MapIcon />
+              <Link href="/naming">
+                <p>Pendataan</p>
+              </Link>
+            </li>
 
             {role === "Verifikator" && (
               <>
@@ -157,6 +152,13 @@ const Sidebar = ({ type }: { type?: string }) => {
                       <Link href="/review/has-not-been-reviewed">
                         Belum Ditelaah
                       </Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/review/revision") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/review/revision">Sudah Direvisi</Link>
                     </li>
                     <li
                       className={`${
@@ -209,6 +211,13 @@ const Sidebar = ({ type }: { type?: string }) => {
                       <Link href="/review/has-not-been-reviewed">
                         Belum Ditelaah
                       </Link>
+                    </li>
+                    <li
+                      className={`${
+                        isActive("/review/revision") ? "font-bold" : ""
+                      } hover:translate-x-2 duration-300 transition-all`}
+                    >
+                      <Link href="/review/revision">Sudah Direvisi</Link>
                     </li>
                     <li
                       className={`${
@@ -432,21 +441,17 @@ const SidebarMobile = ({ type }: { type?: string }) => {
                 <p>Dashboard</p>
               </Link>
             </li>
-            {role !== "Verifikator" && (
-              <li
-                className={`p-3 rounded-md flex items-center space-x-3 ${
-                  isActive("/naming")
-                    ? "bg-primaryy text-white font-medium"
-                    : ""
-                }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
-              >
-                {" "}
-                <MapIcon />
-                <Link href="/naming">
-                  <p>Pendataan</p>
-                </Link>
-              </li>
-            )}
+            <li
+              className={`p-3 rounded-md flex items-center space-x-3 ${
+                isActive("/naming") ? "bg-primaryy text-white font-medium" : ""
+              }  hover:bg-primaryy hover:bg-opacity-20 transition-all duration-300 hover:font-medium hover:text-primaryy`}
+            >
+              {" "}
+              <MapIcon />
+              <Link href="/naming">
+                <p>Pendataan</p>
+              </Link>
+            </li>
 
             {role === "Verifikator" && (
               <>

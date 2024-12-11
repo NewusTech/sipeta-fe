@@ -47,6 +47,7 @@ import DetailFormDetail from "@/components/Form/Detail/detail";
 import DocumentTabDetail from "@/components/Form/Document/detail";
 import ModalVerif from "@/components/Dialog/verif";
 import ModalDecline from "@/components/Dialog/decline";
+import ModalRevision from "@/components/Dialog/revision";
 
 const frameworks = [
   {
@@ -552,6 +553,11 @@ export default function DetailHasNotBeenReviewed({
         </div>
         <div className="flex md:flex-row w-full md:w-[40%] md:space-x-2 justify-start items-start md:items-center md:justify-between space-y-2 mb-2 md:mb-0 flex-col md:items-center">
           <h1 className="text-primaryy pt-5 font-semibold text-xl">Detail</h1>
+          <div className="flex space-x-2">
+            <ModalVerif id={params.id} />
+            <ModalRevision id={params.id} />
+            <ModalDecline id={params.id} />
+          </div>
         </div>
         <div className="flex md:flex-row flex-col md:justify-between md:space-x-4">
           <div className="w-full block md:hidden ">
