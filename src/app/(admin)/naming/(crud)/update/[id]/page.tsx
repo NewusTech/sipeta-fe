@@ -566,7 +566,7 @@ export default function UpdateNamingPage({
   if (!isLoaded) return <p>Loading ...</p>;
 
   return (
-    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor"]}>
+    <ProtectedRoute roles={["Super Admin", "Verifikator", "Surveyor", "User"]}>
       <section className="md:pl-32 pl-10 pr-10 md:pr-0 pb-20 md:pb-0">
         <div className="flex items-center text-primaryy mt-4">
           <Link href="/naming" className="cursor-pointer">
