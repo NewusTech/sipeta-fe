@@ -55,7 +55,7 @@ const ModalDelete = ({
           showConfirmButton: false,
           position: "center",
         });
-        router.push("/naming");
+        window.location.reload();
       }
       if (!response.ok) {
         Swal.fire({
